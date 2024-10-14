@@ -10,9 +10,8 @@
 
 # Features
  
-## Briscula
+## Briscula Rules
 
-### Rules
 - 40 cars, 120 possible points
 -	Clasical rule of Briscula
 -	If 3 players are playing, one card is out
@@ -20,11 +19,13 @@
 -	Feature to see cards of teammate before last round
 
 ## Tournaments
+
 -	Tournament with 4, 8, 16 or 32 players
 -	Every round is played until one of the players wins x times
 -	Winner gets certain number of points
 
 ## Playaer
+
 -	Has a name, picture
 -	Has number of points and level
 - There is a rang list with players, number of matched they participated in, score
