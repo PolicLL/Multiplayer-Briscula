@@ -4,9 +4,11 @@ import com.example.briscula.exceptions.NoCardWithNumberTwoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import lombok.Getter;
 
 public class Deck {
 
+  @Getter
   private final List<Card> deckCards = new ArrayList<>();
   private final Random random = new Random();
 
@@ -29,7 +31,7 @@ public class Deck {
 
   public Boolean removeOneWithCardValueTwo() {
     return deckCards.stream()
-        .filter(card -> card.getCardValue() == CardValue.TWO)
+        .filter(card -> card.cardValue() == CardValue.TWO)
         .findFirst()
         .map(deckCards::remove)
         .orElseThrow(() -> new IllegalStateException(new NoCardWithNumberTwoException()));

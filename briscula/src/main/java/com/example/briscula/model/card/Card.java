@@ -3,16 +3,11 @@ package com.example.briscula.model.card;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
-@AllArgsConstructor
-@Getter
-@EqualsAndHashCode
-@ToString
-public class Card {
 
-  private final CardType cardType;
-  private final CardValue cardValue;
+public record Card(CardType cardType, CardValue cardValue) {
 
   public boolean isMainType(CardType mainCardType) {
     return this.cardType == mainCardType;
