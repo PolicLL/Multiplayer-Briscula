@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.example.briscula.game.GameJudge;
 import com.example.briscula.game.Move;
+import com.example.briscula.game.RoundWinner;
 import com.example.briscula.user.player.AbstractPlayer;
 import com.example.briscula.user.player.Bot;
 import java.util.ArrayDeque;
@@ -17,9 +18,11 @@ public class GameTest {
 
   private List<Card> cardsList;
 
+  private RoundWinner roundWinner;
+
   private final List<Bot> playerList = new ArrayList<>(Arrays.asList(
-      new Bot(new ArrayList<>(), "Bot 1"), new Bot(new ArrayList<>(), "Bot 2"),
-      new Bot(new ArrayList<>(), "Bot 3"), new Bot(new ArrayList<>(), "Bot 4")
+      new Bot(new ArrayList<>(), "Bot 0"), new Bot(new ArrayList<>(), "Bot 1"),
+      new Bot(new ArrayList<>(), "Bot 2"), new Bot(new ArrayList<>(), "Bot 3")
   ));
 
 
@@ -39,7 +42,8 @@ public class GameTest {
 
     setupMovesAndCalculateRound(CardType.COPPE);
 
-    assertThat(playerList.get(3).getPoints()).isEqualTo(16);
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(16);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 3");
   }
 
   @Test
@@ -54,7 +58,8 @@ public class GameTest {
 
     setupMovesAndCalculateRound(CardType.BASTONI);
 
-    assertThat(playerList.get(2).getPoints()).isEqualTo(23);
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(23);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 2");
   }
 
   @Test
@@ -69,7 +74,8 @@ public class GameTest {
 
     setupMovesAndCalculateRound(CardType.COPPE);
 
-    assertThat(playerList.get(0).getPoints()).isEqualTo(12);
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(12);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 0");
   }
 
   @Test
@@ -83,7 +89,8 @@ public class GameTest {
 
     setupMovesAndCalculateRound(CardType.COPPE);
 
-    assertThat(playerList.get(3).getPoints()).isEqualTo(12);
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(12);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 3");
   }
 
 
@@ -99,7 +106,7 @@ public class GameTest {
         new Move(playerList.get(2), cardsList.get(2)), new Move(playerList.get(3), cardsList.get(3))
     );
 
-    new GameJudge(mainCardType).calculateRound(new ArrayDeque<>(movesList.subList(0, 4)));
+    roundWinner = new GameJudge(mainCardType).calculateRound(new ArrayDeque<>(movesList.subList(0, 4)));
   }
 
 }

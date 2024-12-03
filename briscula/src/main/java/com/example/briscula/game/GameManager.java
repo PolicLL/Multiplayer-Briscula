@@ -40,12 +40,14 @@ public class GameManager {
       log.info("Move " + i + " -> " + player.getNickname() + " | " + card);
     }
 
-    gameJudge.calculateRound(queueMoves);
+    RoundWinner roundWinner = gameJudge.calculateRound(queueMoves);
+    roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
+
     admin.dealNextRound();
-    printPlayersValues();
+    logPlayersValues();
   }
 
-  private void printPlayersValues() {
+  private void logPlayersValues() {
     admin.getPlayers().forEach(player ->
         log.info("[" + player.getNickname() + "] : " + player.getPoints()));
     log.info("\n");

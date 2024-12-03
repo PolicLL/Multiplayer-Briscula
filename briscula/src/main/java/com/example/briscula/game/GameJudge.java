@@ -4,7 +4,6 @@ package com.example.briscula.game;
 import com.example.briscula.exceptions.DuplicateCardException;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
-import com.example.briscula.user.admin.Admin;
 import java.util.Queue;
 import lombok.RequiredArgsConstructor;
 
@@ -13,7 +12,7 @@ public class GameJudge {
 
   private final CardType mainCardType;
 
-  public void calculateRound(Queue<Move> queueMoves) {
+  public RoundWinner calculateRound(Queue<Move> queueMoves) {
     Move roundWinnerMove = queueMoves.poll();
     int tempPointsInRound = roundWinnerMove.card().getPoints();
 
@@ -30,7 +29,7 @@ public class GameJudge {
       }
     }
 
-    roundWinnerMove.player().incrementPoints(tempPointsInRound);
+    return new RoundWinner(roundWinnerMove.player(), tempPointsInRound);
   }
 
   public boolean isSecondCardStronger(Card firstCard, Card secondCard) throws DuplicateCardException {
@@ -45,6 +44,9 @@ public class GameJudge {
     return firstCard.isSameType(secondCard) && isSecondCardStrongerThanFirstCard(firstCard, secondCard);
   }
 
+  /**
+   * This function ignores the fact which card type is the main one while checking for stronger card.
+   */
   public boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
     return secondCard.cardValue().isBiggerThan(firstCard.cardValue());
   }
