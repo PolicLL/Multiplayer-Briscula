@@ -47,7 +47,7 @@ public class GameJudge {
   /**
    * This function ignores the fact which card type is the main one while checking for stronger card.
    */
-  public boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
+  private boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
     return secondCard.cardValue().isBiggerThan(firstCard.cardValue());
   }
 

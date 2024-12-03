@@ -1,5 +1,8 @@
 package com.example.briscula.user.admin;
 
+import static com.example.briscula.utilities.constants.Constants.HUMAN_PLAYER;
+import static com.example.briscula.utilities.constants.Constants.getRandomNumber;
+
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import com.example.briscula.model.card.Deck;
@@ -11,18 +14,18 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
+@Slf4j
 public class Admin {
 
-  private final Random random = new Random();
   private CardType mainCardType;
   private final Deck deck;
 
   private List<AbstractPlayer> players;
-  private List<List<Card>> playersCardsList;
+  private List<List<Card>> listOfCardsForAllPlayers;
 
   private int indexOfCurrentPlayer = 0;
 
@@ -35,7 +38,8 @@ public class Admin {
     initializePlayers(gameOptions, gameMode);
     chooseMainCardType();
     chooseStartingPlayer();
-    System.out.println("STARTING PLAYER : " + indexOfCurrentPlayer);
+
+    log.info("STARTING PLAYER : " + indexOfCurrentPlayer);
   }
 
   private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {
@@ -44,43 +48,52 @@ public class Admin {
 
   private void initializePlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode) {
     dealCards(gameOptions);
-    if (gameMode == GameMode.ALL_BOTS) addBotPlayers(gameOptions);
+    if (gameMode == GameMode.ALL_BOTS) setAllBotPlayers(gameOptions);
     else if (gameMode == GameMode.BOTS_AND_HUMAN) addBotPlayersAndHuman(gameOptions);
   }
 
-  private void addBotPlayers(GameOptionNumberOfPlayers gameOptions) {
-    players = new ArrayList<>();
-    for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
-      players.add(new Bot(playersCardsList.get(i), "Name " + i));
-    }
-  }
-
-  private void addBotPlayersAndHuman(GameOptionNumberOfPlayers gameOptions) {
-    addBotPlayers(gameOptions);
-    players.set(players.size() - 1, new RealPlayer(playersCardsList.get(playersCardsList.size() - 1), "Human Player"));
-  }
-
   private void dealCards(GameOptionNumberOfPlayers gameOptions) {
-    playersCardsList = new ArrayList<>();
+    listOfCardsForAllPlayers = new ArrayList<>();
     List<Card> deckCards = deck.getDeckCards();
     int cardsPerPlayer = getStartNumberOfCards(gameOptions);
 
     for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
       List<Card> playerCards = new LinkedList<>();
       for (int j = 0; j < cardsPerPlayer; ++j) {
-        Card card = deckCards.remove(random.nextInt(deckCards.size()));
+        Card card = deckCards.remove(getRandomNumber(deckCards.size()));
         playerCards.add(card);
       }
-      playersCardsList.add(playerCards);
+      listOfCardsForAllPlayers.add(playerCards);
+    }
+  }
+
+  private int getStartNumberOfCards(GameOptionNumberOfPlayers gameOptions) {
+    return switch (gameOptions) {
+      case TWO_PLAYERS, FOUR_PLAYERS -> 4;
+      case THREE_PLAYERS -> 3;
+    };
+  }
+
+
+  private void addBotPlayersAndHuman(GameOptionNumberOfPlayers gameOptions) {
+    setAllBotPlayers(gameOptions);
+    players.set(players.size() - 1, new RealPlayer(
+        listOfCardsForAllPlayers.get(listOfCardsForAllPlayers.size() - 1), HUMAN_PLAYER));
+  }
+
+  private void setAllBotPlayers(GameOptionNumberOfPlayers gameOptions) {
+    players = new ArrayList<>();
+    for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
+      players.add(new Bot(listOfCardsForAllPlayers.get(i), "Name " + i));
     }
   }
 
   private void chooseStartingPlayer() {
-    indexOfCurrentPlayer = random.nextInt(players.size());
+    indexOfCurrentPlayer = getRandomNumber(players.size());
   }
 
   private void chooseMainCardType() {
-    mainCardType = CardType.values()[random.nextInt(CardType.values().length)];
+    mainCardType = CardType.values()[getRandomNumber(CardType.values().length)];
   }
 
   public void dealNextRound() {
@@ -94,12 +107,6 @@ public class Admin {
     return currentPlayer;
   }
 
-  private int getStartNumberOfCards(GameOptionNumberOfPlayers gameOptions) {
-    return switch (gameOptions) {
-      case TWO_PLAYERS, FOUR_PLAYERS -> 4;
-      case THREE_PLAYERS -> 3;
-    };
-  }
 
   public boolean isGameOver() {
     return deck.getNumberOfDeckCards() == 0 &&
