@@ -6,7 +6,7 @@ import java.util.Random;
 
 public class Bot extends AbstractPlayer {
 
-  private Random random;
+  private final Random random;
 
   public Bot(List<Card> playerCards, String nickname) {
     super(playerCards, nickname);

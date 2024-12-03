@@ -3,10 +3,14 @@ package com.example.briscula.user.player;
 
 import com.example.briscula.model.card.Card;
 import java.util.List;
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class AbstractPlayer {
   protected List<Card> playerCards;
+  @Getter
   protected String nickname;
+  @Getter
   protected int points;
 
   public AbstractPlayer(List<Card> playerCards, String nickname) {
@@ -28,15 +32,8 @@ public abstract class AbstractPlayer {
     playerCards.add(card);
   }
 
-  public int getPoints() {
-    return points;
-  }
-
-  public String getNickname() {
-    return nickname;
-  }
-
   public void resetPoints() {
     points = 0;
   }
+
 }
