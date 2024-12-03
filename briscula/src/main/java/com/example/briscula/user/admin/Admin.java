@@ -18,11 +18,13 @@ import lombok.Getter;
 public class Admin {
 
   private final Random random = new Random();
-  private int indexOfCurrentPlayer = 0;
   private CardType mainCardType;
-  private List<AbstractPlayer> players;
   private final Deck deck;
+
+  private List<AbstractPlayer> players;
   private List<List<Card>> playersCardsList;
+
+  private int indexOfCurrentPlayer = 0;
 
   public Admin() {
     deck = new Deck();
@@ -86,13 +88,9 @@ public class Admin {
     players.forEach(player -> player.addCard(deck.removeOneCard()));
   }
 
-  private void findNextPlayer() {
-    indexOfCurrentPlayer = (indexOfCurrentPlayer + 1) % players.size();
-  }
-
   public AbstractPlayer getCurrentPlayer() {
     AbstractPlayer currentPlayer = players.get(indexOfCurrentPlayer);
-    findNextPlayer();
+    indexOfCurrentPlayer = (indexOfCurrentPlayer + 1) % players.size();
     return currentPlayer;
   }
 
@@ -101,5 +99,10 @@ public class Admin {
       case TWO_PLAYERS, FOUR_PLAYERS -> 4;
       case THREE_PLAYERS -> 3;
     };
+  }
+
+  public boolean isGameOver() {
+    return deck.getNumberOfDeckCards() == 0 &&
+        players.stream().allMatch(AbstractPlayer::isPlayerDone);
   }
 }

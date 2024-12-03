@@ -6,14 +6,12 @@ import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import com.example.briscula.user.admin.Admin;
 import java.util.Queue;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class GameJudge {
 
-  private final Admin admin;
-
-  public GameJudge(Admin admin) {
-    this.admin = admin;
-  }
+  private final CardType mainCardType;
 
   public void calculateRound(Queue<Move> queueMoves) {
     Move roundWinnerMove = queueMoves.poll();
@@ -38,13 +36,17 @@ public class GameJudge {
   public boolean isSecondCardStronger(Card firstCard, Card secondCard) throws DuplicateCardException {
     if (firstCard.equals(secondCard)) throw new DuplicateCardException();
 
-    CardType mainCardType = admin.getMainCardType();
     if (!firstCard.isMainType(mainCardType) && secondCard.isMainType(mainCardType)) {
       return true;
     } else if (firstCard.isMainType(mainCardType) && secondCard.isMainType(mainCardType)) {
-      return secondCard.isCardValueBiggerThan(firstCard);
+      return isSecondCardStrongerThanFirstCard(firstCard, secondCard);
     }
 
-    return firstCard.isSameType(secondCard) && secondCard.isCardValueBiggerThan(firstCard);
+    return firstCard.isSameType(secondCard) && isSecondCardStrongerThanFirstCard(firstCard, secondCard);
   }
+
+  public boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
+    return secondCard.cardValue().isBiggerThan(firstCard.cardValue());
+  }
+
 }

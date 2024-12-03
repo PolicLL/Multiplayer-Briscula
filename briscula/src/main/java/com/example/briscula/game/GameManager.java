@@ -7,7 +7,9 @@ import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import java.util.ArrayDeque;
 import java.util.Queue;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class GameManager {
   private final GameOptionNumberOfPlayers gameOptions;
   private final Admin admin;
@@ -16,14 +18,15 @@ public class GameManager {
   public GameManager(GameOptionNumberOfPlayers gameOptions, GameMode gameMode) {
     this.gameOptions = gameOptions;
     this.admin = new Admin();
-    this.gameJudge = new GameJudge(admin);
+    this.gameJudge = new GameJudge(admin.getMainCardType());
 
     admin.prepareDeckAndPlayers(gameOptions, gameMode);
-    System.out.println("Main card type : " + admin.getMainCardType());
+
+    log.info("Main card type : " + admin.getMainCardType());
   }
 
   public boolean isGameOver() {
-    return admin.getDeck().getNumberOfDeckCards() == 0 && admin.getPlayers().stream().allMatch(AbstractPlayer::isPlayerDone);
+    return admin.isGameOver();
   }
 
   public void playRound() {
@@ -34,7 +37,7 @@ public class GameManager {
       Card card = player.playRound();
       queueMoves.add(new Move(player, card));
 
-      System.out.println("Move " + i + " -> " + player.getNickname() + " | " + card);
+      log.info("Move " + i + " -> " + player.getNickname() + " | " + card);
     }
 
     gameJudge.calculateRound(queueMoves);
@@ -43,7 +46,8 @@ public class GameManager {
   }
 
   private void printPlayersValues() {
-    admin.getPlayers().forEach(player -> System.out.println("[" + player.getNickname() + "] : " + player.getPoints()));
-    System.out.println();
+    admin.getPlayers().forEach(player ->
+        log.info("[" + player.getNickname() + "] : " + player.getPoints()));
+    log.info("\n");
   }
 }

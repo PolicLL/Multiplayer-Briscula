@@ -4,7 +4,6 @@ package com.example.briscula.user.player;
 import com.example.briscula.model.card.Card;
 import java.util.List;
 import lombok.Getter;
-import lombok.Setter;
 
 public abstract class AbstractPlayer {
   protected List<Card> playerCards;

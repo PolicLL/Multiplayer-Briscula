@@ -18,8 +18,7 @@ public class RealPlayer extends AbstractPlayer {
   public Card playRound() {
     printInstructions();
     int numberInput = enterNumber();
-    Card tempCard = playerCards.remove(numberInput);
-    return tempCard;
+    return playerCards.remove(numberInput);
   }
 
   private void printInstructions() {

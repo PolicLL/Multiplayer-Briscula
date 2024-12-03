@@ -5,7 +5,7 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 
 public class Game {
 
-  private GameManager gameManager;
+  private final GameManager gameManager;
 
   public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode) {
     gameManager = new GameManager(gameOptions, gameMode);

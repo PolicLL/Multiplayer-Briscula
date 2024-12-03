@@ -6,16 +6,12 @@ import java.util.Random;
 
 public class Bot extends AbstractPlayer {
 
-  private final Random random;
-
   public Bot(List<Card> playerCards, String nickname) {
     super(playerCards, nickname);
-
-    this.random = new Random();
   }
 
   public Card playRound(){
-    Card tempCard = playerCards.get(random.nextInt(playerCards.size()));
+    Card tempCard = playerCards.get(new Random().nextInt(playerCards.size()));
     playerCards.remove(tempCard);
 
     return tempCard;

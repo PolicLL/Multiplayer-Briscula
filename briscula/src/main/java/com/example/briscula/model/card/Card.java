@@ -17,10 +17,6 @@ public record Card(CardType cardType, CardValue cardValue) {
     return this.cardType == otherCard.cardType;
   }
 
-  public boolean isCardValueBiggerThan(Card secondCard) {
-    return this.cardValue.isBiggerThan(secondCard.cardValue);
-  }
-
   public int getPoints() {
     return this.cardValue.getPoints();
   }

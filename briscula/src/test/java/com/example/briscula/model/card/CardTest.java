@@ -37,15 +37,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 public class CardTest {
 
-  private  static GameJudge gameJudge;
   private static final CardType mainCardType = CardType.COPPE;
 
-  @BeforeAll
-  public static void setUp() {
-    Admin adminMock = mock(Admin.class);
-    when(adminMock.getMainCardType()).thenReturn(mainCardType);
-    gameJudge = new GameJudge(adminMock);
-  }
+  private  static GameJudge gameJudge = new GameJudge(mainCardType);
 
   @ParameterizedTest
   @MethodSource("testSameNonMainCardType")
