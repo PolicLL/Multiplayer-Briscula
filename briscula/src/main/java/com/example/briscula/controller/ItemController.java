@@ -19,7 +19,12 @@ public class ItemController {
   }
 
   @PostMapping
-  public void startGame() {
-    new Game(GameOptionNumberOfPlayers.FOUR_PLAYERS, GameMode.BOTS_AND_HUMAN).startGame();
+  public String startGame() {
+    //new Game(GameOptionNumberOfPlayers.FOUR_PLAYERS, GameMode.BOTS_AND_HUMAN).startGame();
+    return "INSTRUCTIONS 123";
+  }
+
+  private void playTheRound() {
+
   }
 }
