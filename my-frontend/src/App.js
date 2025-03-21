@@ -3,6 +3,7 @@ import axios from "axios";
 
 function App() {
   const [items, setItems] = useState([]);
+  const [receivedMessage, setReceivedMessage] = useState("");
 
   // Fetch existing items on component mount
   useEffect(() => {
@@ -15,22 +16,14 @@ function App() {
   // Function to handle POST request and update items
   const handlePostRequest = () => {
     const newItem = { name: `Item ${items.length + 1}` }; // Example payload
-    fetch("http://localhost:8080/api/items", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newItem),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        return response.json();
+    axios
+      .post("http://localhost:8080/api/items", newItem, {
+        headers: { "Content-Type": "application/json" },
       })
-      .then((data) => {
-        console.log("POST response:", data);
-        setItems((prevItems) => [...prevItems, data]); // Add new item to the list
+      .then((response) => {
+        console.log("POST response:", response.data);
+        setItems((prevItems) => [...prevItems, response.data]); // Add new item to list
+        setReceivedMessage(response.data); // Capture response (string) and display it
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -47,6 +40,9 @@ function App() {
         ))}
       </ul>
       <button onClick={handlePostRequest}>Add Item</button>
+
+      {/* Display the message received from backend */}
+      {receivedMessage && <p>Backend Response: {receivedMessage}</p>}
     </div>
   );
 }
