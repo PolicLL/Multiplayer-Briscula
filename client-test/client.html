@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Connection</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        #status { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>WebSocket Connection Test</h1>
+    <button onclick="connectWebSocket()">Join Game</button>
+    <p id="status">Click "Join Game" to connect.</p>
+
+    <script>
+        let socket;
+
+        function connectWebSocket() {
+            socket = new WebSocket("ws://localhost:8080/game"); // Change port if needed
+
+            socket.onopen = () => {
+                document.getElementById("status").innerText = "Connected to the server successfully!";
+            };
+
+            socket.onerror = () => {
+                document.getElementById("status").innerText = "Failed to connect to the server.";
+            };
+
+            socket.onclose = () => {
+                document.getElementById("status").innerText = "Disconnected from server.";
+            };
+        }
+    </script>
+
+</body>
+</html>
