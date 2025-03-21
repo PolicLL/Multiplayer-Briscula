@@ -5,7 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import com.example.briscula.game.GameJudge;
 import com.example.briscula.game.Move;
 import com.example.briscula.game.RoundWinner;
-import com.example.briscula.user.player.AbstractPlayer;
+import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.Bot;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class GameTest {
     playerList.forEach(element -> System.out.println(element.getPoints()));
   }
 
-  private void setPlayersPointsToZero(){ playerList.forEach(AbstractPlayer::resetPoints); }
+  private void setPlayersPointsToZero(){ playerList.forEach(Player::resetPoints); }
 
   private void setupMovesAndCalculateRound(CardType mainCardType) {
     List<Move> movesList = List.of(

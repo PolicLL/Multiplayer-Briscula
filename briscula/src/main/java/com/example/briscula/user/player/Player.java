@@ -5,14 +5,14 @@ import com.example.briscula.model.card.Card;
 import java.util.List;
 import lombok.Getter;
 
-public abstract class AbstractPlayer {
+public abstract class Player {
   protected List<Card> playerCards;
   @Getter
   protected String nickname;
   @Getter
   protected int points;
 
-  public AbstractPlayer(List<Card> playerCards, String nickname) {
+  public Player(List<Card> playerCards, String nickname) {
     this.playerCards = playerCards;
     this.nickname = nickname;
   }

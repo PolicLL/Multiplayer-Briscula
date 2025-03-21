@@ -1,9 +1,9 @@
 package com.example.briscula.game;
 
-import com.example.briscula.user.player.AbstractPlayer;
+import com.example.briscula.user.player.Player;
 
 public record RoundWinner(
-    AbstractPlayer player, int numberOfPoints
+    Player player, int numberOfPoints
 ) {
 
 }

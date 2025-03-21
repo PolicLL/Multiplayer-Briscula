@@ -3,10 +3,11 @@ package com.example.briscula.user.admin;
 import static com.example.briscula.utilities.constants.Constants.HUMAN_PLAYER;
 import static com.example.briscula.utilities.constants.Constants.getRandomNumber;
 
+import com.example.briscula.game.Game;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import com.example.briscula.model.card.Deck;
-import com.example.briscula.user.player.AbstractPlayer;
+import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameMode;
@@ -24,7 +25,7 @@ public class Admin {
   private CardType mainCardType;
   private final Deck deck;
 
-  private List<AbstractPlayer> players;
+  private List<Player> players;
   private List<List<Card>> listOfCardsForAllPlayers;
 
   private int indexOfCurrentPlayer = 0;
@@ -33,9 +34,9 @@ public class Admin {
     deck = new Deck();
   }
 
-  public void prepareDeckAndPlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode) {
+  public void prepareDeckAndPlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<Player> players) {
     prepareDeck(gameOptions);
-    initializePlayers(gameOptions, gameMode);
+    initializePlayers(gameOptions, gameMode, players);
     chooseMainCardType();
     chooseStartingPlayer();
 
@@ -46,10 +47,11 @@ public class Admin {
     if (gameOptions == GameOptionNumberOfPlayers.THREE_PLAYERS) deck.removeOneWithCardValueTwo();
   }
 
-  private void initializePlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode) {
+  private void initializePlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<Player> players) {
     dealCards(gameOptions);
     if (gameMode == GameMode.ALL_BOTS) setAllBotPlayers(gameOptions);
     else if (gameMode == GameMode.BOTS_AND_HUMAN) addBotPlayersAndHuman(gameOptions);
+    else if(gameMode == GameMode.ALL_HUMANS) this.players = players;
   }
 
   private void dealCards(GameOptionNumberOfPlayers gameOptions) {
@@ -101,8 +103,8 @@ public class Admin {
     players.forEach(player -> player.addCard(deck.removeOneCard()));
   }
 
-  public AbstractPlayer getCurrentPlayer() {
-    AbstractPlayer currentPlayer = players.get(indexOfCurrentPlayer);
+  public Player getCurrentPlayer() {
+    Player currentPlayer = players.get(indexOfCurrentPlayer);
     indexOfCurrentPlayer = (indexOfCurrentPlayer + 1) % players.size();
     return currentPlayer;
   }
@@ -110,6 +112,6 @@ public class Admin {
 
   public boolean isGameOver() {
     return deck.getNumberOfDeckCards() == 0 &&
-        players.stream().allMatch(AbstractPlayer::isPlayerDone);
+        players.stream().allMatch(Player::isPlayerDone);
   }
 }

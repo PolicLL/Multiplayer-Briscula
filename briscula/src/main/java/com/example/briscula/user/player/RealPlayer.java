@@ -6,7 +6,7 @@ import java.util.Scanner;
 import lombok.Getter;
 
 @Getter
-public class RealPlayer extends AbstractPlayer {
+public class RealPlayer extends Player {
 
   private final Scanner scanner = new Scanner(System.in);
 
