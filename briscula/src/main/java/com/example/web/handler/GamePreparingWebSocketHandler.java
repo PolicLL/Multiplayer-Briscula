@@ -1,6 +1,7 @@
 package com.example.web.handler;
 
 import com.example.briscula.game.Game;
+import com.example.briscula.game.GameManager;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
@@ -23,10 +24,8 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
   private final int MAX_NUMBER_OF_PLAYERS = 2;
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
-
-    String messageName = (String) message.getPayload();
-
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(null, messageName));
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session,
+        new RealPlayer(null, (String) message.getPayload()));
 
     if (isThereUserFromThisWebSession(connectedPlayer)) {
       log.info("Session already used.");
@@ -36,14 +35,10 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
     setOfPlayers.add(connectedPlayer);
 
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
-
-      Game game = new Game(GameOptionNumberOfPlayers.TWO_PLAYERS,
-          GameMode.ALL_HUMANS, setOfPlayers.stream().map(ConnectedPlayer::getPlayer).toList());
-
       setOfPlayers.forEach(tempUser -> {
         try {
           log.info("Game can start.");
-          tempUser.getWebSocketSession().sendMessage(new TextMessage("Game can start."));
+          tempUser.getWebSocketSession().sendMessage(new TextMessage("START_ENABLED"));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
