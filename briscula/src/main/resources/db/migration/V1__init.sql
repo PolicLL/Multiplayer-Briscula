@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY,
+    id VARCHAR PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     age INT CHECK (age >= 18),
     country VARCHAR(50) NOT NULL,

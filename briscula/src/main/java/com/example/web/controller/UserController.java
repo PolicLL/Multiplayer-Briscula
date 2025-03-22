@@ -1,50 +1,54 @@
 package com.example.web.controller;
 
-import com.example.web.exception.UserAlreadyExistsException;
-import com.example.web.model.User;
+import com.example.web.dto.UserDto;
 import com.example.web.service.UserService;
-import jakarta.validation.Valid;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @Slf4j
+@RequiredArgsConstructor
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000") // Allow React frontend access
 public class UserController {
 
   private final UserService userService;
 
-  @Autowired
-  public UserController(UserService userService) {
-    this.userService = userService;
-  }
-
   @PostMapping("/create")
-  public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
-    log.info("Received request to create user: {}", user.getUsername());
-    String response = userService.createUser(user);
-    return ResponseEntity.ok(response);
+  public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+    return ResponseEntity.ok(userService.createUser(userDto));
   }
 
   @GetMapping
-  public List<User> getAllUsers() {
-    log.info("Request received to get all users.");
-    return userService.getAllUsers();
+  public ResponseEntity<List<UserDto>> getAllUsers() {
+    return ResponseEntity.ok(userService.getAllUsers());
   }
 
-  @ExceptionHandler(UserAlreadyExistsException.class)
-  public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-    log.error("User creation error: {}", ex.getMessage());
-    return ResponseEntity.badRequest().body(ex.getMessage());
+  @GetMapping("/{id}")
+  public ResponseEntity<UserDto> getUserById(@PathVariable String id) {
+    return ResponseEntity.ok(userService.getUserById(id));
+  }
+
+  @PutMapping("/{id}")
+  public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
+    return ResponseEntity.ok(userService.updateUser(id, userDto));
+  }
+
+  @DeleteMapping("/{id}")
+  public ResponseEntity<String> deleteUser(@PathVariable String id) {
+    userService.deleteUser(id);
+    return ResponseEntity.ok("User deleted successfully!");
   }
 }
