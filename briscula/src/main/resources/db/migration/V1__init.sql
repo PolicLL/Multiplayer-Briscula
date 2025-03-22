@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id VARCHAR PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    age INT CHECK (age >= 18),
+    age INT,
     country VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     points INT DEFAULT 0 CHECK (points >= 0),
