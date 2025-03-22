@@ -1,53 +1,50 @@
 package com.example.web.controller;
 
+import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.model.User;
-import com.example.web.repository.UserRepository;
+import com.example.web.service.UserService;
 import jakarta.validation.Valid;
-
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Slf4j
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:3000") // Allow React frontend access
+@CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
+  private final UserService userService;
+
   @Autowired
-  private UserRepository userRepository;
+  public UserController(UserService userService) {
+    this.userService = userService;
+  }
 
   @PostMapping("/create")
-  public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
+  public ResponseEntity<String> createUser(@Valid @RequestBody User user) {
     log.info("Received request to create user: {}", user.getUsername());
-
-    // Check if the username is already taken
-    if (userRepository.existsByUsername(user.getUsername())) {
-      log.warn("Username already taken: {}", user.getUsername());
-      return ResponseEntity.badRequest().body("Username is already taken!");
-    }
-
-    // Check if the email is already registered
-    if (userRepository.existsByEmail(user.getEmail())) {
-      log.warn("Email already registered: {}", user.getEmail());
-      return ResponseEntity.badRequest().body("Email is already registered!");
-    }
-
-    // Save user if both checks pass
-    userRepository.save(user);
-    log.info("User created successfully: {}", user.getUsername());
-
-    return ResponseEntity.ok("User created successfully!");
+    String response = userService.createUser(user);
+    return ResponseEntity.ok(response);
   }
 
   @GetMapping
   public List<User> getAllUsers() {
     log.info("Request received to get all users.");
-    List<User> users = userRepository.findAll();
-    log.info("Found {} users.", users.size());
-    return users;
+    return userService.getAllUsers();
+  }
+
+  @ExceptionHandler(UserAlreadyExistsException.class)
+  public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
+    log.error("User creation error: {}", ex.getMessage());
+    return ResponseEntity.badRequest().body(ex.getMessage());
   }
 }
