@@ -32,19 +32,10 @@ public class UserService {
       throw new UserAlreadyExistsException("Email is already registered!");
     }
 
-    User userToSave = userMapper.toEntity(userDto);
-    log.info("User to save {}", userToSave);
+    User savedUser = userRepository.save(userMapper.toEntity(userDto));
+    log.info("Saved user {}", savedUser);
 
-//    User userToSave = User.builder()
-//        .id(UUID.randomUUID().toString())
-//        .username(userDto.username())
-//        .age(userDto.age())
-//        .country(userDto.country())
-//        .email(userDto.email())
-//        .build();
-
-    User savedUser = userRepository.save(userToSave);
-    log.info("Saving user {}", userToSave);
+    log.info("Test : {}", userMapper.toDto(savedUser));
 
     return userMapper.toDto(savedUser);
   }
