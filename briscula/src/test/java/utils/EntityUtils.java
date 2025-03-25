@@ -1,6 +1,7 @@
 package utils;
 
 import com.example.web.dto.UserDto;
+import com.example.web.model.User;
 import java.util.Random;
 
 public class EntityUtils {
@@ -36,5 +37,15 @@ public class EntityUtils {
     return JsonUtils.toJson(generateValidUserDto());
   }
 
+  public static User generateValidUser() {
+    return User.builder()
+        .username(randomUsername())
+        .age( randomAge())
+        .country(randomCountry())
+        .email(randomEmail())
+        .points(0)
+        .level(1)
+        .build();
+  }
 
 }
