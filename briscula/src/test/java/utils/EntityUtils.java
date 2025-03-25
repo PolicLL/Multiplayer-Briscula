@@ -8,8 +8,10 @@ public class EntityUtils {
   private static final Random RANDOM = new Random();
   private static final String[] COUNTRIES = {"USA", "Canada", "UK", "Germany", "France", "India"};
 
+  private static final String[] NAMES = {"John", "Tom", "Pera", "Steve", "Vladimir", "Peter"};
+
   public static String randomUsername() {
-    return "User" + RANDOM.nextInt(1000);
+    return NAMES[RANDOM.nextInt(NAMES.length)] + RANDOM.nextInt(1000000);
   }
 
   public static int randomAge() {
