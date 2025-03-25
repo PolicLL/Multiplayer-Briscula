@@ -1,8 +1,12 @@
 package com.example.web.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static utils.EntityUtils.randomAge;
+import static utils.EntityUtils.randomCountry;
+import static utils.EntityUtils.randomEmail;
+import static utils.EntityUtils.randomUsername;
 
-import com.example.web.model.User;
+import com.example.web.dto.UserDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -13,7 +17,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import utils.EntityUtils;
 
-public class UserTest {
+public class UserValidationTest {
 
   private static ValidatorFactory validatorFactory;
   private static Validator validator;
@@ -31,19 +35,23 @@ public class UserTest {
 
   @Test
   void testValidUser() {
-    User validUser = EntityUtils.generateValidUser();
+    UserDto validUser = EntityUtils.generateValidUserDto();
 
-    Set<ConstraintViolation<User>> violations = validator.validate(validUser);
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(validUser);
 
     assertThat(violations).isEmpty();
   }
 
   @Test
   void testUsernameIsBlank() {
-    User user = EntityUtils.generateValidUser();
-    user.setUsername("");
+    UserDto userDto = UserDto.builder()
+        .username("")
+        .age(randomAge())
+        .country(randomCountry())
+        .email(randomEmail())
+        .build();
 
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
     assertThat(violations)
         .hasSize(2)
@@ -53,10 +61,14 @@ public class UserTest {
 
   @Test
   void testUsernameTooShort() {
-    User user = EntityUtils.generateValidUser();
-    user.setUsername("12");
+    UserDto userDto = UserDto.builder()
+        .username("12")
+        .age(randomAge())
+        .country(randomCountry())
+        .email(randomEmail())
+        .build();
 
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
     assertThat(violations)
         .hasSize(1)
@@ -65,10 +77,14 @@ public class UserTest {
 
   @Test
   void testInvalidEmail() {
-    User user = EntityUtils.generateValidUser();
-    user.setEmail("invalid-email");
+    UserDto userDto = UserDto.builder()
+        .username(randomUsername())
+        .age(randomAge())
+        .country(randomCountry())
+        .email("invalid-email")
+        .build();
 
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
     assertThat(violations)
         .hasSize(1)
@@ -77,37 +93,17 @@ public class UserTest {
 
   @Test
   void testCountryIsBlank() {
-    User user = EntityUtils.generateValidUser();
-    user.setCountry("");
+    UserDto userDto = UserDto.builder()
+        .username(randomUsername())
+        .age(randomAge())
+        .country("")
+        .email(randomEmail())
+        .build();
 
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
 
     assertThat(violations)
         .hasSize(1)
         .anyMatch(v -> v.getMessage().contains("Country is required."));
-  }
-
-  @Test
-  void testPointsCannotBeNegative() {
-    User user = EntityUtils.generateValidUser();
-    user.setPoints(-1);
-
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
-
-    assertThat(violations)
-        .hasSize(1)
-        .anyMatch(v -> v.getMessage().contains("Points cannot be negative"));
-  }
-
-  @Test
-  void testLevelMustBeAtLeastOne() {
-    User user = EntityUtils.generateValidUser();
-    user.setLevel(-1);
-
-    Set<ConstraintViolation<User>> violations = validator.validate(user);
-
-    assertThat(violations)
-        .hasSize(1)
-        .anyMatch(v -> v.getMessage().contains("Level must be at least 1"));
   }
 }

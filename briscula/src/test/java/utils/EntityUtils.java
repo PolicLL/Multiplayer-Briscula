@@ -36,16 +36,4 @@ public class EntityUtils {
   public static String generateValidUserDtoInJson() {
     return JsonUtils.toJson(generateValidUserDto());
   }
-
-  public static User generateValidUser() {
-    return User.builder()
-        .username(randomUsername())
-        .age( randomAge())
-        .country(randomCountry())
-        .email(randomEmail())
-        .points(0)
-        .level(1)
-        .build();
-  }
-
 }
