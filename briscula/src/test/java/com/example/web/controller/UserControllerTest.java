@@ -55,12 +55,58 @@ public class UserControllerTest {
   }
 
   @Test
+  void createUserSuccessThrowsUserAlreadyExistsException() throws Exception {
+    String userRegistrationPayload = EntityUtils.generateValidUserDtoInJson();
+
+    mockMvc.perform(post("/api/users/create")
+            .contentType("application/json")
+            .content(userRegistrationPayload))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/users/create")
+            .contentType("application/json")
+            .content(userRegistrationPayload))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string("Username is already taken!"));
+  }
+
+  @Test
   void getAllUsersSuccess() throws Exception {
     mockMvc.perform(get("/api/users")
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andDo(print());
+  }
+
+  @Test
+  void getUserById() throws Exception {
+    String createdUserJson = mockMvc.perform(post("/api/users/create")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(EntityUtils.generateValidUserDtoInJson()))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+
+    UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
+
+
+    String userJson = mockMvc.perform(get("/api/users/{id}", createdUser.id())
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn().getResponse().getContentAsString();
+
+    UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
+    assertThat(createdUser).isEqualTo(finalUserObject);
+
+  }
+
+  @Test
+  void getUserByIdThrowsUserNotFoundException() throws Exception {
+    mockMvc.perform(get("/api/users/{id}", "NON-EXISTING-ID")
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isNotFound())
+        .andExpect(content().string("User not found with id: " + "NON-EXISTING-ID"));
   }
 
   @Test

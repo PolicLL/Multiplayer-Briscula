@@ -1,5 +1,6 @@
 package com.example.web.controller;
 
+import com.example.web.exception.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,5 +22,11 @@ public class GlobalExceptionHandler {
   public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
     log.error("Entity not found: {}", e.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+  }
+
+  @ExceptionHandler(UserAlreadyExistsException.class)
+  public ResponseEntity<String> handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+    log.error("Entity already exists: {}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
   }
 }
