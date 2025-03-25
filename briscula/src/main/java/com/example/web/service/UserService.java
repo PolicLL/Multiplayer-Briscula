@@ -29,7 +29,7 @@ public class UserService {
     }
 
     if (userRepository.existsByEmail(userDto.email())) {
-      throw new UserAlreadyExistsException("Email is already registered!");
+      throw new UserAlreadyExistsException("Email is already taken!");
     }
 
     User savedUser = userRepository.save(userMapper.toEntity(userDto));

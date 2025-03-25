@@ -8,6 +8,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static utils.EntityUtils.randomAge;
+import static utils.EntityUtils.randomCountry;
+import static utils.EntityUtils.randomEmail;
+import static utils.EntityUtils.randomUsername;
 
 import com.example.web.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
@@ -55,7 +59,7 @@ public class UserControllerTest {
   }
 
   @Test
-  void createUserSuccessThrowsUserAlreadyExistsException() throws Exception {
+  void createUserSuccessThrowsUserAlreadyExistsException_UsernameIsUsed() throws Exception {
     String userRegistrationPayload = EntityUtils.generateValidUserDtoInJson();
 
     mockMvc.perform(post("/api/users/create")
@@ -68,6 +72,37 @@ public class UserControllerTest {
             .content(userRegistrationPayload))
         .andExpect(status().isBadRequest())
         .andExpect(content().string("Username is already taken!"));
+  }
+
+  @Test
+  void createUserSuccessThrowsUserAlreadyExistsException_EmailIsUsed() throws Exception {
+    UserDto firstUserDto = UserDto.builder()
+        .username(randomUsername())
+        .age(randomAge())
+        .country(randomCountry())
+        .email("USED EMAIL")
+        .build();
+
+    UserDto secondUserDto = UserDto.builder()
+        .username(randomUsername())
+        .age(randomAge())
+        .country(randomCountry())
+        .email("USED EMAIL")
+        .build();
+
+    String firstUserPayload = JsonUtils.toJson(firstUserDto);
+    String secondUserPayload = JsonUtils.toJson(secondUserDto);
+
+    mockMvc.perform(post("/api/users/create")
+            .contentType("application/json")
+            .content(firstUserPayload))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/users/create")
+            .contentType("application/json")
+            .content(secondUserPayload))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().string("Email is already taken!"));
   }
 
   @Test
