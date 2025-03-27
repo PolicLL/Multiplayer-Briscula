@@ -1,6 +1,7 @@
 package com.example.web.model;
 
 
+import com.example.web.security.model.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -20,7 +21,11 @@ public class User {
   @Id
   private String id;
 
+  private Role role;
+
   private String username;
+
+  private String password;
 
   private int age;
 

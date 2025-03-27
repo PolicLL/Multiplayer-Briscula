@@ -26,12 +26,15 @@ public class EntityUtils {
     return "user" + RANDOM.nextInt(1000) + "@example.com";
   }
 
+  public static String randomPassword() { return "password" +  RANDOM.nextInt(1000); };
+
   public static UserDto generateValidUserDto() {
     return UserDto.builder()
         .username(randomUsername())
         .age( randomAge())
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
   }
 
