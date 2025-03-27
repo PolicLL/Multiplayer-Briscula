@@ -3,6 +3,8 @@ package com.example.web.model;
 
 import com.example.web.security.model.Role;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,6 +23,7 @@ public class User {
   @Id
   private String id;
 
+  @Enumerated(EnumType.STRING)
   private Role role;
 
   private String username;
