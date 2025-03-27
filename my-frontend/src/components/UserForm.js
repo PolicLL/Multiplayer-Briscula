@@ -21,15 +21,25 @@ function UserForm() {
   const validateForm = () => {
     let tempErrors = {};
 
+    // username
     if (!formData.username.trim())
       tempErrors.username = "Username is required.";
     else if (formData.username.length < 3)
       tempErrors.username = "Username should be at least 3 characters long.";
+    else if (formData.username.length > 100)
+      tempErrors.username = "Username must be between 3 and 100 characters.";
 
+    // age
     if (!formData.age) tempErrors.age = "Age is required.";
-    if (!formData.country) tempErrors.country = "Country is required.";
-    if (!formData.email) tempErrors.email = "Email is required.";
+    else if (formData.age < 3) tempErrors.age = "Age must be at least 3.";
+    else if (formData.age > 100)
+      tempErrors.age = "Age must be no more than 100.";
 
+    // country
+    if (!formData.country) tempErrors.country = "Country is required.";
+
+    // email
+    if (!formData.email) tempErrors.email = "Email is required.";
     let isEmailInvalid = !/\S+@\S+\.\S+/.test(formData.email);
     if (isEmailInvalid) tempErrors.email = "Email is invalid.";
 

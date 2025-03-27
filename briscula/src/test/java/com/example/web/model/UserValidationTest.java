@@ -124,6 +124,22 @@ public class UserValidationTest {
   }
 
   @Test
+  void testAgeIsBlank() {
+    UserDto userDto = UserDto.builder()
+        .username(randomUsername())
+        .age(null)
+        .country(randomCountry())
+        .email(randomEmail())
+        .build();
+
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+
+    assertThat(violations)
+        .hasSize(1)
+        .anyMatch(v -> v.getMessage().equals("Age is required."));
+  }
+
+  @Test
   void testCountryIsBlank() {
     UserDto userDto = UserDto.builder()
         .username(randomUsername())
