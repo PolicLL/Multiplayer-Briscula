@@ -13,6 +13,7 @@ function UserForm() {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const [user, setUser] = useState(null);
 
   const validateForm = () => {
     let tempErrors = {};
@@ -46,9 +47,10 @@ function UserForm() {
 
       console.log("response: " + response);
       console.log("response.data: " + response.data);
-      console.log("response.data.message: " + response.data.message);
 
-      setMessage(response.data.message || response.data);
+      setUser(response.data);
+      setMessage("User created successfully.");
+
       setFormData({
         username: "",
         age: "",

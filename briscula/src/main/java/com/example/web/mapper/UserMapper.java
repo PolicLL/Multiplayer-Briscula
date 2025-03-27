@@ -9,6 +9,8 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
+  @Mapping(target = "level", expression = "java(source.getLevel() != null ? source.getLevel() : 1)")
+  @Mapping(target = "points", expression = "java(source.getPoints() != null ? source.getPoints() : 0)")
   @Mapping(target = "id", expression = "java(generateUUID())")
   User toEntity(UserDto userDto);
 
