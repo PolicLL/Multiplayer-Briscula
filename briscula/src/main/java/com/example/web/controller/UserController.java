@@ -2,6 +2,7 @@ package com.example.web.controller;
 
 import com.example.web.dto.UserDto;
 import com.example.web.service.UserService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +28,7 @@ public class UserController {
   private final UserService userService;
 
   @PostMapping("/create")
-  public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
+  public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
     return ResponseEntity.ok(userService.createUser(userDto));
   }
 
@@ -42,7 +43,7 @@ public class UserController {
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody UserDto userDto) {
+  public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody @Valid  UserDto userDto) {
     return ResponseEntity.ok(userService.updateUser(id, userDto));
   }
 

@@ -1,4 +1,4 @@
-package com.example.web.controller;
+package com.example.web.model;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static utils.EntityUtils.randomAge;
@@ -89,6 +89,38 @@ public class UserValidationTest {
     assertThat(violations)
         .hasSize(1)
         .anyMatch(v -> v.getMessage().contains("Invalid email format"));
+  }
+
+  @Test
+  void testAgeIsToLow() {
+    UserDto userDto = UserDto.builder()
+        .username(randomUsername())
+        .age(1)
+        .country(randomCountry())
+        .email(randomEmail())
+        .build();
+
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+
+    assertThat(violations)
+        .hasSize(1)
+        .anyMatch(v -> v.getMessage().equals("Age must be at least 3."));
+  }
+
+  @Test
+  void testAgeIsToHigh() {
+    UserDto userDto = UserDto.builder()
+        .username(randomUsername())
+        .age(101)
+        .country(randomCountry())
+        .email(randomEmail())
+        .build();
+
+    Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
+
+    assertThat(violations)
+        .hasSize(1)
+        .anyMatch(v -> v.getMessage().equals("Age must be no more than 100."));
   }
 
   @Test

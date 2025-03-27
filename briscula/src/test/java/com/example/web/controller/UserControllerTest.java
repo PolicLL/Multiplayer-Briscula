@@ -80,14 +80,14 @@ public class UserControllerTest {
         .username(randomUsername())
         .age(randomAge())
         .country(randomCountry())
-        .email("USED EMAIL")
+        .email("usedemail@gmail.com")
         .build();
 
     UserDto secondUserDto = UserDto.builder()
         .username(randomUsername())
         .age(randomAge())
         .country(randomCountry())
-        .email("USED EMAIL")
+        .email("usedemail@gmail.com")
         .build();
 
     String firstUserPayload = JsonUtils.toJson(firstUserDto);
@@ -188,7 +188,7 @@ public class UserControllerTest {
         .id(createdUser.id())
         .username(createdUser.username())
         .age(createdUser.age())
-        .email("UPDATE")
+        .email("updateemail@gmail.com")
         .country(createdUser.country())
         .build());
 
@@ -207,7 +207,7 @@ public class UserControllerTest {
         .andReturn().getResponse().getContentAsString();
 
     UserDto finalUserObject = JsonUtils.fromJson(finalUserJson, UserDto.class);
-    assertThat(finalUserObject.email()).isEqualTo("UPDATE");
+    assertThat(finalUserObject.email()).isEqualTo("updateemail@gmail.com");
 
   }
 

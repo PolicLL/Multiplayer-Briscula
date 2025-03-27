@@ -1,5 +1,8 @@
 import React, { useState } from "react";
+import { getNames } from "country-list";
 import axios from "axios";
+
+const countries = getNames();
 
 function UserForm() {
   const [formData, setFormData] = useState({
@@ -91,14 +94,20 @@ function UserForm() {
         />
         <p style={{ color: "red" }}>{errors.age}</p>
 
-        <input
-          type="text"
-          placeholder="Country"
+        <select
           value={formData.country}
           onChange={(e) =>
             setFormData({ ...formData, country: e.target.value })
           }
-        />
+        >
+          <option value="">Select a country</option>
+          {countries.map((country) => (
+            <option key={country} value={country}>
+              {country}
+            </option>
+          ))}
+        </select>
+
         <p style={{ color: "red" }}>{errors.country}</p>
 
         <input

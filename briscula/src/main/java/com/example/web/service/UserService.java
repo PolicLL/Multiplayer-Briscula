@@ -22,7 +22,6 @@ public class UserService {
   private final UserRepository userRepository;
   private final UserMapper userMapper;
 
-  @Transactional
   public UserDto createUser(UserDto userDto) {
     if (userRepository.existsByUsername(userDto.username())) {
       throw new UserAlreadyExistsException("Username is already taken!");
