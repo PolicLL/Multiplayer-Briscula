@@ -6,12 +6,17 @@ import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
+import com.example.web.security.service.JwtService;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,6 +26,9 @@ public class UserService {
 
   private final UserRepository userRepository;
   private final UserMapper userMapper;
+
+  private final JwtService jwtService;
+  private final AuthenticationManager authenticationManager;
 
   public UserDto createUser(UserDto userDto) {
     if (userRepository.existsByUsername(userDto.username())) {
@@ -66,5 +74,15 @@ public class UserService {
       throw new UserNotFoundException(id);
     }
     userRepository.deleteById(id);
+  }
+
+  /**
+   * Used for verifying user credentials during the login.
+   */
+  public String verify(User user) {
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+
+    return authentication.isAuthenticated() ? jwtService.generateToken(user.getUsername()) : "Failure";
   }
 }
