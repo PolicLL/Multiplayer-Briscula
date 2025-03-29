@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static utils.EntityUtils.randomAge;
 import static utils.EntityUtils.randomCountry;
 import static utils.EntityUtils.randomEmail;
+import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
 import com.example.web.dto.UserDto;
@@ -49,6 +50,7 @@ public class UserValidationTest {
         .age(randomAge())
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -66,6 +68,7 @@ public class UserValidationTest {
         .age(randomAge())
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -82,6 +85,7 @@ public class UserValidationTest {
         .age(randomAge())
         .country(randomCountry())
         .email("invalid-email")
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -98,6 +102,7 @@ public class UserValidationTest {
         .age(1)
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -114,6 +119,7 @@ public class UserValidationTest {
         .age(101)
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -130,6 +136,7 @@ public class UserValidationTest {
         .age(null)
         .country(randomCountry())
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
@@ -153,7 +160,7 @@ public class UserValidationTest {
 
     assertThat(violations)
         .hasSize(1)
-        .anyMatch(v -> v.getMessage().equals("Age is required."));
+        .anyMatch(v -> v.getMessage().equals("Password is required."));
   }
 
   @Test
@@ -163,6 +170,7 @@ public class UserValidationTest {
         .age(randomAge())
         .country("")
         .email(randomEmail())
+        .password(randomPassword())
         .build();
 
     Set<ConstraintViolation<UserDto>> violations = validator.validate(userDto);
