@@ -10,7 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static utils.EntityUtils.randomAge;
 import static utils.EntityUtils.randomCountry;
-import static utils.EntityUtils.randomEmail;
+import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
 import com.example.web.dto.UserDto;
@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import utils.AuthService;
 import utils.EntityUtils;
 import utils.JsonUtils;
 
@@ -36,10 +37,21 @@ public class UserControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private String token;
 
   @BeforeEach
-  void setUp() {
-    MockitoAnnotations.openMocks(this);
+  void setUp() throws Exception {
+    this.token = new AuthService(mockMvc).getAuthToken("user", "user");
+  }
+
+  @Test
+  void loginUser() throws Exception {
+    String loginPayload = "{ \"username\": \"" + "user" + "\", \"password\": \"" + "user" + "\" }";
+
+    mockMvc.perform(post("/api/users/login")
+            .contentType("application/json")
+            .content(loginPayload))
+        .andExpect(status().isOk());
   }
 
   @Test
@@ -52,6 +64,7 @@ public class UserControllerTest {
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/api/users")
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -81,6 +94,7 @@ public class UserControllerTest {
         .age(randomAge())
         .country(randomCountry())
         .email("usedemail@gmail.com")
+        .password(randomPassword())
         .build();
 
     UserDto secondUserDto = UserDto.builder()
@@ -88,6 +102,7 @@ public class UserControllerTest {
         .age(randomAge())
         .country(randomCountry())
         .email("usedemail@gmail.com")
+        .password(randomPassword())
         .build();
 
     String firstUserPayload = JsonUtils.toJson(firstUserDto);
@@ -108,6 +123,7 @@ public class UserControllerTest {
   @Test
   void getAllUsersSuccess() throws Exception {
     mockMvc.perform(get("/api/users")
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -126,6 +142,7 @@ public class UserControllerTest {
 
 
     String userJson = mockMvc.perform(get("/api/users/{id}", createdUser.id())
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -139,6 +156,7 @@ public class UserControllerTest {
   @Test
   void getUserByIdThrowsUserNotFoundException() throws Exception {
     mockMvc.perform(get("/api/users/{id}", "NON-EXISTING-ID")
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(content().string("User not found with id: " + "NON-EXISTING-ID"));
@@ -161,10 +179,12 @@ public class UserControllerTest {
     String userId = createdUser.id();
 
     mockMvc.perform(delete("/api/users/" + userId)
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/api/users/" + userId)
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -190,10 +210,12 @@ public class UserControllerTest {
         .age(createdUser.age())
         .email("updateemail@gmail.com")
         .country(createdUser.country())
+        .password(randomPassword())
         .build());
 
     // UPDATE
     mockMvc.perform(put("/api/users/{id}", userId)
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON)
             .content(userUpdatePayload))
         .andExpect(status().isOk())
@@ -201,6 +223,7 @@ public class UserControllerTest {
 
     // GET AND CHECK
     String finalUserJson = mockMvc.perform(get("/api/users/{id}", userId)
+            .header("Authorization", "Bearer " + token)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

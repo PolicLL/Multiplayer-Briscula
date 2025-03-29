@@ -1,11 +1,15 @@
 package com.example.web.service;
 
+import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
+
 import com.example.web.dto.UserDto;
+import com.example.web.dto.UserLoginDto;
 import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
+import com.example.web.security.model.Role;
 import com.example.web.security.service.JwtService;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -39,7 +43,10 @@ public class UserService {
       throw new UserAlreadyExistsException("Email is already taken!");
     }
 
-    User savedUser = userRepository.save(userMapper.toEntity(userDto));
+    User userToBeSaved = userMapper.toEntity(userDto);
+    userToBeSaved.setPassword(B_CRYPT_PASSWORD_ENCODER.encode(userToBeSaved.getPassword()));
+
+    User savedUser = userRepository.save(userToBeSaved);
     log.info("Saved user {}", savedUser);
 
     log.info("Test : {}", userMapper.toDto(savedUser));
@@ -79,10 +86,10 @@ public class UserService {
   /**
    * Used for verifying user credentials during the login.
    */
-  public String verify(User user) {
+  public String verify(UserLoginDto userLoginDto) {
     Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+        new UsernamePasswordAuthenticationToken(userLoginDto.username(), userLoginDto.password()));
 
-    return authentication.isAuthenticated() ? jwtService.generateToken(user.getUsername()) : "Failure";
+    return authentication.isAuthenticated() ? jwtService.generateToken(userLoginDto.username()) : "Failure";
   }
 }

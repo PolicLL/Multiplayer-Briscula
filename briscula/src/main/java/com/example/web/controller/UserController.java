@@ -1,6 +1,7 @@
 package com.example.web.controller;
 
 import com.example.web.dto.UserDto;
+import com.example.web.dto.UserLoginDto;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,6 +31,11 @@ public class UserController {
   @PostMapping("/create")
   public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
     return ResponseEntity.ok(userService.createUser(userDto));
+  }
+
+  @PostMapping("/login")
+  public String login(@RequestBody @Valid UserLoginDto userLoginDto) {
+    return userService.verify(userLoginDto);
   }
 
   @GetMapping

@@ -1,7 +1,7 @@
 CREATE TABLE users (
     id VARCHAR PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
+    password VARCHAR(150) NOT NULL,
     role VARCHAR(40) NOT NULL,
     age INT CHECK (age >= 3 AND age <= 100) NOT NULL,
     country VARCHAR(50) NOT NULL,
@@ -9,4 +9,12 @@ CREATE TABLE users (
     points INT DEFAULT 0,
     level INT DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO users (id, username, password, role, age, country, email, points, level)
+VALUES (
+    '123e4567-e89b-12d3-a456-426614174000',
+    'user',
+    '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86',
+    'ROLE_USER', 25, 'USA', 'example@example.com', 0, 1
 );

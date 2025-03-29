@@ -33,7 +33,7 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(request -> request
-            .requestMatchers("/api/users/**", "/actuator/**")
+            .requestMatchers("/api/users/create", "/api/users/login", "/actuator/**")
             .permitAll()
             .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults()) // include it so that Auth works for Postman
