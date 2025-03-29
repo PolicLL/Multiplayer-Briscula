@@ -16,7 +16,6 @@ import static utils.EntityUtils.randomUsername;
 import com.example.web.dto.UserDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,11 +36,12 @@ public class UserControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  private String token;
+  private String userToken, adminToken;
 
   @BeforeEach
   void setUp() throws Exception {
-    this.token = new AuthService(mockMvc).getAuthToken("user", "user");
+    this.userToken = new AuthService(mockMvc).getUserBearerToken();
+    this.adminToken = new AuthService(mockMvc).getAdminBearerToken();
   }
 
   @Test
@@ -64,7 +64,7 @@ public class UserControllerTest {
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/api/users")
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -123,7 +123,7 @@ public class UserControllerTest {
   @Test
   void getAllUsersSuccess() throws Exception {
     mockMvc.perform(get("/api/users")
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -142,7 +142,7 @@ public class UserControllerTest {
 
 
     String userJson = mockMvc.perform(get("/api/users/{id}", createdUser.id())
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -156,7 +156,7 @@ public class UserControllerTest {
   @Test
   void getUserByIdThrowsUserNotFoundException() throws Exception {
     mockMvc.perform(get("/api/users/{id}", "NON-EXISTING-ID")
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andExpect(content().string("User not found with id: " + "NON-EXISTING-ID"));
@@ -179,12 +179,12 @@ public class UserControllerTest {
     String userId = createdUser.id();
 
     mockMvc.perform(delete("/api/users/" + userId)
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
     mockMvc.perform(get("/api/users/" + userId)
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
@@ -215,7 +215,7 @@ public class UserControllerTest {
 
     // UPDATE
     mockMvc.perform(put("/api/users/{id}", userId)
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
             .content(userUpdatePayload))
         .andExpect(status().isOk())
@@ -223,7 +223,7 @@ public class UserControllerTest {
 
     // GET AND CHECK
     String finalUserJson = mockMvc.perform(get("/api/users/{id}", userId)
-            .header("Authorization", "Bearer " + token)
+            .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

@@ -16,10 +16,18 @@ public class AuthService {
     this.mockMvc = mockMvc;
   }
 
-  public String getAuthToken(String username, String password) throws Exception {
+  public String getUserBearerToken() throws Exception {
+    return getAuthBearerToken("user", "user");
+  }
+
+  public String getAdminBearerToken() throws Exception {
+    return getAuthBearerToken("admin", "admin");
+  }
+
+  public String getAuthBearerToken(String username, String password) throws Exception {
     String jsonRequestBody = "{ \"username\": \"" + username + "\", \"password\": \"" + password + "\" }";
 
-    return mockMvc.perform(post("/api/users/login")
+    return "Bearer " + mockMvc.perform(post("/api/users/login")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonRequestBody))
         .andExpect(status().isOk())
