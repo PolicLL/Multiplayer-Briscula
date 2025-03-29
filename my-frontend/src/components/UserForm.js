@@ -10,6 +10,8 @@ function UserForm() {
     age: "",
     country: "",
     email: "",
+    password: "",
+    confirmPassword: "",
     points: 0,
     level: 1,
   });
@@ -43,6 +45,17 @@ function UserForm() {
     let isEmailInvalid = !/\S+@\S+\.\S+/.test(formData.email);
     if (isEmailInvalid) tempErrors.email = "Email is invalid.";
 
+    // password
+    if (!formData.password) tempErrors.password = "Password is required.";
+    else if (formData.password.length < 6)
+      tempErrors.password = "Password must be at least 6 characters long.";
+
+    if (!formData.confirmPassword)
+      tempErrors.confirmPassword =
+        "Filed for password confirmation is required.";
+    else if (formData.password !== formData.confirmPassword)
+      tempErrors.confirmPassword = "Passwords are not the same.";
+
     setErrors(tempErrors);
 
     return Object.keys(tempErrors).length === 0;
@@ -69,6 +82,8 @@ function UserForm() {
         age: "",
         country: "",
         email: "",
+        password: "",
+        confirmPassword: "",
         points: 0,
         level: 1,
       });
@@ -95,6 +110,26 @@ function UserForm() {
           }
         />
         <p style={{ color: "red" }}>{errors.username}</p>
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={(e) =>
+            setFormData({ ...formData, password: e.target.value })
+          }
+        />
+        <p style={{ color: "red" }}>{errors.password}</p>
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={formData.confirmPassword}
+          onChange={(e) =>
+            setFormData({ ...formData, confirmPassword: e.target.value })
+          }
+        />
+        <p style={{ color: "red" }}>{errors.confirmPassword}</p>
 
         <input
           type="number"
