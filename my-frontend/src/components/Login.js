@@ -39,7 +39,7 @@ function Login() {
       localStorage.setItem("jwtToken", token);
       setMessage("Login successful!");
 
-      //window.location.href = "/home";
+      window.location.href = "/dashboard";
     } catch (error) {
       console.log("Error : " + error);
       setMessage("Invalid credidentials");

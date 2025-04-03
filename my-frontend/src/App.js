@@ -11,6 +11,7 @@ import Signup from "./components/Signup";
 import Home from "./components/Home";
 import Login from "./components/Login";
 import UserForm from "./components/UserForm";
+import Dashboard from "./components/Dashboard";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/login" element={<Login />}></Route>
         <Route path="/signup" element={<UserForm />}></Route>
         <Route path="/game" element={<PrepareGame />}></Route>
+        <Route path="/dashboard" element={<Dashboard />}></Route>
       </Routes>
     </Router>
   );
