@@ -9,18 +9,14 @@ import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
-import com.example.web.security.model.Role;
 import com.example.web.security.service.JwtService;
-import jakarta.transaction.Transactional;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -91,5 +87,11 @@ public class UserService {
         new UsernamePasswordAuthenticationToken(userLoginDto.username(), userLoginDto.password()));
 
     return authentication.isAuthenticated() ? jwtService.generateToken(userLoginDto.username()) : "Failure";
+  }
+
+  public UserDto getUserByUsername(String username) {
+    User user = userRepository.findByUsername(username);
+    if (user == null) throw new UserNotFoundException();
+    return userMapper.toDto(user);
   }
 }
