@@ -25,18 +25,20 @@ function Dashboard() {
 
         console.log("Point 2");
 
-        const response = await axios.get("http://localhost:8080/api/users/by", {
-          params: { username }, // Only sending username
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        //const response = await axios.get("http://localhost:8080/api/users/by");
+        const userResponse = await axios.get(
+          "http://localhost:8080/api/users/by",
+          {
+            params: { username }, // Only sending username
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         console.log("Point 3");
+        console.log("Response: " + userResponse);
 
-        setUserInfo(response.data);
+        setUserInfo(userResponse.data);
       } catch (error) {
         setMessage("Error fetching user information.");
         console.error(error);
@@ -49,7 +51,7 @@ function Dashboard() {
   const handleStartGame = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/game/start-game",
+        `http://localhost:8080/api/game/start-game/${userInfo.id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
