@@ -1,10 +1,6 @@
 package com.example.web.handler;
 
-import com.example.briscula.game.Game;
-import com.example.briscula.game.GameManager;
 import com.example.briscula.user.player.RealPlayer;
-import com.example.briscula.utilities.constants.GameMode;
-import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import java.io.IOException;
 import java.util.HashSet;

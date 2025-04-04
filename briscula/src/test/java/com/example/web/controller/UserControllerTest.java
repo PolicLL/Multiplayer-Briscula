@@ -141,7 +141,7 @@ public class UserControllerTest {
     UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
 
 
-    String userJson = mockMvc.perform(get("/api/users/{id}", createdUser.id())
+    String userJson = mockMvc.perform(get("/api/users/by?id={id}", createdUser.id())
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -155,7 +155,7 @@ public class UserControllerTest {
 
   @Test
   void getUserByIdThrowsUserNotFoundException() throws Exception {
-    mockMvc.perform(get("/api/users/{id}", "NON-EXISTING-ID")
+    mockMvc.perform(get("/api/users/by?id={id}", "NON-EXISTING-ID")
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
@@ -183,7 +183,7 @@ public class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/users/" + userId)
+    mockMvc.perform(get("/api/users/by?id=" + userId)
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
@@ -222,7 +222,7 @@ public class UserControllerTest {
         .andDo(print());
 
     // GET AND CHECK
-    String finalUserJson = mockMvc.perform(get("/api/users/{id}", userId)
+    String finalUserJson = mockMvc.perform(get("/api/users/by?id={id}", userId)
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
