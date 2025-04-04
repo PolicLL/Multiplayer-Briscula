@@ -33,10 +33,10 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(request -> request
-            .requestMatchers("/api/users/create", "/api/users/login", "/actuator/**")
-            .permitAll()
+            .requestMatchers("/api/users/create", "/api/users/login", "/api/game/**", "/actuator/**").permitAll()
             .anyRequest().authenticated())
-        .httpBasic(Customizer.withDefaults()) // include it so that Auth works for Postman
+        .httpBasic(Customizer.withDefaults())
+        .cors(Customizer.withDefaults())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
         .build();
   }
