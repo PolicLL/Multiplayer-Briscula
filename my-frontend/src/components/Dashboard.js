@@ -7,9 +7,7 @@ function Dashboard() {
   const [message, setMessage] = useState("");
   const [userInfo, setUserInfo] = useState({});
   const [status, setStatus] = useState("Click 'Join Game' to connect.");
-  const [username, setUsername] = useState(() =>
-    localStorage.getItem("username")
-  );
+  const [username] = useState(() => localStorage.getItem("username"));
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [receivedMessage, setReceivedMessage] = useState("");
 
@@ -72,39 +70,11 @@ function Dashboard() {
     };
   };
 
-  const handleStartGame = async () => {
-    try {
-      /*       const response = await axios.post(
-        `http://localhost:8080/api/game/start-game/${userInfo.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-          },
-        }
-      ); */
-
-      // Shift Alt A
-
-      const response = await axios.post(`http://localhost:8080/game/prepare`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwtToken")}`,
-        },
-      });
-
-      setMessage("Game started successfully!");
-      console.log("Response : " + response);
-    } catch (error) {
-      setMessage("Error starting game!");
-      console.error(error);
-    }
-  };
-
   return (
     <div>
       <h2>Hello !</h2>
       {message && <p>{message}</p>}
 
-      {/* Display user info if available */}
       {userInfo && (
         <div>
           <h3>Welcome, {userInfo.username}!</h3>
@@ -114,7 +84,9 @@ function Dashboard() {
         </div>
       )}
 
-      <button onClick={connectWebSocket}>Start Game</button>
+      <button onClick={connectWebSocket}>Join Game</button>
+
+      <button disabled={!isStartEnabled}>Start Game</button>
     </div>
   );
 }
