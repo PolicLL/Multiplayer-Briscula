@@ -1,7 +1,7 @@
-package com.example.web.config;
+package com.example.web.configuration;
 
 import com.example.web.handler.GamePreparingWebSocketHandler;
-import com.example.web.handler.StartedGameWebSocketHandler;
+import com.example.web.handler.GameStartWebSocketHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -17,7 +17,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
         .addHandler(new GamePreparingWebSocketHandler(), "/game/prepare")
-        .addHandler(new StartedGameWebSocketHandler(), "/game/start")
+        .addHandler(new GameStartWebSocketHandler(), "/game/start")
         .setAllowedOrigins("*");
 
     log.info("WebSocket handler registered for path /game");

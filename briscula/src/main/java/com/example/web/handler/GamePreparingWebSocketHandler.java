@@ -24,11 +24,12 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
         new RealPlayer(null, (String) message.getPayload()));
 
     if (isThereUserFromThisWebSession(connectedPlayer)) {
-      log.info("Session already used.");
+      log.info("User from this session already joined.");
       return;
     }
 
     setOfPlayers.add(connectedPlayer);
+    log.info("Added player {}.", connectedPlayer);
 
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
       setOfPlayers.forEach(tempUser -> {

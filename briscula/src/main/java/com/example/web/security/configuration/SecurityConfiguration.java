@@ -34,6 +34,7 @@ public class SecurityConfiguration {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(request -> request
             .requestMatchers("/api/users/create", "/api/users/login", "/api/game/**", "/actuator/**").permitAll()
+            .requestMatchers("/game/**").permitAll()
             .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .cors(Customizer.withDefaults())

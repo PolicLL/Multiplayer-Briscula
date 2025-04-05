@@ -12,4 +12,6 @@ import org.springframework.web.socket.WebSocketSession;
 public class ConnectedPlayer {
   private WebSocketSession webSocketSession;
   private Player player;
+
+
 }

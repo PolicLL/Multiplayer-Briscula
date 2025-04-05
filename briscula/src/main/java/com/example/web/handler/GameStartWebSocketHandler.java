@@ -13,7 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Slf4j
-public class StartedGameWebSocketHandler extends TextWebSocketHandler {
+public class GameStartWebSocketHandler extends TextWebSocketHandler {
 
   private static final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
 
