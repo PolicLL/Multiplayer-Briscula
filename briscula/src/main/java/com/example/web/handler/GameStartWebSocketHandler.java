@@ -27,3 +27,17 @@ public class GameStartWebSocketHandler extends TextWebSocketHandler {
 
   }
 }
+
+/*
+public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
+  private final Map<String, GameRoom> activeGames = new ConcurrentHashMap<>();
+
+  @Override
+  public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
+    String roomId = (String) message.getPayload();
+    GameRoom room = activeGames.computeIfAbsent(roomId, GameRoom::new);
+    room.handleMessage(session, message);
+  }
+}
+
+ */

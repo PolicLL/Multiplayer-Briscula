@@ -71,9 +71,10 @@ function PrepareGame() {
               onChange={(e) => setName(e.target.value)}
             />
 
+            <button onClick={connectWebSocket}>Join Game</button>
+
             <button disabled={!isStartEnabled}>Start Game</button>
 
-            <button onClick={connectWebSocket}>Join Game</button>
             <p id="status" style={{ fontWeight: "bold", fontSize: "18px" }}>
               {status}
             </p>

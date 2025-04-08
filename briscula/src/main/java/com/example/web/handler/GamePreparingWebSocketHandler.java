@@ -2,9 +2,11 @@ package com.example.web.handler;
 
 import com.example.briscula.user.player.RealPlayer;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.service.GameRoomService;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.web.socket.TextMessage;
@@ -13,9 +15,12 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Slf4j
+@RequiredArgsConstructor
 public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
 
-  private static final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
+  private final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
+
+  private final GameRoomService gameRoomService;
 
   private final int MAX_NUMBER_OF_PLAYERS = 2;
   @Override
@@ -34,12 +39,13 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
       setOfPlayers.forEach(tempUser -> {
         try {
-          log.info("Game can start.");
           tempUser.getWebSocketSession().sendMessage(new TextMessage("START_ENABLED"));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
       });
+
+      log.info("Create room {}.",  gameRoomService.createRoom(setOfPlayers));
     }
   }
 
