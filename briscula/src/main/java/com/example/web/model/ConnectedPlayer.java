@@ -13,5 +13,8 @@ public class ConnectedPlayer {
   private WebSocketSession webSocketSession;
   private Player player;
 
-
+  @Override
+  public String toString() {
+    return this.player.toString();
+  }
 }

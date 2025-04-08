@@ -5,10 +5,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
 @Data
+@ToString
 public class GameRoom {
 
   private String roomId;
