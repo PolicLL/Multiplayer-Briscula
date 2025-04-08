@@ -36,8 +36,9 @@ function PrepareGame() {
     socket.onmessage = (event) => {
       const message = event.data;
 
-      if (message === "START_ENABLED") {
-        setIsStartEnabled(true);
+      if (message.includes("GAME_STARTED")) {
+        console.log("Game starting.");
+        navigate("/game");
       } else {
         setReceivedMessage(message);
       }

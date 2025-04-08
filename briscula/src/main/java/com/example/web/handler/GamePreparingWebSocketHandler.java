@@ -2,6 +2,7 @@ package com.example.web.handler;
 
 import com.example.briscula.user.player.RealPlayer;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.GameRoom;
 import com.example.web.service.GameRoomService;
 import java.io.IOException;
 import java.util.HashSet;
@@ -37,15 +38,18 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
     log.info("Added player {}.", connectedPlayer);
 
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
+      GameRoom gameRoom = gameRoomService.createRoom(setOfPlayers);
+      log.info("Created room {}.",  gameRoom);
+
       setOfPlayers.forEach(tempUser -> {
         try {
-          tempUser.getWebSocketSession().sendMessage(new TextMessage("START_ENABLED"));
+          tempUser.getWebSocketSession().sendMessage(new TextMessage("GAME_STARTED " + gameRoom.getRoomId()));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }
       });
 
-      log.info("Create room {}.",  gameRoomService.createRoom(setOfPlayers));
+
     }
   }
 
