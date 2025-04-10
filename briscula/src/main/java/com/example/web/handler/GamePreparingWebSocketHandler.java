@@ -36,6 +36,7 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
 
     setOfPlayers.add(connectedPlayer);
     log.info("Added player {}.", connectedPlayer);
+    log.info("Room size {}", setOfPlayers.size());
 
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
       GameRoom gameRoom = gameRoomService.createRoom(setOfPlayers);
@@ -43,6 +44,7 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
 
       setOfPlayers.forEach(tempUser -> {
         try {
+          log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
           tempUser.getWebSocketSession().sendMessage(new TextMessage("GAME_STARTED " + gameRoom.getRoomId()));
         } catch (IOException e) {
           throw new RuntimeException(e);

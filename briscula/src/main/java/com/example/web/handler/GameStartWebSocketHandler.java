@@ -20,10 +20,10 @@ public class GameStartWebSocketHandler extends TextWebSocketHandler {
   private final int MAX_NUMBER_OF_PLAYERS = 2;
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
-    GameManager gameManager = new GameManager(
-        GameOptionNumberOfPlayers.TWO_PLAYERS,
-        GameMode.ALL_HUMANS, setOfPlayers.stream().map(ConnectedPlayer::getPlayer).toList()
-    );
+//    GameManager gameManager = new GameManager(
+//        GameOptionNumberOfPlayers.TWO_PLAYERS,
+//        GameMode.ALL_HUMANS, setOfPlayers.stream().map(ConnectedPlayer::getPlayer).toList()
+//    );
 
   }
 }

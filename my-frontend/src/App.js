@@ -1,17 +1,12 @@
-import React, { useState } from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-} from "react-router-dom";
-import { use } from "react";
-import PrepareGame from "./components/PrepareGame";
-import Signup from "./components/Signup";
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+
+import AnonymousDashboard from "./components/AnonymousDashboard";
 import Home from "./components/Home";
 import Login from "./components/Login";
-import UserForm from "./components/UserForm";
+import Registration from "./components/Registration";
 import Dashboard from "./components/Dashboard";
+import GameRoom from "./components/GameRoom";
 
 function App() {
   return (
@@ -19,9 +14,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
-        <Route path="/signup" element={<UserForm />}></Route>
-        <Route path="/game" element={<PrepareGame />}></Route>
+        <Route path="/signup" element={<Registration />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
+        <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
+        <Route path="/game/:id" element={<GameRoom />} />
       </Routes>
     </Router>
   );

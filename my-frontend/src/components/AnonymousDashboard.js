@@ -5,11 +5,6 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom";
-import { use } from "react";
-import StartGame from ".//StartGame";
-import Signup from ".//Signup";
-import Home from ".//Home";
-import Login from ".//Login";
 
 function PrepareGame() {
   const [status, setStatus] = useState("Click 'Join Game' to connect.");
@@ -38,7 +33,8 @@ function PrepareGame() {
 
       if (message.includes("GAME_STARTED")) {
         console.log("Game starting.");
-        navigate("/game");
+        const roomId = message.split(" ")[1];
+        navigate(`/game/${roomId}`);
       } else {
         setReceivedMessage(message);
       }
@@ -83,8 +79,6 @@ function PrepareGame() {
           </div>
         }
       />
-
-      <Route path="/start-game" element={<StartGame />} />
     </Routes>
   );
 }

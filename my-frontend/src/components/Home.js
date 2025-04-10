@@ -11,7 +11,9 @@ function Home() {
 
       <button onClick={() => navigate("/login")}>Log In</button>
       <button onClick={() => navigate("/signup")}>Sign Up</button>
-      <button onClick={() => navigate("/game")}>Continue Anonymously</button>
+      <button onClick={() => navigate("/anonymous")}>
+        Continue Anonymously
+      </button>
     </div>
   );
 }

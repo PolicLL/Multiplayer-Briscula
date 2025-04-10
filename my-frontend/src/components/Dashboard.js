@@ -54,8 +54,10 @@ function Dashboard() {
     socket.onmessage = (event) => {
       const message = event.data;
 
-      if (message === "START_ENABLED") {
-        setIsStartEnabled(true);
+      if (message.includes("GAME_STARTED")) {
+        console.log("Game starting.");
+        const roomId = message.split(" ")[1];
+        navigate(`/game/${roomId}`);
       } else {
         setReceivedMessage(message);
       }
