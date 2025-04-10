@@ -6,17 +6,21 @@ function GameRoom() {
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/game/start");
+    const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
 
     socket.onopen = () => {
       console.log(`Connected to game room ${roomId}.`);
-      socket.send(roomId);
+      socket.send("Test Message from Game Room.");
     };
 
     socket.onmessage = (event) => {
       const message = event.data;
       console.log("Message received : " + message);
       setMessages((prev) => [...prev, message]);
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
     };
 
     socket.onclose = () => {
