@@ -1,9 +1,9 @@
-package com.example.web.handler;
+package com.example.web.service;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.web.handler.WebSocketMessageHandler;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
-import com.example.web.service.GameRoomService;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,8 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PrepareGameService  implements WebSocketMessageHandler{
-
+public class PrepareGameService  implements WebSocketMessageHandler {
 
   private final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
 
@@ -53,7 +52,6 @@ public class PrepareGameService  implements WebSocketMessageHandler{
       });
 
       setOfPlayers.clear();
-
     }
   }
 

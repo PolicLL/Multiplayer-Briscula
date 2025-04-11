@@ -10,7 +10,13 @@ function GameRoom() {
 
     socket.onopen = () => {
       console.log(`Connected to game room ${roomId}.`);
-      socket.send("Test Message from Game Room.");
+
+      socket.send(
+        JSON.stringify({
+          type: "JOIN_ROOM",
+          message: "Test Message from Game Room.",
+        })
+      );
     };
 
     socket.onmessage = (event) => {

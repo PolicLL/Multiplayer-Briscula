@@ -1,8 +1,5 @@
 package com.example.web.handler;
 
-import com.example.briscula.game.GameManager;
-import com.example.briscula.utilities.constants.GameMode;
-import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.service.GameRoomService;
@@ -12,7 +9,6 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -38,7 +34,7 @@ public class GameStartWebSocketHandler extends TextWebSocketHandler {
     log.info("Received room from service {}" , gameRoomService.getRoom(roomId));
 
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
-    gameRoom.sendMessage(0, "TEST 123 123");
+    //gameRoom.sendMessage(0, "TEST 123 123");
     //session.sendMessage(new TextMessage("TEST 123 123"));
 
   }

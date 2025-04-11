@@ -1,8 +1,8 @@
 package com.example.web.configuration;
 
-import com.example.web.handler.GamePreparingWebSocketHandler;
+import com.example.web.handler.WebSocketHandler;
 import com.example.web.handler.GameStartWebSocketHandler;
-import com.example.web.handler.PrepareGameService;
+import com.example.web.service.PrepareGameService;
 import com.example.web.service.GameRoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
   @Autowired
-  private PrepareGameService prepareGameService;
+  private WebSocketHandler webSocketHandler;
 
   @Autowired
   private GameRoomService gameRoomService;
@@ -25,7 +25,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
-        .addHandler(new GamePreparingWebSocketHandler(prepareGameService), "/game/prepare")
+        .addHandler(webSocketHandler, "/game/prepare")
         .addHandler(new GameStartWebSocketHandler(gameRoomService), "/game/**")
         .setAllowedOrigins("*");
 
