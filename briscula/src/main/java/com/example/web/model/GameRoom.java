@@ -32,7 +32,7 @@ public class GameRoom {
     this.game = new Game(GameOptionNumberOfPlayers.TWO_PLAYERS, GameMode.ALL_HUMANS,
         players.stream().map(ConnectedPlayer::getPlayer).toList());
 
-    startGame();
+    //startGame();
   }
 
   private void startGame() {

@@ -1,16 +1,13 @@
 package com.example.web.handler;
 
-import com.example.briscula.user.player.RealPlayer;
-import com.example.web.model.ConnectedPlayer;
-import com.example.web.model.GameRoom;
-import com.example.web.service.GameRoomService;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import static com.example.web.model.enums.ClientToServerMessageType.JOIN_GAME;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -19,44 +16,19 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 @RequiredArgsConstructor
 public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
 
-  private final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
-
-  private final GameRoomService gameRoomService;
-
-  private final int MAX_NUMBER_OF_PLAYERS = 2;
+  private final PrepareGameService prepareGameService;
   @Override
-  public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session,
-        new RealPlayer(null, (String) message.getPayload()));
+  public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
+      throws JsonProcessingException {
 
-    if (isThereUserFromThisWebSession(connectedPlayer)) {
-      log.info("User from this session already joined.");
-      return;
+    String payload = (String) message.getPayload();
+    JsonNode json = new ObjectMapper().readTree(payload);
+
+    String type = json.get("type").asText();
+
+    switch (type) {
+      case "JOIN_ROOM" -> prepareGameService.handle(session, message);
+      case "TEMP" -> prepareGameService.handle(session, message);
     }
-
-    setOfPlayers.add(connectedPlayer);
-    log.info("Added player {}.", connectedPlayer);
-    log.info("Room size {}", setOfPlayers.size());
-
-    if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
-      GameRoom gameRoom = gameRoomService.createRoom(setOfPlayers);
-
-      setOfPlayers.forEach(tempUser -> {
-        try {
-          log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-          tempUser.getWebSocketSession().sendMessage(new TextMessage("GAME_STARTED " + gameRoom.getRoomId()));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
-
-      setOfPlayers.clear();
-
-    }
-  }
-
-  private boolean isThereUserFromThisWebSession(ConnectedPlayer connectedPlayer) {
-    return setOfPlayers.stream().anyMatch(
-        player -> player.getWebSocketSession().equals(connectedPlayer.getWebSocketSession()));
   }
 }
