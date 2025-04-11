@@ -2,7 +2,7 @@ package com.example.briscula.model.card;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
-import com.example.briscula.game.GameJudge;
+import com.example.briscula.game.RoundJudge;
 import com.example.briscula.game.Move;
 import com.example.briscula.game.RoundWinner;
 import com.example.briscula.user.player.Player;
@@ -106,7 +106,7 @@ public class GameTest {
         new Move(playerList.get(2), cardsList.get(2)), new Move(playerList.get(3), cardsList.get(3))
     );
 
-    roundWinner = new GameJudge(mainCardType).calculateRound(new ArrayDeque<>(movesList.subList(0, 4)));
+    roundWinner = new RoundJudge(mainCardType).calculateRound(new ArrayDeque<>(movesList.subList(0, 4)));
   }
 
 }

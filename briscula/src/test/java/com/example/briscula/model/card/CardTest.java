@@ -17,13 +17,10 @@ import static com.example.briscula.model.card.CardValue.TWO;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import com.example.briscula.exceptions.DuplicateCardException;
-import com.example.briscula.game.GameJudge;
-import com.example.briscula.user.admin.Admin;
+import com.example.briscula.game.RoundJudge;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -39,7 +36,7 @@ public class CardTest {
 
   private static final CardType mainCardType = CardType.COPPE;
 
-  private  static GameJudge gameJudge = new GameJudge(mainCardType);
+  private  static RoundJudge roundJudge = new RoundJudge(mainCardType);
 
   @ParameterizedTest
   @MethodSource("testSameNonMainCardType")
@@ -49,7 +46,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(gameJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
   }
 
   private static Stream<Arguments> testSameNonMainCardType() {
@@ -69,7 +66,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(gameJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
   }
 
   private static Stream<Arguments> testDifferentNonMainCardType() {
@@ -90,7 +87,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(gameJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
   }
 
   private static Stream<Arguments> testFirstCardMainCardType() {
@@ -111,7 +108,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(gameJudge.isSecondCardStronger(firstCard, secondCard)).isTrue();
+    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isTrue();
   }
 
   private static Stream<Arguments> testSecondCardMainCardType() {
@@ -133,7 +130,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(gameJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
   }
 
   private static Stream<Arguments> testBothCardsMainCardType() {
@@ -149,7 +146,7 @@ public class CardTest {
   @Test
   public void TestDuplicateCardException() {
     assertThrows(DuplicateCardException.class, () -> {
-      gameJudge.isSecondCardStronger(new Card(COPPE, TWO), new Card(COPPE, TWO));
+      roundJudge.isSecondCardStronger(new Card(COPPE, TWO), new Card(COPPE, TWO));
     });
   }
 }

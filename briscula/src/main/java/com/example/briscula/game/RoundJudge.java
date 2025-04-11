@@ -8,7 +8,7 @@ import java.util.Queue;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class GameJudge {
+public class RoundJudge {
 
   private final CardType mainCardType;
 

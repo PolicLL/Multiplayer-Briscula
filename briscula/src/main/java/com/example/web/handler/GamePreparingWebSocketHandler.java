@@ -40,7 +40,6 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
 
     if (setOfPlayers.size() == MAX_NUMBER_OF_PLAYERS) {
       GameRoom gameRoom = gameRoomService.createRoom(setOfPlayers);
-      log.info("Created room {}.",  gameRoom);
 
       setOfPlayers.forEach(tempUser -> {
         try {
@@ -51,6 +50,7 @@ public class GamePreparingWebSocketHandler extends TextWebSocketHandler {
         }
       });
 
+      setOfPlayers.clear();
 
     }
   }

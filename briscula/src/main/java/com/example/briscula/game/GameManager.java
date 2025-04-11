@@ -14,12 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 public class GameManager {
   private final GameOptionNumberOfPlayers gameOptions;
   private final Admin admin;
-  private final GameJudge gameJudge;
+  private final RoundJudge roundJudge;
 
   public GameManager(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<Player> players) {
     this.gameOptions = gameOptions;
     this.admin = new Admin();
-    this.gameJudge = new GameJudge(admin.getMainCardType());
+    this.roundJudge = new RoundJudge(admin.getMainCardType());
 
     admin.prepareDeckAndPlayers(gameOptions, gameMode, players);
 
@@ -41,7 +41,7 @@ public class GameManager {
       log.info("Move " + i + " -> " + player.getNickname() + " | " + card);
     }
 
-    RoundWinner roundWinner = gameJudge.calculateRound(queueMoves);
+    RoundWinner roundWinner = roundJudge.calculateRound(queueMoves);
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound();
