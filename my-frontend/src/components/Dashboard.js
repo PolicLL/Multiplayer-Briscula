@@ -48,7 +48,13 @@ function Dashboard() {
 
     socket.onopen = () => {
       setStatus("Connected to the server successfully!");
-      socket.send(username);
+
+      socket.send(
+        JSON.stringify({
+          type: "JOIN_ROOM",
+          playerName: username,
+        })
+      );
     };
 
     socket.onmessage = (event) => {

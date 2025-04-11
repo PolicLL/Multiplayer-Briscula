@@ -25,7 +25,12 @@ function PrepareGame() {
 
     socket.onopen = () => {
       setStatus("Connected to the server successfully!");
-      socket.send(name);
+      socket.send(
+        JSON.stringify({
+          type: "JOIN_ROOM",
+          playerName: name,
+        })
+      );
     };
 
     socket.onmessage = (event) => {
