@@ -5,6 +5,7 @@ import axios from "axios";
 function Dashboard() {
   const navigate = useNavigate();
   const [message, setMessage] = useState("");
+  const [waiting, setWaiting] = useState();
   const [userInfo, setUserInfo] = useState({});
   const [status, setStatus] = useState("Click 'Join Game' to connect.");
   const [username] = useState(() => localStorage.getItem("username"));
@@ -43,45 +44,67 @@ function Dashboard() {
     fetchUserInfo();
   }, []);
 
-  const connectWebSocket = () => {
-    socket = new WebSocket("ws://localhost:8080/game/prepare"); // Change port if needed
+  const connectWebSocketWhenReady = async () => {
+    try {
+      const joinResponse = await axios.post(
+        "http://localhost:8080/api/game/join",
+        {
+          playerName: username,
+        }
+      );
+
+      const playerId = joinResponse.data.playerId;
+
+      setStatus("Waiting for other players...");
+      setWaiting(true); // show spinner or animation
+
+      const pollInterval = setInterval(async () => {
+        const statusResponse = await axios.get(
+          `http://localhost:8080/api/game/status/${playerId}`
+        );
+        const { status, roomId } = statusResponse.data;
+
+        if (status === "READY") {
+          clearInterval(pollInterval);
+          setStatus("Game ready! Connecting...");
+          connectWebSocket(roomId);
+        }
+      }, 2000); // poll every 2 seconds
+    } catch (error) {
+      console.error("Join error:", error);
+      setStatus("Error joining game.");
+    }
+  };
+
+  const connectWebSocket = (roomId) => {
+    const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
 
     socket.onopen = () => {
-      setStatus("Connected to the server successfully!");
-
-      socket.send(
-        JSON.stringify({
-          type: "JOIN_ROOM",
-          playerName: username,
-        })
-      );
+      setStatus("Connected to the game room!");
+      setWaiting(false); // hide waiting animation
     };
 
     socket.onmessage = (event) => {
       const message = event.data;
 
       if (message.includes("GAME_STARTED")) {
-        console.log("Game starting.");
-        const roomId = message.split(" ")[1];
-        navigate(`/game/${roomId}`);
+        const roomIdFromMessage = message.split(" ")[1];
+        navigate(`/game/${roomIdFromMessage}`);
       } else {
         setReceivedMessage(message);
       }
     };
 
-    socket.onerror = () => {
-      setStatus("Failed to connect to the server.");
-    };
-
-    socket.onclose = () => {
-      setStatus("Disconnected from server.");
-    };
+    socket.onerror = () => setStatus("WebSocket error occurred.");
+    socket.onclose = () => setStatus("Disconnected.");
   };
 
   return (
     <div>
       <h2>Hello !</h2>
       {message && <p>{message}</p>}
+
+      {waiting && <img src="/spinner.gif" alt="Waiting..." />}
 
       {userInfo && (
         <div>
@@ -92,7 +115,7 @@ function Dashboard() {
         </div>
       )}
 
-      <button onClick={connectWebSocket}>Join Game</button>
+      <button onClick={connectWebSocketWhenReady}>Join Game</button>
 
       <button disabled={!isStartEnabled}>Start Game</button>
     </div>
