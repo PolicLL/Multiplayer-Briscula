@@ -18,7 +18,7 @@ import org.springframework.web.socket.WebSocketSession;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class PrepareGameService  implements WebSocketMessageHandler {
+public class GamePrepareService implements WebSocketMessageHandler {
 
   private final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
 

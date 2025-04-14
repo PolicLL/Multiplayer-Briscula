@@ -2,7 +2,6 @@ package com.example.web.configuration;
 
 import com.example.web.handler.WebSocketHandler;
 import com.example.web.handler.GameStartWebSocketHandler;
-import com.example.web.service.PrepareGameService;
 import com.example.web.service.GameRoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
