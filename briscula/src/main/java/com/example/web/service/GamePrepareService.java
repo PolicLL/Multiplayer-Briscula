@@ -30,10 +30,6 @@ public class GamePrepareService implements WebSocketMessageHandler {
     ConnectedPlayer connectedPlayer = new ConnectedPlayer(session,
         new RealPlayer(null, (String) message.getPayload()));
 
-    if (isThereUserFromThisWebSession(connectedPlayer)) {
-      log.info("User from this session already joined.");
-      return;
-    }
 
     setOfPlayers.add(connectedPlayer);
     log.info("Added player {}.", connectedPlayer);
@@ -53,11 +49,6 @@ public class GamePrepareService implements WebSocketMessageHandler {
 
       setOfPlayers.clear();
     }
-  }
-
-  private boolean isThereUserFromThisWebSession(ConnectedPlayer connectedPlayer) {
-    return setOfPlayers.stream().anyMatch(
-        player -> player.getWebSocketSession().equals(connectedPlayer.getWebSocketSession()));
   }
 
 }
