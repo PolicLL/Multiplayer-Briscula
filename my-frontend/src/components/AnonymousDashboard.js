@@ -28,6 +28,8 @@ function PrepareGame() {
 
       const playerId = joinResponse.data.playerId;
 
+      console.log("Waiting for other players.");
+
       setStatus("Waiting for other players...");
       setWaiting(true); // show spinner or animation
 
@@ -38,6 +40,7 @@ function PrepareGame() {
         const { status, roomId } = statusResponse.data;
 
         if (status === "READY") {
+          console.log("Connecting to the web socket.");
           clearInterval(pollInterval);
           setStatus("Game ready! Connecting...");
           connectWebSocket(roomId);
@@ -54,18 +57,15 @@ function PrepareGame() {
 
     socket.onopen = () => {
       setStatus("Connected to the game room!");
+      navigate(`/game/${roomId}`);
+      console.log("Connected to the game room.");
       setWaiting(false); // hide waiting animation
     };
 
     socket.onmessage = (event) => {
       const message = event.data;
-
-      if (message.includes("GAME_STARTED")) {
-        const roomIdFromMessage = message.split(" ")[1];
-        navigate(`/game/${roomIdFromMessage}`);
-      } else {
-        setReceivedMessage(message);
-      }
+      console.log(`WebSocket message [${message}] received.`);
+      setReceivedMessage(message);
     };
 
     socket.onerror = () => setStatus("WebSocket error occurred.");
