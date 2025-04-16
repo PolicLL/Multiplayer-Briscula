@@ -67,9 +67,10 @@ function Dashboard() {
         const { status, roomId } = statusResponse.data;
 
         if (status === "READY") {
-          console.log("Connecting to the web socket.");
           clearInterval(pollInterval);
           setStatus("Game ready! Connecting...");
+          console.log("Connecting to the web socket...");
+
           connectWebSocket(roomId);
         }
       }, 2000); // poll every 2 seconds
@@ -84,8 +85,10 @@ function Dashboard() {
 
     socket.onopen = () => {
       setStatus("Connected to the game room!");
-      navigate(`/game/${roomId}`);
       console.log("Connected to the game room.");
+
+      navigate(`/game/${roomId}`);
+
       setWaiting(false); // hide waiting animation
     };
 

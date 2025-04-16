@@ -21,7 +21,7 @@ function GameRoom() {
 
     socket.onmessage = (event) => {
       const message = event.data;
-      console.log("Message received : " + message);
+      console.log("Message received in GameRoom : " + message);
       setMessages((prev) => [...prev, message]);
     };
 
