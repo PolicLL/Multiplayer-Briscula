@@ -61,9 +61,10 @@ function Dashboard() {
       const message = event.data;
 
       if (message.includes("GAME_STARTED")) {
-        console.log("Game starting.");
-        const roomId = message.split(" ")[1];
-        navigate(`/game/${roomId}`);
+        console.log("Game starting...");
+        const [_, roomId, playerId] = message.split(" ");
+
+        navigate(`/game/${roomId}/${playerId}`);
       } else {
         setReceivedMessage(message);
       }

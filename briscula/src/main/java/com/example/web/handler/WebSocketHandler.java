@@ -20,12 +20,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
   private final GamePrepareService gamePrepareService;
 
   private final GameStartService gameStartService;
+
+  private static final String MESSAGE_TYPE = "type";
+
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
 
-    switch (WebSocketMessageReader.getValueFromJsonMessage(message,"type")) {
+    switch (WebSocketMessageReader.getValueFromJsonMessage(message, MESSAGE_TYPE)) {
       case "JOIN_ROOM" -> gamePrepareService.handle(session, message);
+      case "GET_CARDS" -> gameStartService.handleGetCards(session, message);
       case "READY_FOR_GAME" -> gameStartService.handle(session, message);
     }
   }

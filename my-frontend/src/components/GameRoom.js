@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 function GameRoom() {
-  const { roomId } = useParams();
+  const { roomId, playerId } = useParams();
   const [messages, setMessages] = useState([]);
 
   useEffect(() => {
@@ -10,11 +10,13 @@ function GameRoom() {
 
     socket.onopen = () => {
       console.log(`Connected to game room ${roomId}.`);
+      console.log(`Player id ${playerId}.`);
 
       socket.send(
         JSON.stringify({
-          type: "JOIN_ROOM",
-          message: "Test Message from Game Room.",
+          type: "GET_CARDS",
+          gameRoomId: roomId,
+          playerId: playerId,
         })
       );
     };
