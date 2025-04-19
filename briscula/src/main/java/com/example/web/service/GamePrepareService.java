@@ -3,6 +3,8 @@ package com.example.web.service;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
+import com.example.web.utils.WebSocketMessageReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
@@ -26,11 +28,12 @@ public class GamePrepareService {
 
   private final int MAX_NUMBER_OF_PLAYERS = 2;
 
-  public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
+  public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
+      throws JsonProcessingException {
     ConnectedPlayer connectedPlayer = new ConnectedPlayer(session,
-        new RealPlayer(null, (String) message.getPayload()));
+        new RealPlayer(null, WebSocketMessageReader.getValueFromJsonMessage(message, "playerName")));
 
-    if (isThereUserFromThisWebSession(connectedPlayer)) {
+    if (isThereUserFromThisWebSession(session)) {
       log.info("User {} from this session already joined.", connectedPlayer);
       return;
     }
@@ -54,9 +57,9 @@ public class GamePrepareService {
     }
   }
 
-  private boolean isThereUserFromThisWebSession(ConnectedPlayer connectedPlayer) {
+  private boolean isThereUserFromThisWebSession(WebSocketSession session) {
     return setOfPlayers.stream().anyMatch(
-        player -> player.getWebSocketSession().equals(connectedPlayer.getWebSocketSession()));
+        player -> player.getWebSocketSession().equals(session));
   }
 
 }

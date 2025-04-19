@@ -17,7 +17,7 @@ function App() {
         <Route path="/signup" element={<Registration />}></Route>
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
-        <Route path="/game/:roomId" element={<GameRoom />} />
+        <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
       </Routes>
     </Router>
   );
