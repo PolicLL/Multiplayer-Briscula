@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -11,7 +11,7 @@ function Dashboard() {
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [receivedMessage, setReceivedMessage] = useState("");
 
-  let socket;
+  const socketRef = useRef(null);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -26,7 +26,7 @@ function Dashboard() {
         const userResponse = await axios.get(
           "http://localhost:8080/api/users/by",
           {
-            params: { username }, // Only sending username
+            params: { username },
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -41,29 +41,20 @@ function Dashboard() {
     };
 
     fetchUserInfo();
-  }, []);
 
-  const connectWebSocket = () => {
-    socket = new WebSocket("ws://localhost:8080/game/prepare"); // Change port if needed
+    // 🔌 Create WebSocket connection once on mount
+    const socket = new WebSocket("ws://localhost:8080/game/prepare");
+    socketRef.current = socket;
 
     socket.onopen = () => {
       setStatus("Connected to the server successfully!");
-
-      socket.send(
-        JSON.stringify({
-          type: "JOIN_ROOM",
-          playerName: username,
-        })
-      );
     };
 
     socket.onmessage = (event) => {
       const message = event.data;
 
       if (message.includes("GAME_STARTED")) {
-        console.log("Game starting...");
         const [_, roomId, playerId] = message.split(" ");
-
         navigate(`/game/${roomId}/${playerId}`);
       } else {
         setReceivedMessage(message);
@@ -77,11 +68,30 @@ function Dashboard() {
     socket.onclose = () => {
       setStatus("Disconnected from server.");
     };
+
+    // 🔌 Cleanup on unmount
+    return () => {
+      socket.close();
+    };
+  }, [navigate, username]);
+
+  const joinGame = () => {
+    const socket = socketRef.current;
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "JOIN_ROOM",
+          playerName: username,
+        })
+      );
+    } else {
+      setStatus("Socket not connected.");
+    }
   };
 
   return (
     <div>
-      <h2>Hello !</h2>
+      <h2>Hello!</h2>
       {message && <p>{message}</p>}
 
       {userInfo && (
@@ -93,7 +103,7 @@ function Dashboard() {
         </div>
       )}
 
-      <button onClick={connectWebSocket}>Join Game</button>
+      <button onClick={joinGame}>Join Game</button>
 
       <button disabled={!isStartEnabled}>Start Game</button>
     </div>

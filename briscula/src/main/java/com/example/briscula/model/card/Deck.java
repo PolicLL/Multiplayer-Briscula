@@ -29,8 +29,8 @@ public class Deck {
     return deckCards.remove(random.nextInt(deckCards.size()));
   }
 
-  public Boolean removeOneWithCardValueTwo() {
-    return deckCards.stream()
+  public void removeOneWithCardValueTwo() {
+    deckCards.stream()
         .filter(card -> card.cardValue() == CardValue.TWO)
         .findFirst()
         .map(deckCards::remove)

@@ -1,21 +1,18 @@
 package com.example.web.model;
 
 import com.example.briscula.game.Game;
+import com.example.briscula.model.card.Card;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 import lombok.Data;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketMessage;
 
 @Data
 @Slf4j
@@ -33,6 +30,10 @@ public class GameRoom {
         players.stream().map(ConnectedPlayer::getPlayer).toList());
 
     //startGame();
+  }
+
+  public List<Card> getCardsForPlayer(int playerId) {
+    return game.getCardsForPlayer(playerId);
   }
 
   private void startGame() {

@@ -15,7 +15,7 @@ function GameRoom() {
       socket.send(
         JSON.stringify({
           type: "GET_CARDS",
-          gameRoomId: roomId,
+          roomId: roomId,
           playerId: playerId,
         })
       );

@@ -14,6 +14,7 @@ public class RoundJudge {
 
   public RoundWinner calculateRound(Queue<Move> queueMoves) {
     Move roundWinnerMove = queueMoves.poll();
+    assert roundWinnerMove != null;
     int tempPointsInRound = roundWinnerMove.card().getPoints();
 
     while (!queueMoves.isEmpty()) {
