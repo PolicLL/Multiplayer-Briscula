@@ -43,6 +43,10 @@ public class Admin {
     log.info("STARTING PLAYER : " + indexOfCurrentPlayer);
   }
 
+  public List<Card> getCardsForPlayer(int playerId) {
+    return listOfCardsForAllPlayers.get(playerId);
+  }
+
   private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {
     if (gameOptions == GameOptionNumberOfPlayers.THREE_PLAYERS) deck.removeOneWithCardValueTwo();
   }

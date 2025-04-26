@@ -1,11 +1,13 @@
 package com.example.web.service;
 
+import com.example.briscula.model.card.Card;
+import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
 import com.example.web.model.GameRoom;
 import com.example.web.utils.JsonUtils;
 import com.example.web.utils.WebSocketMessageReader;
 import java.io.IOException;
-import java.util.Random;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -28,13 +30,13 @@ public class GameStartService {
   public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
       throws IOException {
     String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
-    String playerId = WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
+    int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
 
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
-    //gameRoom.getCardsForPlayer(playerId);
+    List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
-    Message sentCardsMessage = new Message("SENT_CARDS", roomId, playerId,
-        "D7 C2 B3");
+    Message sentCardsMessage = new Message("SENT_CARDS", roomId, String.valueOf(playerId),
+        CardFormatter.formatCards(listCards));
 
     log.info("Sent cards : " + sentCardsMessage);
 

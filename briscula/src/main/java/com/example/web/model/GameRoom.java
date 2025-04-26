@@ -23,18 +23,23 @@ public class GameRoom {
   private final List<ConnectedPlayer> players = new LinkedList<>();
   private final Game game;
 
+  private int playerIndex = 0;
+
   public GameRoom(Collection<ConnectedPlayer> playerList) {
     this.roomId = UUID.randomUUID().toString().substring(0, 6);
+
+    // TODO: It's not clean, but I will set setting of index like this for now.
+    playerList.forEach(player -> player.setId(playerIndex++));
     this.players.addAll(playerList);
+
     this.game = new Game(GameOptionNumberOfPlayers.TWO_PLAYERS, GameMode.ALL_HUMANS,
         players.stream().map(ConnectedPlayer::getPlayer).toList());
 
     //startGame();
   }
 
-  public List<Card> getCardsForPlayer() {
-
-    return game.getCardsForPlayer(0);
+  public List<Card> getCardsForPlayer(final int playerId) {
+    return game.getCardsForPlayer(playerId);
   }
 
   private void startGame() {

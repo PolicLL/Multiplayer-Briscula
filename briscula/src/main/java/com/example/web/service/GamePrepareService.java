@@ -6,7 +6,7 @@ import com.example.web.model.GameRoom;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class GamePrepareService {
 
-  private final Set<ConnectedPlayer> setOfPlayers = new HashSet<>();
+  private final Set<ConnectedPlayer> setOfPlayers = new LinkedHashSet<>();
 
   private final GameRoomService gameRoomService;
 

@@ -29,7 +29,7 @@ public class Game {
   }
 
   public List<Card> getCardsForPlayer(int playerId) {
-    return List.of(new Card(CardType.COPPE, CardValue.TWO), new Card(CardType.DENARI, CardValue.KNIGHT));
+    return admin.getCardsForPlayer(playerId);
   }
 
   public boolean isGameOver() {
