@@ -22,8 +22,8 @@ public class CardFormatter {
       case "SIX" -> "6";
       case "SEVEN" -> "7";
       case "JACK" -> "J";
-      case "KNIGHT" -> "k";
-      case "KING" -> "K";
+      case "KNIGHT" -> "K";
+      case "KING" -> "KI";
       case "ACE" -> "A";
       default -> "?";
     };

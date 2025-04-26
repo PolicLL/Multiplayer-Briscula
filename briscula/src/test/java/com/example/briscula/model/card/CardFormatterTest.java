@@ -47,7 +47,7 @@ public class CardFormatterTest {
     return Stream.of(
         Arguments.of(DENARI, SEVEN, COPPE, TWO, BASTONI, THREE, "D7 C2 B3"),
         Arguments.of(SPADE, JACK, COPPE, ACE, DENARI, FIVE, "SJ CA D5"),
-        Arguments.of(BASTONI, FOUR, SPADE, KNIGHT, COPPE, KING, "B4 Sk CK"),
+        Arguments.of(BASTONI, FOUR, SPADE, KNIGHT, COPPE, KING, "B4 SK CKI"),
         Arguments.of(COPPE, THREE, COPPE, FOUR, COPPE, FIVE, "C3 C4 C5"),
         Arguments.of(SPADE, ACE, SPADE, TWO, SPADE, THREE, "SA S2 S3")
     );

@@ -32,8 +32,9 @@ public class GameRoom {
     //startGame();
   }
 
-  public List<Card> getCardsForPlayer(int playerId) {
-    return game.getCardsForPlayer(playerId);
+  public List<Card> getCardsForPlayer() {
+
+    return game.getCardsForPlayer(0);
   }
 
   private void startGame() {

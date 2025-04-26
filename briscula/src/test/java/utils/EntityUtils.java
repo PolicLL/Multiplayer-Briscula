@@ -1,7 +1,7 @@
 package utils;
 
 import com.example.web.dto.UserDto;
-import com.example.web.model.User;
+import com.example.web.utils.JsonUtils;
 import java.util.Random;
 
 public class EntityUtils {

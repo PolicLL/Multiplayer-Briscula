@@ -25,7 +25,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import utils.AuthService;
 import utils.EntityUtils;
-import utils.JsonUtils;
+import com.example.web.utils.JsonUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc

@@ -1,12 +1,5 @@
 package com.example.briscula.model.card;
 
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-
 public record Card(CardType cardType, CardValue cardValue) {
 
   public boolean isMainType(CardType mainCardType) {
