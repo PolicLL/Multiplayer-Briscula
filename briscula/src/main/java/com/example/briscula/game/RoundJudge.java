@@ -10,9 +10,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RoundJudge {
 
-  private final CardType mainCardType;
 
-  public RoundWinner calculateRound(Queue<Move> queueMoves) {
+  public static RoundWinner calculateRound(Queue<Move> queueMoves, CardType mainCardType) {
     Move roundWinnerMove = queueMoves.poll();
     assert roundWinnerMove != null;
     int tempPointsInRound = roundWinnerMove.card().getPoints();
@@ -22,7 +21,7 @@ public class RoundJudge {
       tempPointsInRound += tempMove.card().getPoints();
 
       try {
-        if (isSecondCardStronger(roundWinnerMove.card(), tempMove.card())) {
+        if (isSecondCardStronger(roundWinnerMove.card(), tempMove.card(), mainCardType)) {
           roundWinnerMove = tempMove;
         }
       } catch (DuplicateCardException e) {
@@ -33,7 +32,8 @@ public class RoundJudge {
     return new RoundWinner(roundWinnerMove.player(), tempPointsInRound);
   }
 
-  public boolean isSecondCardStronger(Card firstCard, Card secondCard) throws DuplicateCardException {
+  public static boolean isSecondCardStronger(Card firstCard, Card secondCard, CardType mainCardType)
+      throws DuplicateCardException {
     if (firstCard.equals(secondCard)) throw new DuplicateCardException();
 
     if (!firstCard.isMainType(mainCardType) && secondCard.isMainType(mainCardType)) {
@@ -48,7 +48,7 @@ public class RoundJudge {
   /**
    * This function ignores the fact which card type is the main one while checking for stronger card.
    */
-  private boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
+  private static boolean isSecondCardStrongerThanFirstCard(Card firstCard, Card secondCard) {
     return secondCard.cardValue().isBiggerThan(firstCard.cardValue());
   }
 

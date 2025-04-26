@@ -36,8 +36,6 @@ public class CardTest {
 
   private static final CardType mainCardType = CardType.COPPE;
 
-  private  static RoundJudge roundJudge = new RoundJudge(mainCardType);
-
   @ParameterizedTest
   @MethodSource("testSameNonMainCardType")
   public void testBothCardsSameNonMainTypeCombination(
@@ -46,7 +44,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
   }
 
   private static Stream<Arguments> testSameNonMainCardType() {
@@ -66,7 +64,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
   }
 
   private static Stream<Arguments> testDifferentNonMainCardType() {
@@ -87,7 +85,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
   }
 
   private static Stream<Arguments> testFirstCardMainCardType() {
@@ -108,7 +106,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isTrue();
+    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isTrue();
   }
 
   private static Stream<Arguments> testSecondCardMainCardType() {
@@ -130,7 +128,7 @@ public class CardTest {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(roundJudge.isSecondCardStronger(firstCard, secondCard)).isFalse();
+    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
   }
 
   private static Stream<Arguments> testBothCardsMainCardType() {
@@ -146,7 +144,7 @@ public class CardTest {
   @Test
   public void TestDuplicateCardException() {
     assertThrows(DuplicateCardException.class, () -> {
-      roundJudge.isSecondCardStronger(new Card(COPPE, TWO), new Card(COPPE, TWO));
+      RoundJudge.isSecondCardStronger(new Card(COPPE, TWO), new Card(COPPE, TWO), mainCardType);
     });
   }
 }

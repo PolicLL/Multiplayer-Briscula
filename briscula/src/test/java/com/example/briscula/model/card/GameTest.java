@@ -106,7 +106,7 @@ public class GameTest {
         new Move(playerList.get(2), cardsList.get(2)), new Move(playerList.get(3), cardsList.get(3))
     );
 
-    roundWinner = new RoundJudge(mainCardType).calculateRound(new ArrayDeque<>(movesList.subList(0, 4)));
+    roundWinner = RoundJudge.calculateRound(new ArrayDeque<>(movesList.subList(0, 4)), mainCardType);
   }
 
 }
