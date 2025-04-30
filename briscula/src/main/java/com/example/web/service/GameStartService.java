@@ -6,6 +6,7 @@ import com.example.web.dto.Message;
 import com.example.web.model.GameRoom;
 import com.example.web.utils.JsonUtils;
 import com.example.web.utils.WebSocketMessageReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +36,24 @@ public class GameStartService {
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
-    Message sentCardsMessage = new Message("SENT_CARDS", roomId, String.valueOf(playerId),
-        CardFormatter.formatCards(listCards));
+    Message sentCardsMessage = new Message("SENT_INITIAL_CARDS",
+        roomId, playerId, CardFormatter.formatCards(listCards));
 
     log.info("Sent cards : " + sentCardsMessage);
 
     session.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
 
     log.info("Handling cards {} {}.", roomId, playerId);
+  }
+
+  public void handleGetInitialCards(WebSocketMessage<?> message)
+      throws JsonProcessingException {
+    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
+    gameRoomService.notifyRoomPlayerReceivedInitialCards(
+        roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
+
+    if (gameRoomService.areInitialCardsReceived(roomId)) {
+      log.info("Initial cards for rom {} are received.", roomId);
+    }
   }
 }

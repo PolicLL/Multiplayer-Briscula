@@ -30,7 +30,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     switch (WebSocketMessageReader.getValueFromJsonMessage(message, MESSAGE_TYPE)) {
       case "JOIN_ROOM" -> gamePrepareService.handle(session, message);
-      case "GET_CARDS" -> gameStartService.handleGetCards(session, message);
+      case "GET_INITIAL_CARDS" -> gameStartService.handleGetCards(session, message);
+      // TODO: Continue from here, when on front cards are received, track that, when all players have cards, choose the starting player
+      case "INITIAL_CARDS_RECEIVED" -> gameStartService.handleGetInitialCards(message);
       case "READY_FOR_GAME" -> gameStartService.handle(session, message);
     }
   }

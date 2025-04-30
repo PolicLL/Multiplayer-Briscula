@@ -43,7 +43,7 @@ function GameRoom() {
 
       socket.send(
         JSON.stringify({
-          type: "GET_CARDS",
+          type: "GET_INITIAL_CARDS",
           roomId: roomId,
           playerId: playerId,
         })
@@ -57,11 +57,24 @@ function GameRoom() {
 
       console.log("Message received : " + message);
 
-      if (parsedMessage.playerId === playerId) {
+      if (
+        parsedMessage.type === "SENT_INITIAL_CARDS" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
         setMessages((prev) => [...prev, parsedMessage]);
         console.log("Show message." + parsedMessage.content);
 
         setCards(parseCards(parsedMessage.content));
+
+        socket.send(
+          JSON.stringify({
+            type: "INITIAL_CARDS_RECEIVED",
+            roomId: roomId,
+            playerId: playerId,
+          })
+        );
+
+        console.log("Initial cards received.");
       }
     };
 
