@@ -30,29 +30,26 @@ public class GameRoom {
 
     // TODO: It's not clean, but I will set setting of index like this for now.
     playerList.forEach(player -> player.setId(playerIndex++));
+
     this.players.addAll(playerList);
 
     this.game = new Game(GameOptionNumberOfPlayers.TWO_PLAYERS, GameMode.ALL_HUMANS,
         players.stream().map(ConnectedPlayer::getPlayer).toList());
 
-    //startGame();
   }
 
   public List<Card> getCardsForPlayer(final int playerId) {
     return game.getCardsForPlayer(playerId);
   }
 
-  private void startGame() {
-    sendMessage(players.get(0), game.getCardsForPlayer(0).toString());
+  public void startGame() {
+    while (!game.isGameOver()) {
+      game.playRound();
+    }
   }
 
-  public void sendMessage(int playerIndex, String message) {
-    try {
-      players.get(playerIndex).getWebSocketSession().sendMessage(new TextMessage("SERVER " + message));
-      log.info("Sending message {} to web socket {}", message, players.get(playerIndex).getWebSocketSession());
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to send message", e);
-    }
+  public void notifyPlayerToChooseCard() {
+
   }
 
   public void sendMessage(ConnectedPlayer player, String message) {

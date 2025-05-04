@@ -32,6 +32,10 @@ public class GameRoomService {
         ConnectedPlayer::isInitialCardsReceived);
   }
 
+  public void startGame(String roomId) {
+    this.activeRooms.get(roomId).startGame();
+  }
+
   public GameRoom getRoom(String roomId) {
     return activeRooms.get(roomId);
   }

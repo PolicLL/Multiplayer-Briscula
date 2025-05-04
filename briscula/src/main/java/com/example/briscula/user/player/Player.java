@@ -19,6 +19,8 @@ public abstract class Player {
     this.nickname = nickname;
   }
 
+  // TODO: I would like to update this method in my implementation to actually interact with frontend.
+  // TODO: Also I would like to when creating the players, use the same ID that is used in ConnectedPlayer task.
   public abstract Card playRound();
 
   public boolean isPlayerDone() {
