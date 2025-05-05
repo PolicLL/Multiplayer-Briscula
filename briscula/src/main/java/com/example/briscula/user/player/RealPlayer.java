@@ -1,17 +1,29 @@
 package com.example.briscula.user.player;
 
 import com.example.briscula.model.card.Card;
+import com.example.briscula.utilities.constants.CardFormatter;
+import com.example.web.dto.Message;
+import com.example.web.utils.JsonUtils;
+import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 @Getter
+@Slf4j
 public class RealPlayer extends Player {
 
-  private final Scanner scanner = new Scanner(System.in);
+  private final WebSocketSession webSocketSession;
+  private final RoomPlayerId roomPlayerId;
 
-  public RealPlayer(List<Card> playerCards, String nickname) {
+  public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
+      String nickname, WebSocketSession webSocketSession) {
     super(playerCards, nickname);
+    this.webSocketSession = webSocketSession;
+    this.roomPlayerId = new RoomPlayerId();
   }
 
   @Override
@@ -22,19 +34,24 @@ public class RealPlayer extends Player {
   }
 
   private void printInstructions() {
-    System.out.println("Your cards : ");
+    try {
+
+      Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "Choose your card.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
     for (int i = 0; i < playerCards.size(); ++i) {
-      System.out.println(i + " " + playerCards.get(i));
+      log.info(i + " " + playerCards.get(i));
     }
   }
 
   private int enterNumber() {
-    int numberInput;
-    do {
-      System.out.print("Choose card: ");
-      numberInput = scanner.nextInt();
-    } while (isNumberOfCardOutOfRange(numberInput));
-    return numberInput;
+    // TODO: Receive number from frontend.
+    return 0;
   }
 
   private boolean isNumberOfCardOutOfRange(int numberInput) {

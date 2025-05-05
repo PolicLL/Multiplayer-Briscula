@@ -1,12 +1,11 @@
 package com.example.briscula.game;
 
 import com.example.briscula.model.card.Card;
-import com.example.briscula.model.card.CardType;
-import com.example.briscula.model.card.CardValue;
 import com.example.briscula.user.admin.Admin;
 import com.example.briscula.user.player.Player;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import com.example.web.model.ConnectedPlayer;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
@@ -17,7 +16,7 @@ public class Game {
   private final GameOptionNumberOfPlayers gameOptions;
   private final Admin admin;
 
-  public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<Player> players) {
+  public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players) {
     this.gameOptions = gameOptions;
     this.admin = new Admin();
 
@@ -54,7 +53,7 @@ public class Game {
 
   private void logPlayersValues() {
     admin.getPlayers().forEach(player ->
-        log.info("[" + player.getNickname() + "] : " + player.getPoints()));
+        log.info("[" + player.getPlayer().getNickname() + "] : " + player.getPlayer().getPoints()));
     log.info("\n");
   }
 }

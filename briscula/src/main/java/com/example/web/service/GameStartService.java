@@ -54,6 +54,7 @@ public class GameStartService {
 
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
+      gameRoomService.getRoom(roomId).startGame();
     }
   }
 }

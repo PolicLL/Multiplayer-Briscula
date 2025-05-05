@@ -8,6 +8,7 @@ import lombok.ToString;
 
 @ToString
 public abstract class Player {
+
   protected List<Card> playerCards;
   @Getter
   protected String nickname;
@@ -39,4 +40,7 @@ public abstract class Player {
     points = 0;
   }
 
+  public void setPlayerCards(List<Card> playerCards) {
+    this.playerCards = playerCards;
+  }
 }

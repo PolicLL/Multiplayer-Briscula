@@ -1,6 +1,7 @@
 package com.example.web.service;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.utils.WebSocketMessageReader;
@@ -30,8 +31,8 @@ public class GamePrepareService {
 
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session,
-        new RealPlayer(null, WebSocketMessageReader.getValueFromJsonMessage(message, "playerName")));
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(null,
+        null, WebSocketMessageReader.getValueFromJsonMessage(message, "playerName"), session));
 
     if (isThereUserFromThisWebSession(session)) {
       log.info("User {} from this session already joined.", connectedPlayer);
