@@ -7,6 +7,9 @@ import com.example.web.utils.JsonUtils;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
@@ -18,6 +21,10 @@ public class RealPlayer extends Player {
 
   private final WebSocketSession webSocketSession;
   private final RoomPlayerId roomPlayerId;
+
+  private CompletableFuture<Integer> selectedCardFuture;
+
+
 
   public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
@@ -39,9 +46,12 @@ public class RealPlayer extends Player {
       Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Choose your card.");
 
+      log.info("Sent message to player to choose card.");
+    // TODO: Here I have to include complitable future,
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
 
     } catch (IOException e) {
+      log.info(String.valueOf(e));
       throw new RuntimeException(e);
     }
     for (int i = 0; i < playerCards.size(); ++i) {
@@ -50,9 +60,17 @@ public class RealPlayer extends Player {
   }
 
   private int enterNumber() {
-    // TODO: Receive number from frontend.
-    return 0;
+    selectedCardFuture = new CompletableFuture<>();
+    try {
+      return selectedCardFuture.get(30, TimeUnit.SECONDS);
+    } catch (TimeoutException e) {
+      log.warn("Player did not respond in time. Proceeding with default choice.");
+      return 0; // or random card, or throw exception if needed
+    } catch (Exception e) {
+      throw new RuntimeException("Failed to receive input", e);
+    }
   }
+
 
   private boolean isNumberOfCardOutOfRange(int numberInput) {
     return numberInput < 0 || numberInput >= playerCards.size();

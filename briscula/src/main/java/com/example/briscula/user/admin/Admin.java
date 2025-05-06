@@ -26,6 +26,7 @@ public class Admin {
   private CardType mainCardType;
   private final Deck deck;
 
+  @Getter
   private List<ConnectedPlayer> players;
   private List<List<Card>> listOfCardsForAllPlayers;
 

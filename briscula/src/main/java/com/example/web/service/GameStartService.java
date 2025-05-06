@@ -1,8 +1,10 @@
 package com.example.web.service;
 
 import com.example.briscula.model.card.Card;
+import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
+import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.utils.JsonUtils;
 import com.example.web.utils.WebSocketMessageReader;
@@ -55,6 +57,19 @@ public class GameStartService {
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
       gameRoomService.getRoom(roomId).startGame();
+    }
+  }
+
+  public void handleChosenCard(WebSocketMessage<?> message) throws JsonProcessingException {
+    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
+    String playerId =  WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
+
+    int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "cardNumber"));
+
+    GameRoom gameRoom = gameRoomService.getRoom(roomId);
+    ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
+    if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
+      realPlayer.getSelectedCardFuture().complete(card);
     }
   }
 }

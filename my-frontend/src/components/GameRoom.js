@@ -76,6 +76,20 @@ function GameRoom() {
 
         console.log("Initial cards received.");
       }
+
+      if (
+        parsedMessage.type === "CHOOSE_CARD" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        console.log("POINT 1");
+
+        setMessages((prev) => [...prev, parsedMessage]);
+        console.log("Show message." + parsedMessage.content);
+
+        setCards(parseCards(parsedMessage.content));
+
+        console.log("Choose card.");
+      }
     };
 
     socket.onerror = (error) => {

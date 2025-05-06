@@ -51,6 +51,12 @@ public class Game {
     logPlayersValues();
   }
 
+  public ConnectedPlayer getPlayer(int playerId) {
+    return this.admin.getPlayers()
+        .stream().filter(player -> player.getId() == playerId)
+        .findFirst().get();
+  }
+
   private void logPlayersValues() {
     admin.getPlayers().forEach(player ->
         log.info("[" + player.getPlayer().getNickname() + "] : " + player.getPlayer().getPoints()));
