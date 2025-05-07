@@ -36,21 +36,30 @@ function GameRoom() {
   const handleCardClick = (card) => {
     console.log("Card clicked " + card.code + ".");
 
+    const cardIndex = cards.indexOf(card);
+
     setCards((prevCards) => prevCards.filter((tempCard) => tempCard !== card));
-
-    console.log("Cards : " + cards);
-
     setCardsClickable(false);
     setMessage("");
 
-    socketRef.current.send(
-      JSON.stringify({
-        type: "CARD_CHOSEN",
-        roomId: roomId,
-        playerId: playerId,
-        card: card,
-      })
-    );
+    const socket = socketRef.current;
+
+    console.log("card: " + typeof card.code);
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "CARD_CHOSEN",
+          roomId: roomId,
+          playerId: playerId,
+          card: cardIndex,
+        })
+      );
+      console.log("Chosen card sent.");
+    } else {
+      console.log("Socket not connected.");
+      setMessage("Socket not connected.");
+    }
   };
 
   useEffect(() => {
