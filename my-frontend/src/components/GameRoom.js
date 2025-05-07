@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 function GameRoom() {
   const { roomId, playerId } = useParams();
-  const [messages, setMessages] = useState([]);
+  const [message, setMessage] = useState("");
   const [cards, setCards] = useState([]);
+  const [cardsClickable, setCardsClickable] = useState(false); // control globally
+
+  const socketRef = useRef(null);
 
   const parseWebSocketMessage = (message) => {
     try {
@@ -32,10 +35,28 @@ function GameRoom() {
 
   const handleCardClick = (card) => {
     console.log("Card clicked " + card.code + ".");
+
+    setCards((prevCards) => prevCards.filter((tempCard) => tempCard !== card));
+
+    console.log("Cards : " + cards);
+
+    setCardsClickable(false);
+    setMessage("");
+
+    socketRef.current.send(
+      JSON.stringify({
+        type: "CARD_CHOSEN",
+        roomId: roomId,
+        playerId: playerId,
+        card: card,
+      })
+    );
   };
 
   useEffect(() => {
     const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
+
+    socketRef.current = socket;
 
     socket.onopen = () => {
       console.log(`Connected to game room ${roomId}.`);
@@ -53,6 +74,8 @@ function GameRoom() {
     socket.onmessage = (event) => {
       const message = event.data;
 
+      console.log("Before parsing: " + message);
+
       const parsedMessage = parseWebSocketMessage(message);
 
       console.log("Message received : " + message);
@@ -61,7 +84,7 @@ function GameRoom() {
         parsedMessage.type === "SENT_INITIAL_CARDS" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        setMessages((prev) => [...prev, parsedMessage]);
+        //setMessage((prev) => [...prev, parsedMessage]);
         console.log("Show message." + parsedMessage.content);
 
         setCards(parseCards(parsedMessage.content));
@@ -81,14 +104,12 @@ function GameRoom() {
         parsedMessage.type === "CHOOSE_CARD" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        console.log("POINT 1");
+        setMessage(parsedMessage.content);
 
-        setMessages((prev) => [...prev, parsedMessage]);
+        console.log("Cards are clickable now.");
+
+        setCardsClickable(true);
         console.log("Show message." + parsedMessage.content);
-
-        setCards(parseCards(parsedMessage.content));
-
-        console.log("Choose card.");
       }
     };
 
@@ -108,6 +129,7 @@ function GameRoom() {
   return (
     <div>
       <h2>Game Room id : {roomId}</h2>
+      <h2>Player id : {playerId}</h2>
 
       <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
         {cards.map((card) => (
@@ -116,13 +138,13 @@ function GameRoom() {
             src={card.imageUrl}
             alt={card.code}
             style={{ width: "100px", cursor: "pointer" }}
-            onClick={() => handleCardClick(card)}
+            onClick={() => cardsClickable && handleCardClick(card)}
           />
         ))}
       </div>
 
       <div>
-        <h3>Messages: </h3>
+        <h3>Messages: {message}</h3>
       </div>
     </div>
   );

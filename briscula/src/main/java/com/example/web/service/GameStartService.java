@@ -24,11 +24,8 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class GameStartService {
 
-  private final GameRoomService gameRoomService;
 
-  public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
-    log.info("Game start.");
-  }
+  private final GameRoomService gameRoomService;
 
   public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
       throws IOException {
@@ -37,6 +34,13 @@ public class GameStartService {
 
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
+
+    List<ConnectedPlayer> players = gameRoom.getPlayers();
+    // TODO: Update bad practice of setting new web socket session with different uri here.
+     ConnectedPlayer connectedPlayer = players.stream().filter(player -> player.getId() == playerId).findFirst().get();
+     if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
+       realPlayer.setWebSocketSession(session);
+     }
 
     Message sentCardsMessage = new Message("SENT_INITIAL_CARDS",
         roomId, playerId, CardFormatter.formatCards(listCards));

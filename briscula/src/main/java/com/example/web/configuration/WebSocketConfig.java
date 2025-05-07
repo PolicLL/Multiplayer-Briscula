@@ -1,8 +1,6 @@
 package com.example.web.configuration;
 
 import com.example.web.handler.WebSocketHandler;
-import com.example.web.handler.GameStartWebSocketHandler;
-import com.example.web.service.GameRoomService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -17,9 +15,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
   @Autowired
   private WebSocketHandler webSocketHandler;
-
-  @Autowired
-  private GameRoomService gameRoomService;
 
   @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {

@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -19,7 +20,8 @@ import org.springframework.web.socket.WebSocketSession;
 @Slf4j
 public class RealPlayer extends Player {
 
-  private final WebSocketSession webSocketSession;
+  @Setter
+  private WebSocketSession webSocketSession;
   private final RoomPlayerId roomPlayerId;
 
   private CompletableFuture<Integer> selectedCardFuture;
@@ -46,8 +48,8 @@ public class RealPlayer extends Player {
       Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Choose your card.");
 
-      log.info("Sent message to player to choose card.");
-    // TODO: Here I have to include complitable future,
+      log.info("Sent message to player to choose card. roomId = {}, playerId = {}", roomPlayerId.getRoomId(), roomPlayerId.getPlayerId());
+
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
 
     } catch (IOException e) {
@@ -62,7 +64,7 @@ public class RealPlayer extends Player {
   private int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
-      return selectedCardFuture.get(30, TimeUnit.SECONDS);
+      return selectedCardFuture.get(60, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
       return 0; // or random card, or throw exception if needed

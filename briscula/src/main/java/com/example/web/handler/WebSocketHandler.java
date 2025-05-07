@@ -34,7 +34,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
       case "GET_INITIAL_CARDS" -> gameStartService.handleGetCards(session, message);
       case "INITIAL_CARDS_RECEIVED" -> gameStartService.handleGetInitialCards(message);
       case "CARD_CHOSEN" -> gameStartService.handleChosenCard(message);
-      case "READY_FOR_GAME" -> gameStartService.handle(session, message);
       default -> throw new WebSocketException();
     }
   }
