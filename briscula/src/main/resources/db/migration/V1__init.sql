@@ -27,3 +27,20 @@ VALUES (
     '$2a$10$dcCL0ARQfBY.kqI1uaiepuFIoeHIQ9Pblj9LmWyxIg1ydj5hRCEPG',
     'ROLE_ADMIN', 25, 'USA', 'admin@example.com', 0, 1
 );
+
+INSERT INTO users (id, username, password, role, age, country, email, points, level) VALUES
+('123e4567-e89b-12d3-a456-42661417400g', 'user1', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 25, 'USA', 'user1@example.com', 100, 1),
+('123e4567-e89b-12d3-a456-426614174002', 'user2', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 30, 'Canada', 'user2@example.com', 150, 2),
+('123e4567-e89b-12d3-a456-426614174003', 'user3', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 22, 'UK', 'user3@example.com', 200, 3),
+('123e4567-e89b-12d3-a456-426614174004', 'user4', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 28, 'Germany', 'user4@example.com', 250, 4),
+('123e4567-e89b-12d3-a456-426614174005', 'user5', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 26, 'France', 'user5@example.com', 300, 5),
+('123e4567-e89b-12d3-a456-426614174006', 'user6', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 23, 'India', 'user6@example.com', 120, 1),
+('123e4567-e89b-12d3-a456-426614174007', 'user7', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 27, 'Australia', 'user7@example.com', 180, 2),
+('123e4567-e89b-12d3-a456-426614174008', 'user8', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 24, 'Spain', 'user8@example.com', 220, 3),
+('123e4567-e89b-12d3-a456-426614174009', 'user9', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 31, 'Italy', 'user9@example.com', 270, 4),
+('123e4567-e89b-12d3-a456-42661417400a', 'user10', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 29, 'Brazil', 'user10@example.com', 310, 5),
+('123e4567-e89b-12d3-a456-42661417400b', 'user11', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 26, 'Mexico', 'user11@example.com', 90, 1),
+('123e4567-e89b-12d3-a456-42661417400c', 'user12', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 24, 'Japan', 'user12@example.com', 160, 2),
+('123e4567-e89b-12d3-a456-42661417400d', 'user13', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 27, 'South Korea', 'user13@example.com', 230, 3),
+('123e4567-e89b-12d3-a456-42661417400e', 'user14', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 32, 'Russia', 'user14@example.com', 260, 4),
+('123e4567-e89b-12d3-a456-42661417400f', 'user15', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 21, 'Netherlands', 'user15@example.com', 320, 5);

@@ -18,3 +18,10 @@ spring:
 #    org.springframework.security: DEBUG
 #    org.springframework.security.web: DEBUG
 #    org.springframework.web.socket: DEBUG
+
+logging:
+  level:
+    org.springframework.web.socket: DEBUG
+    org.springframework.web.socket.messaging: DEBUG
+    org.springframework.messaging: DEBUG
+    org.springframework.web.socket.server.support: DEBUG

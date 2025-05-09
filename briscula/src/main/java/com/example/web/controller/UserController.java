@@ -2,6 +2,7 @@ package com.example.web.controller;
 
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserLoginDto;
+import com.example.web.dto.UserResponse;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -9,15 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Slf4j
@@ -29,18 +22,26 @@ public class UserController {
 
   @PostMapping("/create")
   public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
-    return ResponseEntity.ok(userService.createUser(userDto));
+    log.info("Creating user with username: {}", userDto.username());
+    UserDto createdUser = userService.createUser(userDto);
+    log.info("User created with ID: {}", createdUser.id());
+    return ResponseEntity.ok(createdUser);
   }
 
   @PostMapping("/login")
   public String login(@RequestBody @Valid UserLoginDto userLoginDto) {
-    return userService.verify(userLoginDto);
+    log.info("Login attempt for username: {}", userLoginDto.username());
+    String token = userService.verify(userLoginDto);
+    log.info("Login successful for username: {}", userLoginDto.username());
+    return token;
   }
 
   @GetMapping
-  @PreAuthorize("hasRole('ADMIN')")
-  public ResponseEntity<List<UserDto>> getAllUsers() {
-    return ResponseEntity.ok(userService.getAllUsers());
+  public ResponseEntity<List<UserResponse>> getAllUsers() {
+    log.info("Fetching all users");
+    List<UserResponse> users = userService.getAllUsers();
+    log.info("Total users fetched: {}", users.size());
+    return ResponseEntity.ok(users);
   }
 
   @GetMapping("/by")
@@ -49,21 +50,32 @@ public class UserController {
       @RequestParam(required = false) String id,
       @RequestParam(required = false) String username) {
 
-    if (id != null) return ResponseEntity.ok(userService.getUserById(id));
-    else if (username != null) return ResponseEntity.ok(userService.getUserByUsername(username));
-    else return ResponseEntity.badRequest().build();
+    if (id != null) {
+      log.info("Fetching user by ID: {}", id);
+      return ResponseEntity.ok(userService.getUserById(id));
+    } else if (username != null) {
+      log.info("Fetching user by username: {}", username);
+      return ResponseEntity.ok(userService.getUserByUsername(username));
+    } else {
+      log.warn("Bad request: both id and username are null");
+      return ResponseEntity.badRequest().build();
+    }
   }
 
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('USER')")
-  public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody @Valid  UserDto userDto) {
-    return ResponseEntity.ok(userService.updateUser(id, userDto));
+  public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody @Valid UserDto userDto) {
+    log.info("Updating user with ID: {}", id);
+    UserDto updatedUser = userService.updateUser(id, userDto);
+    return ResponseEntity.ok(updatedUser);
   }
 
   @DeleteMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')")
   public ResponseEntity<String> deleteUser(@PathVariable String id) {
+    log.info("Deleting user with ID: {}", id);
     userService.deleteUser(id);
+    log.info("User with ID: {} deleted successfully", id);
     return ResponseEntity.ok("User deleted successfully!");
   }
 }
