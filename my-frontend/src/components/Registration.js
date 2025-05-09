@@ -16,6 +16,7 @@ function UserForm() {
     level: 1,
   });
 
+  const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
@@ -65,10 +66,24 @@ function UserForm() {
     e.preventDefault();
     if (!validateForm()) return;
 
+    const formDataToSend = new FormData();
+    formDataToSend.append("file", file);
+    formDataToSend.append("name", formData.username); // or any other field for the name
+
+    // Append other form data
+    Object.keys(formData).forEach((key) => {
+      formDataToSend.append(key, formData[key]);
+    });
+
     try {
       const response = await axios.post(
         "http://localhost:8080/api/users/create",
-        formData
+        formDataToSend,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
 
       console.log("response: " + response);
@@ -88,6 +103,7 @@ function UserForm() {
         level: 1,
       });
       setErrors({});
+      setFile(null); // Reset file input
     } catch (error) {
       console.log("Error : " + error);
       setMessage(error.response?.data || "Something went wrong.");
@@ -162,6 +178,9 @@ function UserForm() {
           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
         />
         <p style={{ color: "red" }}>{errors.email}</p>
+
+        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
+        <p style={{ color: "red" }}>{errors.file}</p>
 
         <button type="submit">Create user</button>
       </form>

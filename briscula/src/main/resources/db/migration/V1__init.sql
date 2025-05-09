@@ -1,3 +1,9 @@
+CREATE TABLE photos (
+    id VARCHAR PRIMARY KEY,
+    photo BYTEA NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
 CREATE TABLE users (
     id VARCHAR PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
@@ -8,7 +14,9 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     points INT DEFAULT 0,
     level INT DEFAULT 1,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    photo_id VARCHAR,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE SET NULL
 );
 
 INSERT INTO users (id, username, password, role, age, country, email, points, level)

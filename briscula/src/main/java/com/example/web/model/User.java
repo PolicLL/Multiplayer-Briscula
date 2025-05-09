@@ -1,11 +1,12 @@
 package com.example.web.model;
 
-
 import com.example.web.security.model.Role;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,4 +40,9 @@ public class User {
   private int points = 0;
 
   private int level = 1;
+
+  @ManyToOne
+  @JoinColumn(name = "photo_id")
+  private Photo photo;
+
 }
