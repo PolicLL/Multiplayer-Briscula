@@ -1,12 +1,10 @@
 package com.example.briscula.user.player;
 
 import com.example.briscula.model.card.Card;
-import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
 import com.example.web.utils.JsonUtils;
 import java.io.IOException;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -64,7 +62,7 @@ public class RealPlayer extends Player {
   private int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
-      return selectedCardFuture.get(60, TimeUnit.SECONDS);
+      return selectedCardFuture.get(30, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
       return 0; // or random card, or throw exception if needed

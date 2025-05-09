@@ -39,22 +39,62 @@ function GameRoom() {
     const cardIndex = cards.indexOf(card);
 
     setCards((prevCards) => prevCards.filter((tempCard) => tempCard !== card));
-    setCardsClickable(false);
+    //setCardsClickable(false);
     setMessage("");
 
     const socket = socketRef.current;
 
-    console.log("card: " + typeof card.code);
+    console.log("socket: " + socket);
+    console.log("URI: " + socket.url);
 
     if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({
+      console.log("Socket seems ready");
+      console.log(`STATE : ${roomId} ${playerId} ${cardIndex}`);
+
+      setTimeout(() => {
+        const message = JSON.stringify({
           type: "CARD_CHOSEN",
           roomId: roomId,
           playerId: playerId,
           card: cardIndex,
+        });
+
+        console.log("Message to send:", message); // Log the message
+        socket.send(message);
+
+        console.log("Chosen card sent..");
+      }, 100);
+
+      socket.onerror = (event) => {
+        console.error("WebSocket error:", event);
+      };
+
+      socket.onclose = (event) => {
+        console.log("WebSocket closed:", event.code, event.reason);
+      };
+    }
+  };
+
+  const test = () => {
+    const socket = socketRef.current;
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({
+          type: "GET123",
+          roomId: roomId,
+          playerId: playerId,
         })
       );
+
+      socket.onerror = (event) => {
+        console.error("WebSocket error:", event);
+      };
+
+      socket.onclose = (event) => {
+        console.log("WebSocket closed:", event.code, event.reason);
+      };
+
       console.log("Chosen card sent.");
     } else {
       console.log("Socket not connected.");
@@ -64,7 +104,6 @@ function GameRoom() {
 
   useEffect(() => {
     const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
-
     socketRef.current = socket;
 
     socket.onopen = () => {
@@ -153,6 +192,7 @@ function GameRoom() {
       </div>
 
       <div>
+        <button onClick={() => test()}>TEST</button>
         <h3>Messages: {message}</h3>
       </div>
     </div>

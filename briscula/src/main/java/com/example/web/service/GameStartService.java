@@ -1,5 +1,8 @@
 package com.example.web.service;
 
+import static com.example.web.utils.Constants.PLAYER_ID;
+import static com.example.web.utils.Constants.ROOM_ID;
+
 import com.example.briscula.model.card.Card;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.CardFormatter;
@@ -13,7 +16,6 @@ import java.io.IOException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -29,8 +31,8 @@ public class GameStartService {
 
   public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
       throws IOException {
-    String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
-    int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
+    String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
+    int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, PLAYER_ID));
 
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
@@ -54,7 +56,7 @@ public class GameStartService {
 
   public void handleGetInitialCards(WebSocketMessage<?> message)
       throws JsonProcessingException {
-    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
+    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
     gameRoomService.notifyRoomPlayerReceivedInitialCards(
         roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
 
@@ -65,12 +67,14 @@ public class GameStartService {
   }
 
   public void handleChosenCard(WebSocketMessage<?> message) throws JsonProcessingException {
-    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, "roomId");
+    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
     String playerId =  WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
 
     log.info("Choosen card.");
     int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "card"));
     log.info("Chosen card: " + card);
+
+    // TODO: Something does not work as expected.
 
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
