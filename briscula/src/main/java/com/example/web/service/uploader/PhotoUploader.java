@@ -30,9 +30,14 @@ public class PhotoUploader implements CommandLineRunner {
   public void insertExistingPhotos() throws IOException {
     Path photoFolderPath = Paths.get("photos");
 
+    if (!Files.exists(photoFolderPath) || !Files.isDirectory(photoFolderPath)) {
+      log.info("No photo to insert to database.\nFolder 'photos' was not found in the root of the project.");
+      return;
+    }
+
     Files.list(photoFolderPath)
         .forEach(path -> {
-          log.info("Found file {}. ", path.getFileName());
+          log.info("Found image {}. ", path.getFileName());
           try {
             byte[] photoBytes = Files.readAllBytes(path);
             photoRepository.save(Photo.builder()
