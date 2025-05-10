@@ -25,6 +25,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserService {
 
+  private final PhotoService photoService;
+
   private final UserRepository userRepository;
   private final UserMapper userMapper;
 
@@ -38,6 +40,10 @@ public class UserService {
 
     if (userRepository.existsByEmail(userDto.email())) {
       throw new UserAlreadyExistsException("Email is already taken!");
+    }
+
+    if (photoService.existsById(userDto.photoId())) {
+      throw new RuntimeException("Photo id does not exists.");
     }
 
     User userToBeSaved = userMapper.toEntity(userDto);

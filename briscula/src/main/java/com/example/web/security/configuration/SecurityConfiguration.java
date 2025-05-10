@@ -29,13 +29,15 @@ public class SecurityConfiguration {
   @Autowired
   private JwtFilter jwtFilter;
 
+  // TODO - Some problem with allowing paths,""/api/photo/**"" does not work.
   @Bean
   public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(request -> request
             .requestMatchers("/api/users/create", "/api/users/login", "/api/users", "/api/game/**", "/actuator/**").permitAll()
+            .requestMatchers("/api/photo/**").permitAll()
             .requestMatchers("/game/**").permitAll()
-            .anyRequest().authenticated())
+            .anyRequest().permitAll())
         .httpBasic(Customizer.withDefaults())
         .cors(Customizer.withDefaults())
         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)

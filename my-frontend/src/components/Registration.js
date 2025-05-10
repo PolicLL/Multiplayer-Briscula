@@ -14,6 +14,7 @@ function UserForm() {
     confirmPassword: "",
     points: 0,
     level: 1,
+    photo: null,
   });
 
   const [file, setFile] = useState(null);
@@ -62,6 +63,24 @@ function UserForm() {
     return Object.keys(tempErrors).length === 0;
   };
 
+  const uploadPhoto = async (photo) => {
+    const formData = new FormData();
+    formData.append("file", photo); // 'file' should match your backend param name
+
+    // Let the browser set Content-Type automatically
+    const response = await fetch("/api/photo", {
+      method: "POST",
+      body: formData, // The FormData will automatically include 'multipart/form-data'
+    });
+
+    if (!response.ok) {
+      throw new Error("Upload failed");
+    }
+
+    const id = await response.text(); // Assuming the backend sends back an ID as plain text
+    return id;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -69,6 +88,9 @@ function UserForm() {
     const formDataToSend = new FormData();
     formDataToSend.append("file", file);
     formDataToSend.append("name", formData.username); // or any other field for the name
+
+    const photoId = uploadPhoto(file);
+    formDataToSend.append("photo", photoId);
 
     // Append other form data
     Object.keys(formData).forEach((key) => {
@@ -179,8 +201,14 @@ function UserForm() {
         />
         <p style={{ color: "red" }}>{errors.email}</p>
 
-        <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-        <p style={{ color: "red" }}>{errors.file}</p>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) =>
+            setFormData({ ...formData, photo: e.target.files[0] })
+          }
+        />
+        <p style={{ color: "red" }}>{errors.photo}</p>
 
         <button type="submit">Create user</button>
       </form>

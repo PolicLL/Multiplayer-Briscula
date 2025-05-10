@@ -17,9 +17,13 @@ public class PhotoService {
 
   private final PhotoMapper photoMapper;
 
-  public Photo uploadPhoto(UploadPhotoDto uploadPhotoDto)  {
+  public String uploadPhoto(UploadPhotoDto uploadPhotoDto)  {
     Photo photoEntity = photoMapper.toEntity(uploadPhotoDto);
     photoRepository.save(photoEntity);
-    return photoEntity;
+    return photoEntity.getId();
+  }
+
+  public boolean existsById(String photoId) {
+    return photoRepository.existsById(photoId);
   }
 }

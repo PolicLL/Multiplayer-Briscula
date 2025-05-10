@@ -3,14 +3,17 @@ package com.example.web.controller;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserLoginDto;
 import com.example.web.dto.UserResponse;
+import com.example.web.dto.photo.UploadPhotoDto;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @Slf4j

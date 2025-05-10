@@ -24,5 +24,7 @@ public record UserDto(
     String country,
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
-    String email
+    String email,
+    @NotBlank(message = "Photo id is required")
+    String photoId
 ) {}
