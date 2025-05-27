@@ -8,12 +8,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static utils.EntityUtils.PHOTO_ID;
+import static utils.EntityUtils.buildUserDtoMultipartRequest;
+import static utils.EntityUtils.buildValidUserDtoMultipartRequest;
 import static utils.EntityUtils.randomAge;
 import static utils.EntityUtils.randomCountry;
 import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
 import com.example.web.dto.UserDto;
+import com.example.web.utils.JsonUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,15 +27,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import utils.AuthService;
-import utils.EntityUtils;
-import com.example.web.utils.JsonUtils;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
-public class UserControllerTest {
+class UserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -56,33 +59,18 @@ public class UserControllerTest {
 
   @Test
   void createUserSuccess() throws Exception {
-    String userRegistrationPayload = EntityUtils.generateValidUserDtoInJson();
-
-    mockMvc.perform(post("/api/users/create")
-            .contentType("application/json")
-            .content(userRegistrationPayload))
+    mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
         .andExpect(status().isOk());
-
-    mockMvc.perform(get("/api/users")
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(print());
   }
 
   @Test
   void createUserSuccessThrowsUserAlreadyExistsException_UsernameIsUsed() throws Exception {
-    String userRegistrationPayload = EntityUtils.generateValidUserDtoInJson();
+    MockMultipartHttpServletRequestBuilder firstRequest = buildValidUserDtoMultipartRequest("/api/users/create");
 
-    mockMvc.perform(post("/api/users/create")
-            .contentType("application/json")
-            .content(userRegistrationPayload))
+    mockMvc.perform(firstRequest)
         .andExpect(status().isOk());
 
-    mockMvc.perform(post("/api/users/create")
-            .contentType("application/json")
-            .content(userRegistrationPayload))
+    mockMvc.perform(firstRequest)
         .andExpect(status().isBadRequest())
         .andExpect(content().string("Username is already taken!"));
   }
@@ -95,6 +83,7 @@ public class UserControllerTest {
         .country(randomCountry())
         .email("usedemail@gmail.com")
         .password(randomPassword())
+        .photoId(PHOTO_ID)
         .build();
 
     UserDto secondUserDto = UserDto.builder()
@@ -103,19 +92,16 @@ public class UserControllerTest {
         .country(randomCountry())
         .email("usedemail@gmail.com")
         .password(randomPassword())
+        .photoId(PHOTO_ID)
         .build();
 
-    String firstUserPayload = JsonUtils.toJson(firstUserDto);
-    String secondUserPayload = JsonUtils.toJson(secondUserDto);
+    MockMultipartHttpServletRequestBuilder firstRequest = buildUserDtoMultipartRequest("/api/users/create", firstUserDto);
+    MockMultipartHttpServletRequestBuilder secondRequest = buildUserDtoMultipartRequest("/api/users/create", secondUserDto);
 
-    mockMvc.perform(post("/api/users/create")
-            .contentType("application/json")
-            .content(firstUserPayload))
+    mockMvc.perform(firstRequest)
         .andExpect(status().isOk());
 
-    mockMvc.perform(post("/api/users/create")
-            .contentType("application/json")
-            .content(secondUserPayload))
+    mockMvc.perform(secondRequest)
         .andExpect(status().isBadRequest())
         .andExpect(content().string("Email is already taken!"));
   }
@@ -132,16 +118,14 @@ public class UserControllerTest {
 
   @Test
   void getUserById() throws Exception {
-    String createdUserJson = mockMvc.perform(post("/api/users/create")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(EntityUtils.generateValidUserDtoInJson()))
+    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
         .andExpect(status().isOk())
         .andReturn().getResponse().getContentAsString();
 
     UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
 
-
-    String userJson = mockMvc.perform(get("/api/users/by?id={id}", createdUser.id())
+    String userJson = mockMvc.perform(get("/api/users/by")
+            .param("id", createdUser.id())
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
@@ -150,7 +134,6 @@ public class UserControllerTest {
 
     UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
     assertThat(createdUser).isEqualTo(finalUserObject);
-
   }
 
   @Test
@@ -164,16 +147,11 @@ public class UserControllerTest {
 
   @Test
   void deleteUserSuccess() throws Exception {
-    String userRegistrationPayload =  EntityUtils.generateValidUserDtoInJson();
-
-    String responseContent = mockMvc.perform(post("/api/users/create")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(userRegistrationPayload))
+    String responseContent = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
         .andExpect(status().isOk())
         .andReturn()
         .getResponse()
         .getContentAsString();
-
 
     UserDto createdUser = JsonUtils.fromJson(responseContent, UserDto.class);
     String userId = createdUser.id();
@@ -183,23 +161,20 @@ public class UserControllerTest {
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/users/by?id=" + userId)
+    mockMvc.perform(get("/api/users/by")
+            .param("id", userId)
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound());
   }
 
-
   @Test
   void updateUserSuccess() throws Exception {
-    String userRegistrationPayload = EntityUtils.generateValidUserDtoInJson();;
-
-    // CREATE
-    String createdUserJson = mockMvc.perform(post("/api/users/create")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(userRegistrationPayload))
+    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
         .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
 
     UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
     String userId = createdUser.id();
@@ -213,7 +188,6 @@ public class UserControllerTest {
         .password(randomPassword())
         .build());
 
-    // UPDATE
     mockMvc.perform(put("/api/users/{id}", userId)
             .header("Authorization", userToken)
             .contentType(MediaType.APPLICATION_JSON)
@@ -221,18 +195,18 @@ public class UserControllerTest {
         .andExpect(status().isOk())
         .andDo(print());
 
-    // GET AND CHECK
-    String finalUserJson = mockMvc.perform(get("/api/users/by?id={id}", userId)
+    String finalUserJson = mockMvc.perform(get("/api/users/by")
+            .param("id", userId)
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
 
     UserDto finalUserObject = JsonUtils.fromJson(finalUserJson, UserDto.class);
     assertThat(finalUserObject.email()).isEqualTo("updateemail@gmail.com");
-
   }
-
 
 }

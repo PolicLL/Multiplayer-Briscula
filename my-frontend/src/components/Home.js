@@ -11,7 +11,6 @@ function Home() {
       try {
         const response = await axios.get("http://localhost:8080/api/users");
         setUserInfo(response.data); // Fix: use correct variable
-        console.log(response);
       } catch (error) {
         console.error(error);
       }
