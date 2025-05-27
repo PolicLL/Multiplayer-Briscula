@@ -19,6 +19,7 @@ public class PhotoService {
 
   public String uploadPhoto(UploadPhotoDto uploadPhotoDto)  {
     Photo photoEntity = photoMapper.toEntity(uploadPhotoDto);
+    photoEntity.setName(uploadPhotoDto.file().getOriginalFilename());
     photoRepository.save(photoEntity);
     return photoEntity.getId();
   }

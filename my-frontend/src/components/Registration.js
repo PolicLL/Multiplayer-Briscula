@@ -14,7 +14,6 @@ function UserForm() {
     confirmPassword: "",
     points: 0,
     level: 1,
-    photo: null,
   });
 
   const [file, setFile] = useState(null);
@@ -25,95 +24,97 @@ function UserForm() {
   const validateForm = () => {
     let tempErrors = {};
 
-    // username
-    if (!formData.username.trim())
+    if (!formData.username.trim()) {
       tempErrors.username = "Username is required.";
-    else if (formData.username.length < 3)
+    } else if (formData.username.length < 3) {
       tempErrors.username = "Username should be at least 3 characters long.";
-    else if (formData.username.length > 100)
+    } else if (formData.username.length > 100) {
       tempErrors.username = "Username must be between 3 and 100 characters.";
+    }
 
-    // age
-    if (!formData.age) tempErrors.age = "Age is required.";
-    else if (formData.age < 3) tempErrors.age = "Age must be at least 3.";
-    else if (formData.age > 100)
+    if (!formData.age) {
+      tempErrors.age = "Age is required.";
+    } else if (formData.age < 3) {
+      tempErrors.age = "Age must be at least 3.";
+    } else if (formData.age > 100) {
       tempErrors.age = "Age must be no more than 100.";
+    }
 
-    // country
-    if (!formData.country) tempErrors.country = "Country is required.";
+    if (!formData.country) {
+      tempErrors.country = "Country is required.";
+    }
 
-    // email
-    if (!formData.email) tempErrors.email = "Email is required.";
-    let isEmailInvalid = !/\S+@\S+\.\S+/.test(formData.email);
-    if (isEmailInvalid) tempErrors.email = "Email is invalid.";
+    if (!formData.email) {
+      tempErrors.email = "Email is required.";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      tempErrors.email = "Email is invalid.";
+    }
 
-    // password
-    if (!formData.password) tempErrors.password = "Password is required.";
-    else if (formData.password.length < 6)
+    if (!formData.password) {
+      tempErrors.password = "Password is required.";
+    } else if (formData.password.length < 6) {
       tempErrors.password = "Password must be at least 6 characters long.";
+    }
 
-    if (!formData.confirmPassword)
-      tempErrors.confirmPassword =
-        "Filed for password confirmation is required.";
-    else if (formData.password !== formData.confirmPassword)
-      tempErrors.confirmPassword = "Passwords are not the same.";
+    if (!formData.confirmPassword) {
+      tempErrors.confirmPassword = "Password confirmation is required.";
+    } else if (formData.password !== formData.confirmPassword) {
+      tempErrors.confirmPassword = "Passwords do not match.";
+    }
+
+    if (!file) {
+      tempErrors.photo = "Photo is required.";
+    }
 
     setErrors(tempErrors);
-
     return Object.keys(tempErrors).length === 0;
   };
 
-  const uploadPhoto = async (photo) => {
-    const formData = new FormData();
-    formData.append("file", photo); // 'file' should match your backend param name
-
-    // Let the browser set Content-Type automatically
-    const response = await fetch("/api/photo", {
-      method: "POST",
-      body: formData, // The FormData will automatically include 'multipart/form-data'
-    });
-
-    if (!response.ok) {
-      throw new Error("Upload failed");
-    }
-
-    const id = await response.text(); // Assuming the backend sends back an ID as plain text
-    return id;
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validateForm()) return;
-
-    const formDataToSend = new FormData();
-    formDataToSend.append("file", file);
-    formDataToSend.append("name", formData.username); // or any other field for the name
-
-    const photoId = uploadPhoto(file);
-    formDataToSend.append("photo", photoId);
-
-    // Append other form data
-    Object.keys(formData).forEach((key) => {
-      formDataToSend.append(key, formData[key]);
-    });
+  const uploadPhoto = async (file) => {
+    const photoFormData = new FormData();
+    photoFormData.append("photo", file);
 
     try {
       const response = await axios.post(
-        "http://localhost:8080/api/users/create",
-        formDataToSend,
+        "http://localhost:8080/api/photo",
+        photoFormData,
         {
           headers: {
             "Content-Type": "multipart/form-data",
           },
         }
       );
+      return response.data;
+    } catch (error) {
+      console.error("Error uploading photo:", error);
+      throw new Error(error.response?.data || "Error uploading photo.");
+    }
+  };
 
-      console.log("response: " + response);
-      console.log("response.data: " + response.data);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+
+    try {
+      const photoId = await uploadPhoto(file);
+
+      const formDataToSend = new FormData();
+
+      Object.keys(formData).forEach((key) => {
+        formDataToSend.append(key, formData[key]);
+      });
+
+      formDataToSend.append("photoId", photoId); // Send photo ID, not the file
+
+      const response = await axios.post(
+        "http://localhost:8080/api/users/create",
+        formDataToSend
+      );
 
       setUser(response.data);
       setMessage("User created successfully.");
 
+      // Reset form
       setFormData({
         username: "",
         age: "",
@@ -124,17 +125,22 @@ function UserForm() {
         points: 0,
         level: 1,
       });
+      setFile(null);
       setErrors({});
-      setFile(null); // Reset file input
     } catch (error) {
-      console.log("Error : " + error);
-      setMessage(error.response?.data || "Something went wrong.");
+      console.error("Error creating user:", error);
+      const errorData = error.response?.data;
+      const readableError =
+        typeof errorData === "string"
+          ? errorData
+          : errorData?.error || "Something went wrong.";
+      setMessage(readableError);
     }
   };
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Create user</h2>
+      <h2>Create User</h2>
 
       {message && <p style={{ color: "green" }}>{message}</p>}
 
@@ -190,7 +196,6 @@ function UserForm() {
             </option>
           ))}
         </select>
-
         <p style={{ color: "red" }}>{errors.country}</p>
 
         <input
@@ -204,13 +209,14 @@ function UserForm() {
         <input
           type="file"
           accept="image/*"
-          onChange={(e) =>
-            setFormData({ ...formData, photo: e.target.files[0] })
-          }
+          onChange={(e) => {
+            const selectedFile = e.target.files[0];
+            setFile(selectedFile);
+          }}
         />
         <p style={{ color: "red" }}>{errors.photo}</p>
 
-        <button type="submit">Create user</button>
+        <button type="submit">Create User</button>
       </form>
     </div>
   );

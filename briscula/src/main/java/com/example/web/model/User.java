@@ -41,8 +41,5 @@ public class User {
 
   private int level = 1;
 
-  @ManyToOne
-  @JoinColumn(name = "photo_id")
-  private Photo photo;
-
+  private String photoId;
 }

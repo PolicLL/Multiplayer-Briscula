@@ -23,8 +23,8 @@ public class UserController {
 
   private final UserService userService;
 
-  @PostMapping("/create")
-  public ResponseEntity<UserDto> createUser(@RequestBody @Valid UserDto userDto) {
+  @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<UserDto> createUser(@Valid @ModelAttribute UserDto userDto) {
     log.info("Creating user with username: {}", userDto.username());
     UserDto createdUser = userService.createUser(userDto);
     log.info("User created with ID: {}", createdUser.id());

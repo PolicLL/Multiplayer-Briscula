@@ -25,6 +25,5 @@ public record UserDto(
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     String email,
-    @NotBlank(message = "Photo id is required")
     String photoId
 ) {}
