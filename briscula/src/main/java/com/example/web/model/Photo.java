@@ -6,6 +6,7 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Builder
+@Data
 @Table(name = "photos")
 @NoArgsConstructor
 @AllArgsConstructor

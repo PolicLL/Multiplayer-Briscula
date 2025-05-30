@@ -4,6 +4,7 @@ import com.example.web.dto.photo.UploadPhotoDto;
 import com.example.web.mapper.PhotoMapper;
 import com.example.web.model.Photo;
 import com.example.web.repository.PhotoRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,5 +27,9 @@ public class PhotoService {
 
   public boolean existsById(String photoId) {
     return photoRepository.existsById(photoId);
+  }
+
+  public Optional<Photo> findPhotoById(String photoId) {
+    return photoRepository.findById(photoId);
   }
 }
