@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import EditUserForm from "./EditUserForm";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -10,18 +11,28 @@ function Dashboard() {
   const [username] = useState(() => localStorage.getItem("username"));
   const [isStartEnabled, setIsStartEnabled] = useState(false);
   const [receivedMessage, setReceivedMessage] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   const socketRef = useRef(null);
+
+  const getPhotoUrl = (photoId) => {
+    console.log(`Getting photo by id ${photoId}`);
+    return `http://localhost:8080/api/photo/${photoId}`;
+  };
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("jwtToken");
 
+        console.log("token : " + token);
+
         if (!token) {
           setMessage("Please log in first.");
           return;
         }
+
+        console.log("before response : ");
 
         const userResponse = await axios.get(
           "http://localhost:8080/api/users/by",
@@ -32,6 +43,8 @@ function Dashboard() {
             },
           }
         );
+
+        console.log(userResponse);
 
         setUserInfo(userResponse.data);
       } catch (error) {
@@ -94,18 +107,46 @@ function Dashboard() {
       <h2>Hello!</h2>
       {message && <p>{message}</p>}
 
-      {userInfo && (
-        <div>
-          <h3>Welcome, {userInfo.username}!</h3>
-          <p>Age: {userInfo.age}</p>
-          <p>Country: {userInfo.country}</p>
-          <p>Email: {userInfo.email}</p>
-        </div>
+      {isEditing ? (
+        <EditUserForm
+          user={userInfo}
+          onCancel={() => setIsEditing(false)}
+          onUpdate={(updatedUser) => {
+            setUserInfo(updatedUser);
+            setIsEditing(false);
+          }}
+        />
+      ) : (
+        <>
+          {userInfo && (
+            <div>
+              <h3>Welcome, {userInfo.username}!</h3>
+              <p>Age: {userInfo.age}</p>
+              <p>Country: {userInfo.country}</p>
+              <p>Email: {userInfo.email}</p>
+            </div>
+          )}
+
+          <img
+            src={getPhotoUrl(userInfo.photoId)}
+            alt="User"
+            style={{
+              width: "150px",
+              height: "150px",
+              borderRadius: "50%",
+              objectFit: "cover",
+            }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = "/images/anonymous.png";
+            }}
+          />
+
+          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+          <button onClick={joinGame}>Join Game</button>
+          <button disabled={!isStartEnabled}>Start Game</button>
+        </>
       )}
-
-      <button onClick={joinGame}>Join Game</button>
-
-      <button disabled={!isStartEnabled}>Start Game</button>
     </div>
   );
 }

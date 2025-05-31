@@ -18,6 +18,10 @@ public class UserPrincipal implements UserDetails {
     return Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString()));
   }
 
+  public String getEmail() {
+    return user.getEmail();
+  }
+
   @Override
   public String getPassword() {
     return user.getPassword();

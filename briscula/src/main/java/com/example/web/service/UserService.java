@@ -2,6 +2,7 @@ package com.example.web.service;
 
 import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
 
+import com.example.web.dto.UpdateUserRequest;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserLoginDto;
 import com.example.web.dto.UserResponse;
@@ -12,6 +13,7 @@ import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
 import com.example.web.security.service.JwtService;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -69,14 +71,19 @@ public class UserService {
     return userMapper.toDto(user);
   }
 
-  public UserDto updateUser(String id, UserDto userDto) {
-    if (!userRepository.existsById(id))
+  public UserDto updateUser(String id, UpdateUserRequest userDto) {
+    Optional<User> existingUserOptional = userRepository.findById(id);
+    if (existingUserOptional.isEmpty())
       throw new UserNotFoundException(id);
+
+    User existingUser = existingUserOptional.get();
 
     User updatedUser = userMapper.toEntity(userDto);
     updatedUser.setId(id);
+    updatedUser.setPassword(existingUser.getPassword());
+    updatedUser.setRole(existingUser.getRole());
 
-    return userMapper.toDto( userRepository.save(updatedUser));
+    return userMapper.toDto(userRepository.save(updatedUser));
   }
 
   public void deleteUser(String id) {
@@ -90,10 +97,15 @@ public class UserService {
    * Used for verifying user credentials during the login.
    */
   public String verify(UserLoginDto userLoginDto) {
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(userLoginDto.username(), userLoginDto.password()));
+    User existingUser = userRepository.findByUsername(userLoginDto.username());
 
-    return authentication.isAuthenticated() ? jwtService.generateToken(userLoginDto.username()) : "Failure";
+    if (existingUser == null)
+      throw new UserNotFoundException();
+
+    Authentication authentication = authenticationManager.authenticate(
+        new UsernamePasswordAuthenticationToken(existingUser.getEmail(), userLoginDto.password()));
+
+    return authentication.isAuthenticated() ? jwtService.generateToken(existingUser.getEmail()) : "Failure";
   }
 
   public UserDto getUserByUsername(String username) {

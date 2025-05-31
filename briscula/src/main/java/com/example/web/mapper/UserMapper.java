@@ -1,5 +1,6 @@
 package com.example.web.mapper;
 
+import com.example.web.dto.UpdateUserRequest;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserResponse;
 import com.example.web.model.User;
@@ -15,6 +16,10 @@ public interface UserMapper {
   @Mapping(target = "role", constant = "ROLE_USER")
   @Mapping(target = "id", expression = "java(generateUUID())")
   User toEntity(UserDto userDto);
+
+  User toEntity(UpdateUserRequest userDto);
+  @Mapping(target = "jwtToken", source = "token")
+  UserDto toDtoWithToken(User user, String token);
 
   UserDto toDto(User user);
   UserResponse toResponse(User user);
