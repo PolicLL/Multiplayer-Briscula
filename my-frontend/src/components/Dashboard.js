@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import EditUserForm from "./EditUserForm";
+import Menu from "./Menu";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -21,19 +22,17 @@ function Dashboard() {
   };
 
   useEffect(() => {
+    if (!localStorage.getItem("jwtToken")) {
+      navigate("/");
+    }
+
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("jwtToken");
-
-        console.log("token : " + token);
-
         if (!token) {
           setMessage("Please log in first.");
           return;
         }
-
-        console.log("before response : ");
-
         const userResponse = await axios.get(
           "http://localhost:8080/api/users/by",
           {
@@ -104,6 +103,7 @@ function Dashboard() {
 
   return (
     <div>
+      <Menu onLogout={() => setUserInfo(null)} />
       <h2>Hello!</h2>
       {message && <p>{message}</p>}
 
@@ -118,6 +118,23 @@ function Dashboard() {
         />
       ) : (
         <>
+          {userInfo?.photoId && (
+            <img
+              src={getPhotoUrl(userInfo.photoId)}
+              alt="User"
+              style={{
+                width: "150px",
+                height: "150px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/images/anonymous.png";
+              }}
+            />
+          )}
+
           {userInfo && (
             <div>
               <h3>Welcome, {userInfo.username}!</h3>
@@ -126,21 +143,6 @@ function Dashboard() {
               <p>Email: {userInfo.email}</p>
             </div>
           )}
-
-          <img
-            src={getPhotoUrl(userInfo.photoId)}
-            alt="User"
-            style={{
-              width: "150px",
-              height: "150px",
-              borderRadius: "50%",
-              objectFit: "cover",
-            }}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = "/images/anonymous.png";
-            }}
-          />
 
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
           <button onClick={joinGame}>Join Game</button>
