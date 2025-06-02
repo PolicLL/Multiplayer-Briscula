@@ -26,6 +26,8 @@ public class Match {
   // Number of players: 2, 3, or 4
   private int type;
 
+  private int tournamentId;
+
   @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<UserMatch> userMatches;
 }

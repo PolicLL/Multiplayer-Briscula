@@ -1,6 +1,14 @@
+CREATE TABLE tournament (
+    id VARCHAR PRIMARY KEY,
+    number_of_players INT CHECK (number_of_players IN (4, 8, 16, 32)),
+    status VARCHAR(20) NOT NULL CHECK (status IN ('INITIALIZING', 'IN PROGRESS', 'DONE'))
+);
+
 CREATE TABLE match (
   id VARCHAR PRIMARY KEY,
-  type INT NOT NULL CHECK (type IN (2, 3, 4))
+  type INT NOT NULL CHECK (type IN (2, 3, 4)),
+  tournament_id INT COLUMN tournament_id,
+  FOREIGN KEY (tournament_id) REFERENCES tournament(id)
 );
 
 CREATE TABLE user_match (
