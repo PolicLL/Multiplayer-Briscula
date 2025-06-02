@@ -3,7 +3,7 @@ package com.example.web.controller;
 import com.example.web.dto.UpdateUserRequest;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserLoginDto;
-import com.example.web.dto.UserResponse;
+import com.example.web.dto.UserStatsDto;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -48,9 +48,9 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserResponse>> getAllUsers() {
+  public ResponseEntity<List<UserStatsDto>> getAllUsers() {
     log.info("Fetching all users");
-    List<UserResponse> users = userService.getAllUsers();
+    List<UserStatsDto> users = userService.getAllUsers();
     log.info("Total users fetched: {}", users.size());
     return ResponseEntity.ok(users);
   }

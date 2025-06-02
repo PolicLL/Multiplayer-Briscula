@@ -46,6 +46,8 @@ function Home() {
             <tr>
               <th>Username</th>
               <th>Points</th>
+              <th>Total Matches Played</th>
+              <th>Total Wins</th>
               <th>Level</th>
             </tr>
           </thead>
@@ -54,6 +56,8 @@ function Home() {
               <tr key={user.id}>
                 <td>{user.username}</td>
                 <td>{user.points}</td>
+                <td>{user.totalMatchesPlayed}</td>
+                <td>{user.totalWins}</td>
                 <td>{user.level}</td>
               </tr>
             ))}

@@ -5,7 +5,7 @@ import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
 import com.example.web.dto.UpdateUserRequest;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserLoginDto;
-import com.example.web.dto.UserResponse;
+import com.example.web.dto.UserStatsDto;
 import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;
@@ -59,9 +59,9 @@ public class UserService {
     return userMapper.toDto(savedUser);
   }
 
-  public List<UserResponse> getAllUsers() {
-    return userRepository.findAllByOrderByPointsDesc().stream()
-        .map(userMapper::toResponse)
+  public List<UserStatsDto> getAllUsers() {
+    return userRepository.fetchUserStats().stream()
+        .map(userMapper::toUserStats)
         .collect(Collectors.toList());
   }
 

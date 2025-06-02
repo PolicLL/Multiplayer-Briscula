@@ -3,7 +3,9 @@ package com.example.web.mapper;
 import com.example.web.dto.UpdateUserRequest;
 import com.example.web.dto.UserDto;
 import com.example.web.dto.UserResponse;
+import com.example.web.dto.UserStatsDto;
 import com.example.web.model.User;
+import com.example.web.model.entity.UserStatsProjection;
 import java.util.UUID;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -23,6 +25,8 @@ public interface UserMapper {
 
   UserDto toDto(User user);
   UserResponse toResponse(User user);
+
+  UserStatsDto toUserStats(UserStatsProjection projection);
 
   default String generateUUID() {
     return UUID.randomUUID().toString();
