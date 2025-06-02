@@ -45,9 +45,6 @@ function Home() {
           <thead>
             <tr>
               <th>Username</th>
-              <th>Email</th>
-              <th>Age</th>
-              <th>Country</th>
               <th>Points</th>
               <th>Level</th>
             </tr>
@@ -56,9 +53,6 @@ function Home() {
             {userInfo.map((user) => (
               <tr key={user.id}>
                 <td>{user.username}</td>
-                <td>{user.email}</td>
-                <td>{user.age}</td>
-                <td>{user.country}</td>
                 <td>{user.points}</td>
                 <td>{user.level}</td>
               </tr>
