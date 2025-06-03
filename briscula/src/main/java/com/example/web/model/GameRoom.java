@@ -43,7 +43,7 @@ public class GameRoom {
 
     this.players.addAll(playerList);
 
-    this.game = new Game(GameOptionNumberOfPlayers.THREE_PLAYERS, GameMode.ALL_HUMANS, players);
+    this.game = new Game(GameOptionNumberOfPlayers.TWO_PLAYERS, GameMode.ALL_HUMANS, players);
 
   }
 

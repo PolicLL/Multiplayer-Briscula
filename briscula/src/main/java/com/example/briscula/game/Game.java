@@ -48,6 +48,8 @@ public class Game {
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound();
+
+    log.info("ROUND ENDED.");
     logPlayersValues();
   }
 

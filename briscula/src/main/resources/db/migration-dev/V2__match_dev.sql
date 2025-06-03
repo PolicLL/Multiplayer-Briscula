@@ -7,7 +7,7 @@ CREATE TABLE tournament (
 CREATE TABLE match (
   id VARCHAR PRIMARY KEY,
   type INT NOT NULL CHECK (type IN (2, 3, 4)),
-  tournament_id INT COLUMN tournament_id,
+  tournament_id VARCHAR,
   FOREIGN KEY (tournament_id) REFERENCES tournament(id)
 );
 

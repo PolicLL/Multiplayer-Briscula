@@ -14,6 +14,7 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.Executors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -62,7 +63,7 @@ public class GameStartService {
 
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
-      gameRoomService.getRoom(roomId).startGame();
+      Executors.newSingleThreadExecutor().submit(() -> gameRoomService.getRoom(roomId).startGame());
     }
   }
 
@@ -79,7 +80,7 @@ public class GameStartService {
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
     if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
-      realPlayer.getSelectedCardFuture().complete(card);
+      realPlayer.completeSelectedCard(card);
     }
   }
 }

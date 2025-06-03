@@ -27,7 +27,7 @@ public class GamePrepareService {
 
   private final GameRoomService gameRoomService;
 
-  private final int MAX_NUMBER_OF_PLAYERS = 3;
+  private final int MAX_NUMBER_OF_PLAYERS = 2;
 
   // TODO: Check -> When I clicked join from the anonymous user twice, it started the game.
 

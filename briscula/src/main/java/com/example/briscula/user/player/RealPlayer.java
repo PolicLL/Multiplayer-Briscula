@@ -71,6 +71,10 @@ public class RealPlayer extends Player {
     }
   }
 
+  public void completeSelectedCard(int selectedCardIndex) {
+    selectedCardFuture.complete(selectedCardIndex);
+  }
+
 
   private boolean isNumberOfCardOutOfRange(int numberInput) {
     return numberInput < 0 || numberInput >= playerCards.size();
