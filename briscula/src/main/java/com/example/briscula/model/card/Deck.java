@@ -25,8 +25,23 @@ public class Deck {
     }
   }
 
+  public void setLastCard(Card mainCard) {
+    int tempIndexOfMainCard = 0;
+    for (int i = 0; i < deckCards.size(); ++i) {
+      if (deckCards.get(i).equals(mainCard)) {
+        tempIndexOfMainCard = i;
+        break;
+      }
+    }
+
+    Card tempLastCard = deckCards.get(deckCards.size() - 1);
+    deckCards.set(deckCards.size() - 1, mainCard);
+    deckCards.set(tempIndexOfMainCard, tempLastCard);
+  }
+
   public Card removeOneCard() {
-    return deckCards.remove(random.nextInt(deckCards.size()));
+    if (deckCards.size() == 1) return deckCards.remove(0);
+    return deckCards.remove(random.nextInt(deckCards.size() - 1));
   }
 
   public void removeOneWithCardValueTwo() {

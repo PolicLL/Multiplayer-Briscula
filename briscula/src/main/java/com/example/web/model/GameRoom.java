@@ -51,6 +51,10 @@ public class GameRoom {
     return game.getCardsForPlayer(playerId);
   }
 
+  public Card getMainCard() {
+    return game.getMainCard();
+  }
+
   public void startGame() {
     log.info("Game is staring.");
     while (!game.isGameOver()) {

@@ -5,7 +5,9 @@ function GameRoom() {
   const { roomId, playerId } = useParams();
   const [message, setMessage] = useState("");
   const [cards, setCards] = useState([]);
+  const [points, setPoints] = useState(0);
   const [cardsClickable, setCardsClickable] = useState(false); // control globally
+  const [mainCard, setMainCard] = useState({ cardType: "", cardValue: "" });
 
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
@@ -27,13 +29,30 @@ function GameRoom() {
     }
   };
 
-  const parseCards = (cardString) => {
+  const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
 
-    return cardString.split(" ").map((cardCode) => ({
+    const cardArray = cardString.split(" ");
+    const numberOfPoints = parseInt(cardArray[cardArray.length - 1], 10);
+
+    const cardCodes = cardArray.slice(0, n);
+
+    const cards = cardCodes.map((cardCode) => ({
       code: cardCode,
       imageUrl: `/cards/${cardCode}.png`,
     }));
+
+    return {
+      cards,
+      numberOfPoints,
+    };
+  };
+
+  const parseCard = (cardCode) => {
+    return {
+      code: cardCode,
+      imageUrl: `/cards/${cardCode}.png`,
+    };
   };
 
   const handleCardClick = (card) => {
@@ -97,7 +116,9 @@ function GameRoom() {
         parsedMessage.type === "SENT_INITIAL_CARDS" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        setCards(parseCards(parsedMessage.content));
+        const { cards, points } = parsePlayerStatus(parsedMessage.content);
+        setCards(cards);
+        setPoints(points);
 
         socket.send(
           JSON.stringify({
@@ -112,7 +133,9 @@ function GameRoom() {
         parsedMessage.type === "CARDS_STATE_UPDATE" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        setCards(parseCards(parsedMessage.content));
+        const { cards, points } = parsePlayerStatus(parsedMessage.content);
+        setCards(cards);
+        setPoints(points);
       }
 
       if (
@@ -144,6 +167,14 @@ function GameRoom() {
         setCards((prevCards) => prevCards.slice(1));
         setCardsClickable(false);
       }
+
+      if (
+        parsedMessage.type === "SENT_MAIN_CARD" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setMainCard(parseCard(parsedMessage.content));
+        setCardsClickable(false);
+      }
     };
 
     socket.onerror = (error) => {
@@ -165,6 +196,16 @@ function GameRoom() {
       <h2>Game Room id : {roomId}</h2>
       <h2>Player id : {playerId}</h2>
 
+      <h2>Main Card</h2>
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+        <img
+          key={mainCard.code}
+          src={mainCard.imageUrl}
+          alt={mainCard.code}
+          style={{ width: "100px", cursor: "pointer" }}
+        />
+      </div>
+
       <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
         {cards.map((card) => (
           <img
@@ -175,6 +216,8 @@ function GameRoom() {
             onClick={() => cardsClickable && handleCardClick(card)}
           />
         ))}
+
+        <h3>Points: {points}</h3>
       </div>
 
       {cardsClickable && timeLeft > 0 && (

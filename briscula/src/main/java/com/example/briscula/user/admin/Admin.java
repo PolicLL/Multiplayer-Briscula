@@ -5,6 +5,7 @@ import static com.example.briscula.utilities.constants.Constants.getRandomNumber
 
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
+import com.example.briscula.model.card.CardValue;
 import com.example.briscula.model.card.Deck;
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.Player;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Admin {
 
-  private CardType mainCardType;
+  private Card mainCard;
   private final Deck deck;
 
   @Getter
@@ -39,9 +40,13 @@ public class Admin {
 
   public void prepareDeckAndPlayers(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players) {
     prepareDeck(gameOptions);
+    chooseMainCard();
+    deck.setLastCard(mainCard);
+
     initializePlayers(gameOptions, gameMode, players);
-    chooseMainCardType();
+
     chooseStartingPlayer();
+
 
     AtomicInteger index = new AtomicInteger();
     players.forEach(player -> player.getPlayer().setPlayerCards(getCardsForPlayer(
@@ -108,8 +113,9 @@ public class Admin {
     indexOfCurrentPlayer = getRandomNumber(players.size());
   }
 
-  private void chooseMainCardType() {
-    mainCardType = CardType.values()[getRandomNumber(CardType.values().length)];
+  private void chooseMainCard() {
+    mainCard = new Card(CardType.values()[getRandomNumber(CardType.values().length)],
+        CardValue.values()[getRandomNumber(CardValue.values().length)]);
   }
 
   public void dealNextRound() {

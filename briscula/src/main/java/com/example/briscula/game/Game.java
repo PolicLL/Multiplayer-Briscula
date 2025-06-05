@@ -23,7 +23,7 @@ public class Game {
 
     admin.prepareDeckAndPlayers(gameOptions, gameMode, players);
 
-    log.info("Main card type : " + admin.getMainCardType());
+    log.info("Main card type : " + admin.getMainCard().cardType());
   }
 
   public List<Card> getCardsForPlayer(int playerId) {
@@ -48,19 +48,23 @@ public class Game {
       log.info("Move " + i + " -> " + player.getNickname() + " | " + card);
     }
 
-    RoundWinner roundWinner = RoundJudge.calculateRound(queueMoves, admin.getMainCardType());
+    RoundWinner roundWinner = RoundJudge.calculateRound(queueMoves, admin.getMainCard().cardType());
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound();
 
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {
-        realPlayer.sentMessageAboutNewCards();
+        realPlayer.sentMessageAboutNewCardsAndPoints();
       }
     }
 
     log.info("ROUND ENDED.");
     logPlayersValues();
+  }
+
+  public Card getMainCard() {
+    return admin.getMainCard();
   }
 
   public ConnectedPlayer getPlayer(int playerId) {

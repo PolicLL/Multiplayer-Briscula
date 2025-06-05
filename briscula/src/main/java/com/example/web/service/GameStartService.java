@@ -48,9 +48,15 @@ public class GameStartService {
     Message sentCardsMessage = new Message("SENT_INITIAL_CARDS",
         roomId, playerId, CardFormatter.formatCards(listCards));
 
+    Message sentMainCardMessage = new Message("SENT_MAIN_CARD",
+        roomId, playerId, CardFormatter.formatCard(gameRoom.getMainCard()));
+
+    String temp = JsonUtils.toJson(sentMainCardMessage);
+
     log.info("Sent cards : " + sentCardsMessage);
 
     session.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    session.sendMessage(new TextMessage(JsonUtils.toJson(sentMainCardMessage)));
 
     log.info("Handling cards {} {}.", roomId, playerId);
   }
@@ -64,6 +70,7 @@ public class GameStartService {
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
       Executors.newSingleThreadExecutor().submit(() -> gameRoomService.getRoom(roomId).startGame());
+
     }
   }
 

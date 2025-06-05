@@ -24,7 +24,7 @@ public class RealPlayer extends Player {
   private final RoomPlayerId roomPlayerId;
 
   private CompletableFuture<Integer> selectedCardFuture;
-  private final int WAITING_SECONDS = 10;
+  private final int WAITING_SECONDS = 11;
 
   public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
@@ -40,11 +40,12 @@ public class RealPlayer extends Player {
     return playerCards.remove(numberInput);
   }
 
-  public void sentMessageAboutNewCards() {
+  public void sentMessageAboutNewCardsAndPoints() {
 
 
     Message sentCardsMessage = new Message("CARDS_STATE_UPDATE",
-        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), CardFormatter.formatCards(this.playerCards));
+        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(),
+        CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points));
 
     log.info("Sent cards : " + sentCardsMessage);
 
