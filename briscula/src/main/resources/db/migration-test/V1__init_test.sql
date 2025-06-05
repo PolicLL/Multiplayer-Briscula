@@ -52,10 +52,3 @@ INSERT INTO users (id, username, password, role, age, country, email, points, le
 ('123e4567-e89b-12d3-a456-42661417400d', 'user13', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 27, 'South Korea', 'user13@example.com', 230, 3),
 ('123e4567-e89b-12d3-a456-42661417400e', 'user14', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 32, 'Russia', 'user14@example.com', 260, 4),
 ('123e4567-e89b-12d3-a456-42661417400f', 'user15', '$2a$10$K/VuDn2rmMb0TgzeW7GQfu/Xr5hgEJnFUbY3xCrI3YfhULATbno86', 'ROLE_USER', 21, 'Netherlands', 'user15@example.com', 320, 5);
-
-INSERT INTO photos (id, photo, name)
-VALUES (
-    '00000000-0000-0000-0000-000000000000',
-    CAST(X'DEADBEEF' AS BLOB),
-    'sample0.jpg'
-);

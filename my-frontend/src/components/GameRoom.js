@@ -34,12 +34,12 @@ function GameRoom() {
   };
 
   const handleCardClick = (card) => {
-    console.log("Card clicked " + card.code + ".");
+    if (!cardsClickable) return;
 
     const cardIndex = cards.indexOf(card);
 
     setCards((prevCards) => prevCards.filter((tempCard) => tempCard !== card));
-    //setCardsClickable(false);
+    setCardsClickable(false);
     setMessage("");
 
     const socket = socketRef.current;
@@ -59,10 +59,7 @@ function GameRoom() {
           card: cardIndex,
         });
 
-        console.log("Message to send:", message); // Log the message
         socket.send(message);
-
-        console.log("Chosen card sent..");
       }, 100);
 
       socket.onerror = (event) => {
@@ -75,44 +72,11 @@ function GameRoom() {
     }
   };
 
-  const test = () => {
-    const socket = socketRef.current;
-
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      console.log("Sending GET123 message:");
-      console.log("Ready state : " + socket.readyState);
-      console.log();
-      socket.send(
-        JSON.stringify({
-          type: "GET123",
-          roomId: roomId,
-          playerId: playerId,
-        })
-      );
-
-      socket.onerror = (event) => {
-        console.error("WebSocket error:", event);
-      };
-
-      socket.onclose = (event) => {
-        console.log("WebSocket closed:", event.code, event.reason);
-      };
-
-      console.log("Chosen card sent.");
-    } else {
-      console.log("Socket not connected.");
-      setMessage("Socket not connected.");
-    }
-  };
-
   useEffect(() => {
     const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
     socketRef.current = socket;
 
     socket.onopen = () => {
-      console.log(`Connected to game room ${roomId}.`);
-      console.log(`Player id ${playerId}.`);
-
       socket.send(
         JSON.stringify({
           type: "GET_INITIAL_CARDS",
@@ -124,20 +88,12 @@ function GameRoom() {
 
     socket.onmessage = (event) => {
       const message = event.data;
-
-      console.log("Before parsing: " + message);
-
       const parsedMessage = parseWebSocketMessage(message);
-
-      console.log("Message received : " + message);
 
       if (
         parsedMessage.type === "SENT_INITIAL_CARDS" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        //setMessage((prev) => [...prev, parsedMessage]);
-        console.log("Show message." + parsedMessage.content);
-
         setCards(parseCards(parsedMessage.content));
 
         socket.send(
@@ -147,17 +103,12 @@ function GameRoom() {
             playerId: playerId,
           })
         );
-
-        console.log("Initial cards received.");
       }
 
       if (
         parsedMessage.type === "CARDS_STATE_UPDATE" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        //setMessage((prev) => [...prev, parsedMessage]);
-        console.log("Show message." + parsedMessage.content);
-
         setCards(parseCards(parsedMessage.content));
       }
 
@@ -166,11 +117,15 @@ function GameRoom() {
         parsedMessage.playerId === parseInt(playerId)
       ) {
         setMessage(parsedMessage.content);
-
-        console.log("Cards are clickable now.");
-
         setCardsClickable(true);
-        console.log("Show message." + parsedMessage.content);
+      }
+
+      if (
+        parsedMessage.type === "REMOVE_CARD" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setCards((prevCards) => prevCards.slice(1));
+        setCardsClickable(false);
       }
     };
 
@@ -205,7 +160,6 @@ function GameRoom() {
       </div>
 
       <div>
-        <button onClick={() => test()}>TEST</button>
         <h3>Messages: {message}</h3>
       </div>
     </div>

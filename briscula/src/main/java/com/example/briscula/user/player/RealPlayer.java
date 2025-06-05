@@ -24,6 +24,7 @@ public class RealPlayer extends Player {
   private final RoomPlayerId roomPlayerId;
 
   private CompletableFuture<Integer> selectedCardFuture;
+  private final int WAITING_SECONDS = 10;
 
   public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
@@ -39,10 +40,11 @@ public class RealPlayer extends Player {
     return playerCards.remove(numberInput);
   }
 
-  public void sentMessageAboutNewCards(List<Card> listCards) {
+  public void sentMessageAboutNewCards() {
+
 
     Message sentCardsMessage = new Message("CARDS_STATE_UPDATE",
-        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), CardFormatter.formatCards(listCards));
+        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), CardFormatter.formatCards(this.playerCards));
 
     log.info("Sent cards : " + sentCardsMessage);
 
@@ -76,14 +78,19 @@ public class RealPlayer extends Player {
   private int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
-      return selectedCardFuture.get(20, TimeUnit.SECONDS);
+      return selectedCardFuture.get(WAITING_SECONDS, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
 
       Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "");
+
+      Message removeCardMessage = new Message("REMOVE_CARD", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "0");
+
       try {
         webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(removeCardMessage)));
       } catch (IOException ex) {
         throw new RuntimeException(ex);
       }

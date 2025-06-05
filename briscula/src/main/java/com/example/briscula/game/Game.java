@@ -55,7 +55,7 @@ public class Game {
 
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {
-        realPlayer.sentMessageAboutNewCards(admin.getCardsForPlayer(realPlayer.getRoomPlayerId().getPlayerId()));
+        realPlayer.sentMessageAboutNewCards();
       }
     }
 
