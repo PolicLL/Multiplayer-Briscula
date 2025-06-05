@@ -3,6 +3,7 @@ package com.example.briscula.game;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.user.admin.Admin;
 import com.example.briscula.user.player.Player;
+import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
@@ -36,7 +37,10 @@ public class Game {
   public void playRound() {
     Queue<Move> queueMoves = new ArrayDeque<>();
 
-    for (int i = 0; i < gameOptions.getNumberOfPlayers(); i++) {
+    int numberOfIterations = gameOptions.getNumberOfPlayers();
+    if (numberOfIterations == 2) numberOfIterations *= 2;
+
+    for (int i = 0; i < numberOfIterations; i++) {
       Player player = admin.getCurrentPlayer();
       Card card = player.playRound();
       queueMoves.add(new Move(player, card));
@@ -48,6 +52,12 @@ public class Game {
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound();
+
+    for (ConnectedPlayer player : admin.getPlayers()) {
+      if (player.getPlayer() instanceof RealPlayer realPlayer) {
+        realPlayer.sentMessageAboutNewCards(admin.getCardsForPlayer(realPlayer.getRoomPlayerId().getPlayerId()));
+      }
+    }
 
     log.info("ROUND ENDED.");
     logPlayersValues();

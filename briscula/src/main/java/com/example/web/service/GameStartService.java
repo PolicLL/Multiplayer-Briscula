@@ -71,9 +71,7 @@ public class GameStartService {
     String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
     String playerId =  WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
 
-    log.info("Choosen card.");
     int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "card"));
-    log.info("Chosen card: " + card);
 
     // TODO: Something does not work as expected.
 

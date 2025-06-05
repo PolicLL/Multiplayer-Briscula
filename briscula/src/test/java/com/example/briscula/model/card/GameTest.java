@@ -14,7 +14,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-public class GameTest {
+class GameTest {
 
   private List<Card> cardsList;
 
@@ -27,12 +27,12 @@ public class GameTest {
 
 
   @BeforeEach
-  public void setUp() {
+  void setUp() {
     setPlayersPointsToZero();
   }
 
   @Test
-  public void TestRoundMoreCardsOfMainType() {
+  void TestRoundMoreCardsOfMainType() {
     cardsList = new ArrayList<>(Arrays.asList(
         new Card(CardType.SPADE, CardValue.THREE),
         new Card(CardType.COPPE, CardValue.TWO),
@@ -47,7 +47,7 @@ public class GameTest {
   }
 
   @Test
-  public void TestRoundMoreCardsOfMainType2() {
+  void TestRoundMoreCardsOfMainType2() {
     cardsList = new ArrayList<>(Arrays.asList(
         new Card(CardType.DENARI, CardValue.THREE),
         new Card(CardType.DENARI, CardValue.ACE),
@@ -63,7 +63,7 @@ public class GameTest {
   }
 
   @Test
-  public void TestRoundNoCardsOfMainType() {
+  void TestRoundNoCardsOfMainType() {
     cardsList = new ArrayList<>(Arrays.asList(
         new Card(CardType.DENARI, CardValue.THREE),
         new Card(CardType.DENARI, CardValue.SEVEN),
@@ -79,7 +79,7 @@ public class GameTest {
   }
 
   @Test
-  public void TestRoundSmallCardValueMainType() {
+  void TestRoundSmallCardValueMainType() {
     cardsList = new ArrayList<>(Arrays.asList(
         new Card(CardType.DENARI, CardValue.THREE),
         new Card(CardType.DENARI, CardValue.SEVEN),
@@ -93,6 +93,36 @@ public class GameTest {
     assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 3");
   }
 
+  @Test
+  void TestTwoPlayersDoubleRoundWinsSmallMainCard() {
+    cardsList = new ArrayList<>(Arrays.asList(
+        new Card(CardType.DENARI, CardValue.SEVEN),
+        new Card(CardType.DENARI, CardValue.JACK),
+        new Card(CardType.COPPE, CardValue.TWO),
+        new Card(CardType.SPADE, CardValue.KING)
+    ));
+
+    setupMovesAndCalculateRoundForTwoPlayers(CardType.COPPE);
+
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(6);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 0");
+  }
+
+  @Test
+  void TestTwoPlayersDoubleRoundWinsOrder() {
+    cardsList = new ArrayList<>(Arrays.asList(
+        new Card(CardType.DENARI, CardValue.SEVEN),
+        new Card(CardType.DENARI, CardValue.JACK),
+        new Card(CardType.DENARI, CardValue.THREE),
+        new Card(CardType.DENARI, CardValue.ACE)
+    ));
+
+    setupMovesAndCalculateRoundForTwoPlayers(CardType.COPPE);
+
+    assertThat(roundWinner.numberOfPoints()).isEqualTo(23);
+    assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 1");
+  }
+
 
   private void printPlayers(){
     playerList.forEach(element -> System.out.println(element.getPoints()));
@@ -104,6 +134,15 @@ public class GameTest {
     List<Move> movesList = List.of(
         new Move(playerList.get(0), cardsList.get(0)), new Move(playerList.get(1), cardsList.get(1)),
         new Move(playerList.get(2), cardsList.get(2)), new Move(playerList.get(3), cardsList.get(3))
+    );
+
+    roundWinner = RoundJudge.calculateRound(new ArrayDeque<>(movesList.subList(0, 4)), mainCardType);
+  }
+
+  private void setupMovesAndCalculateRoundForTwoPlayers(CardType mainCardType) {
+    List<Move> movesList = List.of(
+        new Move(playerList.get(0), cardsList.get(0)), new Move(playerList.get(1), cardsList.get(1)),
+        new Move(playerList.get(0), cardsList.get(2)), new Move(playerList.get(1), cardsList.get(3))
     );
 
     roundWinner = RoundJudge.calculateRound(new ArrayDeque<>(movesList.subList(0, 4)), mainCardType);

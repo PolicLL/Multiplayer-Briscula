@@ -23,12 +23,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-public class CardFormatterTest {
+class CardFormatterTest {
 
   @ParameterizedTest
   @MethodSource("cardListProvider")
   @DisplayName("Should format cards into expected string")
-  public void testCardFormatter(CardType type1, CardValue value1,
+  void testCardFormatter(CardType type1, CardValue value1,
       CardType type2, CardValue value2,
       CardType type3, CardValue value3,
       String expected) {

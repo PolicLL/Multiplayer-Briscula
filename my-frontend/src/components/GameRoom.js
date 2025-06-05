@@ -79,6 +79,9 @@ function GameRoom() {
     const socket = socketRef.current;
 
     if (socket && socket.readyState === WebSocket.OPEN) {
+      console.log("Sending GET123 message:");
+      console.log("Ready state : " + socket.readyState);
+      console.log();
       socket.send(
         JSON.stringify({
           type: "GET123",
@@ -146,6 +149,16 @@ function GameRoom() {
         );
 
         console.log("Initial cards received.");
+      }
+
+      if (
+        parsedMessage.type === "CARDS_STATE_UPDATE" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        //setMessage((prev) => [...prev, parsedMessage]);
+        console.log("Show message." + parsedMessage.content);
+
+        setCards(parseCards(parsedMessage.content));
       }
 
       if (

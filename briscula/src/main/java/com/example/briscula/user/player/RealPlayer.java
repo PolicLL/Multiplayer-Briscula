@@ -1,6 +1,7 @@
 package com.example.briscula.user.player;
 
 import com.example.briscula.model.card.Card;
+import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
 import com.example.web.utils.JsonUtils;
 import java.io.IOException;
@@ -24,8 +25,6 @@ public class RealPlayer extends Player {
 
   private CompletableFuture<Integer> selectedCardFuture;
 
-
-
   public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
     super(playerCards, nickname);
@@ -38,6 +37,21 @@ public class RealPlayer extends Player {
     printInstructions();
     int numberInput = enterNumber();
     return playerCards.remove(numberInput);
+  }
+
+  public void sentMessageAboutNewCards(List<Card> listCards) {
+
+    Message sentCardsMessage = new Message("CARDS_STATE_UPDATE",
+        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), CardFormatter.formatCards(listCards));
+
+    log.info("Sent cards : " + sentCardsMessage);
+
+    try {
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
+
   }
 
   private void printInstructions() {
@@ -62,10 +76,19 @@ public class RealPlayer extends Player {
   private int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
-      return selectedCardFuture.get(30, TimeUnit.SECONDS);
+      return selectedCardFuture.get(20, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
-      return 0; // or random card, or throw exception if needed
+
+      Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "");
+      try {
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+      } catch (IOException ex) {
+        throw new RuntimeException(ex);
+      }
+
+      return 0;
     } catch (Exception e) {
       throw new RuntimeException("Failed to receive input", e);
     }

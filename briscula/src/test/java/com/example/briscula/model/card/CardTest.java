@@ -15,13 +15,9 @@ import static com.example.briscula.model.card.CardValue.SIX;
 import static com.example.briscula.model.card.CardValue.THREE;
 import static com.example.briscula.model.card.CardValue.TWO;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.mock;
 
-import com.example.briscula.exceptions.DuplicateCardException;
 import com.example.briscula.game.RoundJudge;
 import java.util.stream.Stream;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,15 +28,15 @@ import org.junit.jupiter.params.provider.MethodSource;
  * different Card objects works correctly.
  */
 
-public class CardTest {
+class CardTest {
 
   private static final CardType mainCardType = CardType.COPPE;
 
   @ParameterizedTest
   @MethodSource("testSameNonMainCardType")
-  public void testBothCardsSameNonMainTypeCombination(
+  void testBothCardsSameNonMainTypeCombination(
       CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) throws DuplicateCardException {
+  ) {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
@@ -57,9 +53,9 @@ public class CardTest {
 
   @ParameterizedTest
   @MethodSource("testDifferentNonMainCardType")
-  public void testCardsDifferentNonMainTypeCombination(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) throws DuplicateCardException {
+  void testCardsDifferentNonMainTypeCombination(
+      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2)
+   {
 
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
@@ -78,9 +74,9 @@ public class CardTest {
 
   @ParameterizedTest
   @MethodSource("testFirstCardMainCardType")
-  public void TestFirstCardMainType(
+  void TestFirstCardMainType(
       CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) throws DuplicateCardException {
+  ) {
 
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
@@ -100,9 +96,9 @@ public class CardTest {
 
   @ParameterizedTest
   @MethodSource("testSecondCardMainCardType")
-  public void TestSecondCardMainType(
+  void TestSecondCardMainType(
       CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) throws DuplicateCardException {
+  ) {
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
 
@@ -121,9 +117,9 @@ public class CardTest {
 
   @ParameterizedTest
   @MethodSource("testBothCardsMainCardType")
-  public void TestBothCardsMainType(
+  void TestBothCardsMainType(
       CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) throws DuplicateCardException {
+  ) {
 
     var firstCard = new Card(cardType1, cardValue1);
     var secondCard = new Card(cardType2, cardValue2);
@@ -139,12 +135,5 @@ public class CardTest {
         Arguments.of(COPPE, SEVEN, COPPE, FIVE),
         Arguments.of(COPPE, JACK, COPPE, FOUR)
     );
-  }
-
-  @Test
-  public void TestDuplicateCardException() {
-    assertThrows(DuplicateCardException.class, () -> {
-      RoundJudge.isSecondCardStronger(new Card(COPPE, TWO), new Card(COPPE, TWO), mainCardType);
-    });
   }
 }

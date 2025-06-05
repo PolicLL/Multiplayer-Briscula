@@ -31,6 +31,7 @@ public class Admin {
   private List<List<Card>> listOfCardsForAllPlayers;
 
   private int indexOfCurrentPlayer = 0;
+  private GameOptionNumberOfPlayers gameOptionNumberOfPlayers;
 
   public Admin() {
     deck = new Deck();
@@ -45,6 +46,8 @@ public class Admin {
     AtomicInteger index = new AtomicInteger();
     players.forEach(player -> player.getPlayer().setPlayerCards(getCardsForPlayer(
         index.getAndIncrement())));
+
+    this.gameOptionNumberOfPlayers = gameOptions;
 
     log.info("STARTING PLAYER : " + indexOfCurrentPlayer);
   }
@@ -111,7 +114,12 @@ public class Admin {
 
   public void dealNextRound() {
     if (deck.getNumberOfDeckCards() == 0) return;
+
     players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+
+    if (GameOptionNumberOfPlayers.TWO_PLAYERS.equals(gameOptionNumberOfPlayers)) {
+      players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+    }
   }
 
   public Player getCurrentPlayer() {

@@ -1,7 +1,6 @@
 package com.example.briscula.game;
 
 
-import com.example.briscula.exceptions.DuplicateCardException;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import java.util.Queue;
@@ -20,22 +19,15 @@ public class RoundJudge {
       Move tempMove = queueMoves.poll();
       tempPointsInRound += tempMove.card().getPoints();
 
-      try {
-        if (isSecondCardStronger(roundWinnerMove.card(), tempMove.card(), mainCardType)) {
-          roundWinnerMove = tempMove;
-        }
-      } catch (DuplicateCardException e) {
-        throw new RuntimeException(e);
+      if (isSecondCardStronger(roundWinnerMove.card(), tempMove.card(), mainCardType)) {
+        roundWinnerMove = tempMove;
       }
     }
 
     return new RoundWinner(roundWinnerMove.player(), tempPointsInRound);
   }
 
-  public static boolean isSecondCardStronger(Card firstCard, Card secondCard, CardType mainCardType)
-      throws DuplicateCardException {
-    if (firstCard.equals(secondCard)) throw new DuplicateCardException();
-
+  public static boolean isSecondCardStronger(Card firstCard, Card secondCard, CardType mainCardType) {
     if (!firstCard.isMainType(mainCardType) && secondCard.isMainType(mainCardType)) {
       return true;
     } else if (firstCard.isMainType(mainCardType) && secondCard.isMainType(mainCardType)) {

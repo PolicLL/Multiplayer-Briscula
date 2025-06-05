@@ -5,10 +5,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import org.junit.jupiter.api.Test;
 
-public class CardValueTest {
+ class CardValueTest {
 
   @Test
-  public void TestForThree() {
+  void TestForThree() {
 
     CardValue mainCardValue = CardValue.THREE;
 
@@ -25,7 +25,7 @@ public class CardValueTest {
   }
 
   @Test
-  public void TestForTwo() {
+  void TestForTwo() {
 
     CardValue mainCardValue = CardValue.TWO;
 
