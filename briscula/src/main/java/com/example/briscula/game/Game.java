@@ -51,7 +51,7 @@ public class Game {
     RoundWinner roundWinner = RoundJudge.calculateRound(queueMoves, admin.getMainCard().cardType());
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
-    admin.dealNextRound();
+    admin.dealNextRound(roundWinner);
 
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {

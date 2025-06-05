@@ -3,6 +3,7 @@ package com.example.briscula.user.admin;
 import static com.example.briscula.utilities.constants.Constants.HUMAN_PLAYER;
 import static com.example.briscula.utilities.constants.Constants.getRandomNumber;
 
+import com.example.briscula.game.RoundWinner;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import com.example.briscula.model.card.CardValue;
@@ -46,7 +47,6 @@ public class Admin {
     initializePlayers(gameOptions, gameMode, players);
 
     chooseStartingPlayer();
-
 
     AtomicInteger index = new AtomicInteger();
     players.forEach(player -> player.getPlayer().setPlayerCards(getCardsForPlayer(
@@ -118,13 +118,20 @@ public class Admin {
         CardValue.values()[getRandomNumber(CardValue.values().length)]);
   }
 
-  public void dealNextRound() {
+  public void dealNextRound(RoundWinner roundWinner) {
     if (deck.getNumberOfDeckCards() == 0) return;
 
     players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
 
     if (GameOptionNumberOfPlayers.TWO_PLAYERS.equals(gameOptionNumberOfPlayers)) {
       players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+    }
+
+    for (int i = 0; i < players.size(); ++i) {
+      if (roundWinner.player() == players.get(i).getPlayer()) {
+        indexOfCurrentPlayer = i;
+        break;
+      }
     }
   }
 
