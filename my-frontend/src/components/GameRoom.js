@@ -7,6 +7,9 @@ function GameRoom() {
   const [cards, setCards] = useState([]);
   const [cardsClickable, setCardsClickable] = useState(false); // control globally
 
+  const [timeLeft, setTimeLeft] = useState(0);
+  const timerRef = useRef(null);
+
   const socketRef = useRef(null);
 
   const parseWebSocketMessage = (message) => {
@@ -118,6 +121,20 @@ function GameRoom() {
       ) {
         setMessage(parsedMessage.content);
         setCardsClickable(true);
+        setTimeLeft(10); // start countdown
+
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        timerRef.current = setInterval(() => {
+          setTimeLeft((prevTime) => {
+            if (prevTime <= 1) {
+              clearInterval(timerRef.current);
+              setCardsClickable(false);
+              return 0;
+            }
+            return prevTime - 1;
+          });
+        }, 1000);
       }
 
       if (
@@ -138,6 +155,7 @@ function GameRoom() {
     };
 
     return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
       socket.close();
     };
   }, [roomId]);
@@ -158,6 +176,10 @@ function GameRoom() {
           />
         ))}
       </div>
+
+      {cardsClickable && timeLeft > 0 && (
+        <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>
+      )}
 
       <div>
         <h3>Messages: {message}</h3>
