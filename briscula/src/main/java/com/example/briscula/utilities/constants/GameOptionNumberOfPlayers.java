@@ -10,4 +10,13 @@ public enum GameOptionNumberOfPlayers {
       case FOUR_PLAYERS -> 4;
     };
   }
+
+  public static GameOptionNumberOfPlayers fromInt(int number) {
+    return switch (number) {
+      case 2 -> TWO_PLAYERS;
+      case 3 -> THREE_PLAYERS;
+      case 4 -> FOUR_PLAYERS;
+      default -> throw new IllegalArgumentException("Invalid number of players: " + number);
+    };
+  }
 }

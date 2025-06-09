@@ -1,5 +1,6 @@
 package com.example.web.service;
 
+import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import java.util.Collection;
@@ -14,8 +15,9 @@ public class GameRoomService {
 
   private final Map<String, GameRoom> activeRooms = new ConcurrentHashMap<>();
 
-  public GameRoom createRoom(Collection<ConnectedPlayer> playerList) {
-    GameRoom room = new GameRoom(playerList);
+  public GameRoom createRoom(Collection<ConnectedPlayer> playerList,
+      GameOptionNumberOfPlayers gameOptionNumberOfPlayers) {
+    GameRoom room = new GameRoom(playerList, gameOptionNumberOfPlayers);
     activeRooms.put(room.getRoomId(), room);
     return room;
   }
