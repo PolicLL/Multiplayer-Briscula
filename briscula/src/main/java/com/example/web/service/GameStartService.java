@@ -14,7 +14,7 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
+import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -29,6 +29,7 @@ public class GameStartService {
 
 
   private final GameRoomService gameRoomService;
+  private final GameEndService gameEndService;
 
   public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
       throws IOException {
@@ -69,7 +70,9 @@ public class GameStartService {
 
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
-      Executors.newSingleThreadExecutor().submit(() -> gameRoomService.getRoom(roomId).startGame());
+      CompletableFuture
+          .supplyAsync(() -> gameRoomService.getRoom(roomId).startGame()) // must return ConnectedPlayer
+          .thenAccept(gameEndService::update);            // consumes ConnectedPlayer
 
     }
   }

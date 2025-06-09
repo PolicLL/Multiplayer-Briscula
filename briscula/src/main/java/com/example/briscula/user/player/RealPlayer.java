@@ -110,4 +110,45 @@ public class RealPlayer extends Player {
   private boolean isNumberOfCardOutOfRange(int numberInput) {
     return numberInput < 0 || numberInput >= playerCards.size();
   }
+
+  public void sentMessageAboutRemovingMainCard() {
+    try {
+
+      Message sentCardsMessage = new Message("REMOVE_MAIN_CARD", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "Removing the main card.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      log.info(String.valueOf(e));
+      throw new RuntimeException(e);
+    }
+
+  }
+
+  public void sentLoosingMessage() {
+    try {
+
+      Message sentCardsMessage = new Message("PLAYER_LOST", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "Lost.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      log.info(String.valueOf(e));
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void sentWinningMessage() {
+    try {
+
+      Message sentCardsMessage = new Message("PLAYER_WON", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "Win.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      log.info(String.valueOf(e));
+      throw new RuntimeException(e);
+    }
+  }
+
 }

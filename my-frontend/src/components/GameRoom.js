@@ -175,6 +175,30 @@ function GameRoom() {
         setMainCard(parseCard(parsedMessage.content));
         setCardsClickable(false);
       }
+
+      if (
+        parsedMessage.type === "REMOVE_MAIN_CARD" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setMainCard({ cardType: "", cardValue: "" });
+        setCardsClickable(false);
+      }
+
+      if (
+        parsedMessage.type === "PLAYER_LOST" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setMessage("Player lost.");
+        setCardsClickable(false);
+      }
+
+      if (
+        parsedMessage.type === "PLAYER_WON" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setMessage("Player won.");
+        setCardsClickable(false);
+      }
     };
 
     socket.onerror = (error) => {
@@ -196,15 +220,19 @@ function GameRoom() {
       <h2>Game Room id : {roomId}</h2>
       <h2>Player id : {playerId}</h2>
 
-      <h2>Main Card</h2>
-      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-        <img
-          key={mainCard.code}
-          src={mainCard.imageUrl}
-          alt={mainCard.code}
-          style={{ width: "100px", cursor: "pointer" }}
-        />
-      </div>
+      {mainCard && mainCard.code && mainCard.imageUrl && (
+        <>
+          <h2>Main Card</h2>
+          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+            <img
+              key={mainCard.code}
+              src={mainCard.imageUrl}
+              alt={mainCard.code}
+              style={{ width: "100px", cursor: "pointer" }}
+            />
+          </div>
+        </>
+      )}
 
       <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
         {cards.map((card) => (

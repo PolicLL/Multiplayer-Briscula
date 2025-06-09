@@ -56,6 +56,11 @@ public class Game {
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {
         realPlayer.sentMessageAboutNewCardsAndPoints();
+
+        if (admin.isLastRound()) {
+          realPlayer.sentMessageAboutRemovingMainCard();
+        }
+
       }
     }
 
@@ -77,5 +82,9 @@ public class Game {
     admin.getPlayers().forEach(player ->
         log.info("[" + player.getPlayer().getNickname() + "] : " + player.getPlayer().getPoints()));
     log.info("\n");
+  }
+
+  public ConnectedPlayer notifyPlayersAndGetWinner() {
+    return admin.notifyPlayers();
   }
 }

@@ -15,6 +15,7 @@ import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -59,6 +60,10 @@ public class Admin {
 
   public List<Card> getCardsForPlayer(int playerId) {
     return listOfCardsForAllPlayers.get(playerId);
+  }
+
+  public boolean isLastRound() {
+    return this.deck.getDeckCards().isEmpty();
   }
 
   private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {
@@ -145,5 +150,27 @@ public class Admin {
   public boolean isGameOver() {
     return deck.getNumberOfDeckCards() == 0 &&
         players.stream().allMatch(player -> player.getPlayer().isPlayerDone());
+  }
+
+  public ConnectedPlayer notifyPlayers() {
+    ConnectedPlayer winner = getWinner();
+
+    RealPlayer realPlayer = (RealPlayer) winner.getPlayer();
+
+    realPlayer.sentWinningMessage();
+
+    players.stream()
+        .filter(player -> player.getPlayer() instanceof RealPlayer)
+        .filter(player -> player.getId() != winner.getId())
+        .map(player -> (RealPlayer) player.getPlayer())
+        .forEach(RealPlayer::sentLoosingMessage);
+
+    return winner;
+  }
+
+  private ConnectedPlayer getWinner() {
+    return players.stream()
+        .max(Comparator.comparingInt(p -> p.getPlayer().getPoints()))
+        .orElse(null);
   }
 }

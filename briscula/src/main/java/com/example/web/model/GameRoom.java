@@ -55,15 +55,14 @@ public class GameRoom {
     return game.getMainCard();
   }
 
-  public void startGame() {
+  public ConnectedPlayer startGame() {
     log.info("Game is staring.");
     while (!game.isGameOver()) {
       game.playRound();
     }
-  }
 
-  public void notifyPlayerToChooseCard() {
-
+    log.info("Game ended.");
+    return game.notifyPlayersAndGetWinner();
   }
 
   public void sendMessage(ConnectedPlayer player, String message) {
