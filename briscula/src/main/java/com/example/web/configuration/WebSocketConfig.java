@@ -20,9 +20,8 @@ public class WebSocketConfig implements WebSocketConfigurer {
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
         .addHandler(webSocketHandler, "/game/prepare")
-        .addHandler(webSocketHandler, "/game/**")
         .setAllowedOrigins("*");
 
-    log.info("WebSocket handler registered for path /game");
+    log.info("WebSocket handler registered for path /game/prepare");
   }
 }
