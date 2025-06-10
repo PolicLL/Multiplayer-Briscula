@@ -87,13 +87,14 @@ function Dashboard() {
     };
   }, [navigate, username]);
 
-  const joinGame = () => {
+  const joinGame = (numberOfPlayers) => {
     const socket = socketRef.current;
     if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(
         JSON.stringify({
           type: "JOIN_ROOM",
           playerName: username,
+          numberOfPlayers: numberOfPlayers,
         })
       );
     } else {
@@ -145,7 +146,10 @@ function Dashboard() {
           )}
 
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-          <button onClick={joinGame}>Join Game</button>
+          <button onClick={() => joinGame(2)}>Join Game (2v2)</button>
+          <button onClick={() => joinGame(3)}>Join Game (3v3)</button>
+          <button onClick={() => joinGame(4)}>Join Game (4v4)</button>
+
           <button disabled={!isStartEnabled}>Start Game</button>
         </>
       )}

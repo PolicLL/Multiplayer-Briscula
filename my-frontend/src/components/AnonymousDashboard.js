@@ -15,7 +15,7 @@ function PrepareGame() {
   let socket;
 
   // Function to handle WebSocket connection
-  const connectWebSocket = () => {
+  const joinGame = (numberOfPlayers) => {
     if (!name.trim()) {
       alert("You did not enter a name.");
       return;
@@ -29,6 +29,7 @@ function PrepareGame() {
         JSON.stringify({
           type: "JOIN_ROOM",
           playerName: name,
+          numberOfPlayers: numberOfPlayers,
         })
       );
     };
@@ -73,7 +74,9 @@ function PrepareGame() {
               onChange={(e) => setName(e.target.value)}
             />
 
-            <button onClick={connectWebSocket}>Join Game</button>
+            <button onClick={() => joinGame(2)}>Join Game (2v2)</button>
+            <button onClick={() => joinGame(3)}>Join Game (3v3)</button>
+            <button onClick={() => joinGame(4)}>Join Game (4v4)</button>
 
             <button disabled={!isStartEnabled}>Start Game</button>
 
