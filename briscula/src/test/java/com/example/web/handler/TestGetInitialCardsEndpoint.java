@@ -2,6 +2,7 @@ package com.example.web.handler;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
+import com.example.web.model.GameRoom;
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
@@ -15,19 +16,21 @@ import lombok.RequiredArgsConstructor;
 
 @ClientEndpoint
 @RequiredArgsConstructor
-public class TestEndpoint {
+public class TestGetInitialCardsEndpoint {
 
   private final CompletableFuture<String> completableFuture;
+  private final GameRoom gameRoom;
+  private int tempNumberOfMesages = 0;
+  private StringBuilder tempMessage = new StringBuilder();
 
   @OnOpen
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
-
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
-          "type", "JOIN_ROOM",
-          "playerName", "TestPlayer",
-          "numberOfPlayers", 2
+          "type", "GET_INITIAL_CARDS",
+          "roomId", gameRoom.getRoomId(),
+          "playerId", "1"
       )));
     } catch (Exception e) {
       e.printStackTrace();
@@ -38,7 +41,13 @@ public class TestEndpoint {
   @OnMessage
   public void onMessage(String message) {
     System.out.println("📥 Received message: " + message);
-    completableFuture.complete(message);
+
+    tempMessage.append(message);
+    ++tempNumberOfMesages;
+
+    if (tempNumberOfMesages == 2) {
+      completableFuture.complete(tempMessage.toString());
+    }
   }
 
   @OnError

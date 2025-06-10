@@ -2,10 +2,16 @@ package utils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
+import com.example.briscula.user.player.RealPlayer;
+import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.UserDto;
+import com.example.web.handler.SimpleWebSocketSession;
+import com.example.web.model.ConnectedPlayer;
+import java.util.List;
 import java.util.Random;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
+import org.springframework.web.socket.WebSocketSession;
 
 public class EntityUtils {
   private static final Random RANDOM = new Random();
@@ -67,6 +73,26 @@ public class EntityUtils {
     if (value != null) {
       builder.param(key, value);
     }
+  }
+
+  public static RoomPlayerId getRoomPlayerId() {
+    return new RoomPlayerId("roomId" + RANDOM.nextInt(500), RANDOM.nextInt(500));
+  }
+
+  public static RealPlayer getRealPlayer() {
+    return new RealPlayer(getRoomPlayerId(), List.of(),
+        "Nickname" + RANDOM.nextInt(500), getWebSocketSession()
+    );
+  }
+
+  public static ConnectedPlayer getConnectedPlayer() {
+    return new ConnectedPlayer(
+       getWebSocketSession(), getRealPlayer()
+    );
+  }
+
+  public static WebSocketSession getWebSocketSession() {
+    return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
   }
 
 }

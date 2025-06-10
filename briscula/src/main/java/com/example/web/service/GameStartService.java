@@ -40,6 +40,7 @@ public class GameStartService {
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
     List<ConnectedPlayer> players = gameRoom.getPlayers();
+
     // TODO: Update bad practice of setting new web socket session with different uri here.
      ConnectedPlayer connectedPlayer = players.stream().filter(player -> player.getId() == playerId).findFirst().get();
      if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
@@ -51,10 +52,6 @@ public class GameStartService {
 
     Message sentMainCardMessage = new Message("SENT_MAIN_CARD",
         roomId, playerId, CardFormatter.formatCard(gameRoom.getMainCard()));
-
-    String temp = JsonUtils.toJson(sentMainCardMessage);
-
-    log.info("Sent cards : " + sentCardsMessage);
 
     session.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
     session.sendMessage(new TextMessage(JsonUtils.toJson(sentMainCardMessage)));
