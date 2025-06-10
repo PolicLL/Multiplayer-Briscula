@@ -9,6 +9,7 @@ import static utils.EntityUtils.getWebSocketSession;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.enums.GameEndStatus;
+import com.example.web.model.enums.GameEndStatus.Status;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ class GameRoomTest {
 
     GameEndStatus gameEndStatus = gameRoom.startGame();
 
-    if (!gameEndStatus.status().equals("NO_WINNER")) {
+    if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       ConnectedPlayer player1 = gameRoom.getPlayers().get(0);
       ConnectedPlayer player2 = gameRoom.getPlayers().get(1);
 
