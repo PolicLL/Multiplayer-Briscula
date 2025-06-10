@@ -7,6 +7,7 @@ import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.enums.GameEndStatus;
 import java.util.ArrayDeque;
 import java.util.List;
 import java.util.Queue;
@@ -84,7 +85,7 @@ public class Game {
     log.info("\n");
   }
 
-  public ConnectedPlayer notifyPlayersAndGetWinner() {
+  public GameEndStatus notifyPlayersAndGetWinner() {
     return admin.notifyPlayers();
   }
 }

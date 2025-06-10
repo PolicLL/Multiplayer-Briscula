@@ -20,8 +20,8 @@ public class TestGetInitialCardsEndpoint {
 
   private final CompletableFuture<String> completableFuture;
   private final GameRoom gameRoom;
-  private int tempNumberOfMesages = 0;
-  private StringBuilder tempMessage = new StringBuilder();
+  private int tempNumberOfMessages = 0;
+  private final StringBuilder tempMessage = new StringBuilder();
 
   @OnOpen
   public void onOpen(Session session) {
@@ -43,9 +43,9 @@ public class TestGetInitialCardsEndpoint {
     System.out.println("📥 Received message: " + message);
 
     tempMessage.append(message);
-    ++tempNumberOfMesages;
+    ++tempNumberOfMessages;
 
-    if (tempNumberOfMesages == 2) {
+    if (tempNumberOfMessages == 2) {
       completableFuture.complete(tempMessage.toString());
     }
   }

@@ -14,6 +14,8 @@ import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.enums.GameEndStatus;
+import com.example.web.model.enums.GameEndStatus.Status;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -152,25 +154,41 @@ public class Admin {
         players.stream().allMatch(player -> player.getPlayer().isPlayerDone());
   }
 
-  public ConnectedPlayer notifyPlayers() {
-    ConnectedPlayer winner = getWinner();
+  public GameEndStatus notifyPlayers() {
+    GameEndStatus gameEndStatus = getGameEndStatus();
 
-    RealPlayer realPlayer = (RealPlayer) winner.getPlayer();
+    // TODO: Check if there is no winner then sent third message.
+    if (gameEndStatus.status().equals(Status.NO_WINNER)) {
+      players.stream()
+          .filter(player -> player.getPlayer() instanceof RealPlayer)
+          .map(player -> (RealPlayer) player.getPlayer())
+          .forEach(RealPlayer::setNoWinnerMessage);
+
+      return gameEndStatus;
+    }
+
+    RealPlayer realPlayer = (RealPlayer) gameEndStatus.winner().getPlayer();
 
     realPlayer.sentWinningMessage();
 
     players.stream()
         .filter(player -> player.getPlayer() instanceof RealPlayer)
-        .filter(player -> player.getId() != winner.getId())
+        .filter(player -> player.getId() != gameEndStatus.winner().getId())
         .map(player -> (RealPlayer) player.getPlayer())
         .forEach(RealPlayer::sentLoosingMessage);
 
-    return winner;
+    return gameEndStatus;
   }
 
-  private ConnectedPlayer getWinner() {
+  private GameEndStatus getGameEndStatus() {
     return players.stream()
-        .max(Comparator.comparingInt(p -> p.getPlayer().getPoints()))
-        .orElse(null);
+        .map(p -> p.getPlayer().getPoints())
+        .distinct()
+        .count() == 1
+        ? new GameEndStatus(null, Status.NO_WINNER)
+        : players.stream()
+            .max(Comparator.comparingInt(p -> p.getPlayer().getPoints()))
+            .map(player -> new GameEndStatus(player, Status.WINNER_FOUND))
+            .orElse(null);
   }
 }

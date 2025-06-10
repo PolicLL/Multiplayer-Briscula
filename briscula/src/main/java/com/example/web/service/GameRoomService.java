@@ -34,19 +34,7 @@ public class GameRoomService {
         ConnectedPlayer::isInitialCardsReceived);
   }
 
-  public void startGame(String roomId) {
-    this.activeRooms.get(roomId).startGame();
-  }
-
   public GameRoom getRoom(String roomId) {
     return activeRooms.get(roomId);
-  }
-
-  public void removeRoom(String roomId) {
-    activeRooms.remove(roomId);
-  }
-
-  public Collection<GameRoom> getAllRooms() {
-    return activeRooms.values();
   }
 }

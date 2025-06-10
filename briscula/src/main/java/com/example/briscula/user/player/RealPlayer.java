@@ -76,7 +76,7 @@ public class RealPlayer extends Player {
     }
   }
 
-  private int enterNumber() {
+  public int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
       return selectedCardFuture.get(WAITING_SECONDS, TimeUnit.SECONDS);
@@ -104,11 +104,6 @@ public class RealPlayer extends Player {
 
   public void completeSelectedCard(int selectedCardIndex) {
     selectedCardFuture.complete(selectedCardIndex);
-  }
-
-
-  private boolean isNumberOfCardOutOfRange(int numberInput) {
-    return numberInput < 0 || numberInput >= playerCards.size();
   }
 
   public void sentMessageAboutRemovingMainCard() {
@@ -151,4 +146,16 @@ public class RealPlayer extends Player {
     }
   }
 
+  public void setNoWinnerMessage() {
+    try {
+
+      Message sentCardsMessage = new Message("NO_WINNER", roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), "No winner.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      log.info(String.valueOf(e));
+      throw new RuntimeException(e);
+    }
+  }
 }

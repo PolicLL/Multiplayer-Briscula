@@ -199,6 +199,14 @@ function GameRoom() {
         setMessage("Player won.");
         setCardsClickable(false);
       }
+
+      if (
+        parsedMessage.type === "NO_WINNER" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setMessage("No winner.");
+        setCardsClickable(false);
+      }
     };
 
     socket.onerror = (error) => {

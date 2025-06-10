@@ -2,6 +2,7 @@ package utils;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
+import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.UserDto;
@@ -88,6 +89,12 @@ public class EntityUtils {
   public static ConnectedPlayer getConnectedPlayer() {
     return new ConnectedPlayer(
        getWebSocketSession(), getRealPlayer()
+    );
+  }
+
+  public static ConnectedPlayer getConnectedPlayer(Player player) {
+    return new ConnectedPlayer(
+       getWebSocketSession(), player
     );
   }
 
