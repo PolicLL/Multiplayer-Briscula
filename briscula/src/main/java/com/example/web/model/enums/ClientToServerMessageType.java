@@ -1,8 +1,8 @@
 package com.example.web.model.enums;
 
 public enum ClientToServerMessageType {
-  JOIN_GAME,
-  PLAY_CARD,
-  CHAT_MESSAGE,
-  LEAVE_GAME
+  JOIN_ROOM,
+  GET_INITIAL_CARDS,
+  INITIAL_CARDS_RECEIVED,
+  CARD_CHOSEN
 }

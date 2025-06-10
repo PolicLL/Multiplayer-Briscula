@@ -16,12 +16,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
   @Autowired
   private WebSocketHandler webSocketHandler;
 
-  @Override
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
         .addHandler(webSocketHandler, "/game/prepare")
+        .addHandler(webSocketHandler, "/game/**")
         .setAllowedOrigins("*");
 
-    log.info("WebSocket handler registered for path /game/prepare");
+    log.info("WebSocket handler registered for path /game");
   }
 }

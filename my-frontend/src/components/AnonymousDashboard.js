@@ -55,10 +55,6 @@ function PrepareGame() {
     };
   };
 
-  const startGame = () => {
-    navigate("/start-game");
-  };
-
   return (
     <Routes>
       <Route

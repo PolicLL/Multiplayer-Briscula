@@ -25,17 +25,15 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final GameStartService gameStartService;
 
-  private static final String MESSAGE_TYPE = "type";
-
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws IOException {
 
-    switch (WebSocketMessageReader.getValueFromJsonMessage(message, MESSAGE_TYPE)) {
-      case "JOIN_ROOM" -> gamePrepareService.handle(session, message);
-      case "GET_INITIAL_CARDS" -> gameStartService.handleGetCards(session, message);
-      case "INITIAL_CARDS_RECEIVED" -> gameStartService.handleGetInitialCards(message);
-      case "CARD_CHOSEN" -> gameStartService.handleChosenCard(message);
+    switch (WebSocketMessageReader.getMessageType(message)) {
+      case JOIN_ROOM -> gamePrepareService.handle(session, message);
+      case GET_INITIAL_CARDS -> gameStartService.handleGetCards(session, message);
+      case INITIAL_CARDS_RECEIVED -> gameStartService.handleGetInitialCards(message);
+      case CARD_CHOSEN -> gameStartService.handleChosenCard(message);
       default -> throw new WebSocketException();
     }
   }
@@ -49,5 +47,4 @@ public class WebSocketHandler extends TextWebSocketHandler {
   public void onError(WebSocketSession session, Throwable throwable) {
     log.error("WebSocket ERROR for session {}", session.getId(), throwable);
   }
-
 }
