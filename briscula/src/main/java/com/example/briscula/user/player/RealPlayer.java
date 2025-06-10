@@ -1,5 +1,13 @@
 package com.example.briscula.user.player;
 
+import static com.example.web.model.enums.ServerToClientMessageType.CARDS_STATE_UPDATE;
+import static com.example.web.model.enums.ServerToClientMessageType.CHOOSE_CARD;
+import static com.example.web.model.enums.ServerToClientMessageType.NO_WINNER;
+import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_LOST;
+import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_WON;
+import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_CARD;
+import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_MAIN_CARD;
+
 import com.example.briscula.model.card.Card;
 import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
@@ -43,7 +51,7 @@ public class RealPlayer extends Player {
   public void sentMessageAboutNewCardsAndPoints() {
 
 
-    Message sentCardsMessage = new Message("CARDS_STATE_UPDATE",
+    Message sentCardsMessage = new Message(CARDS_STATE_UPDATE,
         roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(),
         CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points));
 
@@ -60,7 +68,7 @@ public class RealPlayer extends Player {
   private void printInstructions() {
     try {
 
-      Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(CHOOSE_CARD, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Choose your card.");
 
       log.info("Sent message to player to choose card. roomId = {}, playerId = {}", roomPlayerId.getRoomId(), roomPlayerId.getPlayerId());
@@ -83,10 +91,10 @@ public class RealPlayer extends Player {
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
 
-      Message sentCardsMessage = new Message("CHOOSE_CARD", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(CHOOSE_CARD, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "");
 
-      Message removeCardMessage = new Message("REMOVE_CARD", roomPlayerId.getRoomId(),
+      Message removeCardMessage = new Message(REMOVE_CARD, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "0");
 
       try {
@@ -109,7 +117,7 @@ public class RealPlayer extends Player {
   public void sentMessageAboutRemovingMainCard() {
     try {
 
-      Message sentCardsMessage = new Message("REMOVE_MAIN_CARD", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(REMOVE_MAIN_CARD, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Removing the main card.");
 
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
@@ -123,7 +131,7 @@ public class RealPlayer extends Player {
   public void sentLoosingMessage() {
     try {
 
-      Message sentCardsMessage = new Message("PLAYER_LOST", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(PLAYER_LOST, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Lost.");
 
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
@@ -136,7 +144,7 @@ public class RealPlayer extends Player {
   public void sentWinningMessage() {
     try {
 
-      Message sentCardsMessage = new Message("PLAYER_WON", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(PLAYER_WON, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "Win.");
 
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
@@ -149,7 +157,7 @@ public class RealPlayer extends Player {
   public void setNoWinnerMessage() {
     try {
 
-      Message sentCardsMessage = new Message("NO_WINNER", roomPlayerId.getRoomId(),
+      Message sentCardsMessage = new Message(NO_WINNER, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "No winner.");
 
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));

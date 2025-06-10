@@ -1,5 +1,7 @@
 package com.example.web.service;
 
+import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
+
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
@@ -62,7 +64,7 @@ public class GamePrepareService {
         try {
           log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
           tempUser.getWebSocketSession().sendMessage(new TextMessage(
-              String.format("GAME_STARTED %s %s", gameRoom.getRoomId(), tempUser.getId())));
+              String.format("%s %s %s", GAME_STARTED, gameRoom.getRoomId(), tempUser.getId())));
         } catch (IOException e) {
           throw new RuntimeException(e);
         }

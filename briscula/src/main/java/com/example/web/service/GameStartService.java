@@ -1,5 +1,7 @@
 package com.example.web.service;
 
+import static com.example.web.model.enums.ServerToClientMessageType.SENT_INITIAL_CARDS;
+import static com.example.web.model.enums.ServerToClientMessageType.SENT_MAIN_CARD;
 import static com.example.web.utils.Constants.PLAYER_ID;
 import static com.example.web.utils.Constants.ROOM_ID;
 
@@ -47,10 +49,10 @@ public class GameStartService {
        realPlayer.setWebSocketSession(session);
      }
 
-    Message sentCardsMessage = new Message("SENT_INITIAL_CARDS",
+    Message sentCardsMessage = new Message(SENT_INITIAL_CARDS,
         roomId, playerId, CardFormatter.formatCards(listCards));
 
-    Message sentMainCardMessage = new Message("SENT_MAIN_CARD",
+    Message sentMainCardMessage = new Message(SENT_MAIN_CARD,
         roomId, playerId, CardFormatter.formatCard(gameRoom.getMainCard()));
 
     session.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));

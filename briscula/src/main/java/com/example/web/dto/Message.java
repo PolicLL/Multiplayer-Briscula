@@ -1,6 +1,8 @@
 package com.example.web.dto;
 
-public record Message (String type, String roomId, int playerId, String content) {
+import com.example.web.model.enums.ServerToClientMessageType;
+
+public record Message (ServerToClientMessageType type, String roomId, int playerId, String content) {
 
 }
 
