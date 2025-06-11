@@ -31,6 +31,7 @@ public class RealPlayer extends Player {
   private WebSocketSession webSocketSession;
   private final RoomPlayerId roomPlayerId;
 
+  @Setter
   private CompletableFuture<Integer> selectedCardFuture;
   private final int WAITING_SECONDS = 11;
 

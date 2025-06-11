@@ -3,10 +3,13 @@ package com.example.web.handler;
 import static org.assertj.core.api.Assertions.assertThat;
 import static utils.EntityUtils.getConnectedPlayer;
 
+import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import com.example.web.handler.endpoints.TestCardChosenEndpoint;
+import com.example.web.handler.endpoints.TestGetChooseCardMessageEndpoint;
 import com.example.web.handler.endpoints.TestGetInitialCardsEndpoint;
-import com.example.web.handler.endpoints.TestInitialCardsReceivedEndpoint;
 import com.example.web.handler.endpoints.TestJoinRoomEndpoint;
+import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.service.GameRoomService;
 import jakarta.websocket.ContainerProvider;
@@ -40,6 +43,12 @@ class WebSocketHandlerIntegrationTest {
 
     gameRoom = gameRoomService.createRoom(List.of(getConnectedPlayer(), getConnectedPlayer()),
         GameOptionNumberOfPlayers.TWO_PLAYERS);
+
+    gameRoom.getPlayers()
+        .stream()
+        .map(ConnectedPlayer::getPlayer)
+        .map(RealPlayer.class::cast)
+        .forEach(realPlayer -> realPlayer.setSelectedCardFuture(new CompletableFuture<>()));
   }
 
   @Test
@@ -83,13 +92,12 @@ class WebSocketHandlerIntegrationTest {
     CompletableFuture<String> future2 = new CompletableFuture<>();
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-    TestInitialCardsReceivedEndpoint endpoint1 = new TestInitialCardsReceivedEndpoint(gameRoom, future1);
-    TestInitialCardsReceivedEndpoint endpoint2 = new TestInitialCardsReceivedEndpoint(gameRoom, future2);
+    TestGetChooseCardMessageEndpoint endpoint1 = new TestGetChooseCardMessageEndpoint(gameRoom, future1);
+    TestGetChooseCardMessageEndpoint endpoint2 = new TestGetChooseCardMessageEndpoint(gameRoom, future2);
 
     container.connectToServer(endpoint1, WS_URI); // ✅ separate instance
     container.connectToServer(endpoint2, WS_URI); // ✅ separate instance
 
-    // Wait for only one result to assert behavior
     String response1 = "";
     String response2 = "";
 
@@ -109,6 +117,23 @@ class WebSocketHandlerIntegrationTest {
 
     System.out.println("✅ Test completed successfully: " + response1);
     System.out.println("✅ Test completed successfully: " + response2);
+  }
+
+  /**
+   * This test will pass if no exception has been thrown.
+   */
+  @Test
+  void testRawWebSocketCardChosen() throws Exception {
+    CompletableFuture<String> future = new CompletableFuture<>();
+
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
+    TestCardChosenEndpoint endpoint = new TestCardChosenEndpoint(gameRoom, future);
+
+    container.connectToServer(endpoint, WS_URI);
+    container.connectToServer(endpoint, WS_URI);
+
+    System.out.println("✅ Test completed successfully!");
   }
 
 }

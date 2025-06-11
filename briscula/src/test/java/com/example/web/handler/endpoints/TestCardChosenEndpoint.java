@@ -16,51 +16,31 @@ import lombok.RequiredArgsConstructor;
 
 @ClientEndpoint
 @RequiredArgsConstructor
-public class TestInitialCardsReceivedEndpoint {
+public class TestCardChosenEndpoint {
 
   private final GameRoom gameRoom;
   private final CompletableFuture<String> completableFuture;
-  private static int playerId = 0;
-  private Session session;
 
   @OnOpen
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
-
-    this.session = session;
-
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
-          "type", "GET_INITIAL_CARDS",
+          "type", "CARD_CHOSEN",
           "roomId", gameRoom.getRoomId(),
-          "playerId", "1"
+          "playerId", "1",
+          "card", "0"
       )));
     } catch (Exception e) {
       e.printStackTrace();
       completableFuture.completeExceptionally(e);
     }
-
-    System.out.println("✅ WebSocket connection established");
   }
 
   @OnMessage
   public void onMessage(String message) {
     System.out.println("📥 Received message: " + message);
-
-    if (message.contains("SENT_INITIAL_CARDS")) {
-      try {
-        session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
-            "type", "INITIAL_CARDS_RECEIVED",
-            "roomId", gameRoom.getRoomId(),
-            "playerId", String.valueOf(playerId++)
-        )));
-      } catch (Exception e) {
-        e.printStackTrace();
-        completableFuture.completeExceptionally(e);
-      }
-    } else if (message.contains("CHOOSE_CARD")) {
-      completableFuture.complete(message);
-    }
+    completableFuture.complete(message);
   }
 
   @OnError

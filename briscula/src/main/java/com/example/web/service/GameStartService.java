@@ -82,8 +82,6 @@ public class GameStartService {
 
     int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "card"));
 
-    // TODO: Something does not work as expected.
-
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
     if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
