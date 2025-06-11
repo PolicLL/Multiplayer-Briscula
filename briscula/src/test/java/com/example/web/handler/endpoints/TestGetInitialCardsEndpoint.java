@@ -26,8 +26,6 @@ public class TestGetInitialCardsEndpoint {
   @OnOpen
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
-    System.out.println("Session id : " + gameRoom.getPlayers().get(0).getWebSocketSession().getId());
-    System.out.println("Session id : " + gameRoom.getPlayers().get(1).getWebSocketSession().getId());
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "GET_INITIAL_CARDS",

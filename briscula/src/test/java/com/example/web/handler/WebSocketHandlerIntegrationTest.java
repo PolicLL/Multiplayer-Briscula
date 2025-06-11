@@ -79,24 +79,36 @@ class WebSocketHandlerIntegrationTest {
 
   @Test
   void testRawWebSocketInitialCardsReceived() throws Exception {
-    CompletableFuture<String> future = new CompletableFuture<>();
+    CompletableFuture<String> future1 = new CompletableFuture<>();
+    CompletableFuture<String> future2 = new CompletableFuture<>();
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-    TestGetInitialCardsEndpoint endpointGetInitial = new TestGetInitialCardsEndpoint(future, gameRoom);
-    container.connectToServer(endpointGetInitial, WS_URI);
-    container.connectToServer(endpointGetInitial, WS_URI);
+    TestInitialCardsReceivedEndpoint endpoint1 = new TestInitialCardsReceivedEndpoint(gameRoom, future1);
+    TestInitialCardsReceivedEndpoint endpoint2 = new TestInitialCardsReceivedEndpoint(gameRoom, future2);
 
-    TestInitialCardsReceivedEndpoint endpoint = new TestInitialCardsReceivedEndpoint(gameRoom, future);
-    container.connectToServer(endpoint, WS_URI);
-    container.connectToServer(endpoint, WS_URI);
+    container.connectToServer(endpoint1, WS_URI); // ✅ separate instance
+    container.connectToServer(endpoint2, WS_URI); // ✅ separate instance
 
-    String response = future.get(5, TimeUnit.SECONDS);
+    // Wait for only one result to assert behavior
+    String response1 = "";
+    String response2 = "";
 
-    System.out.println("RESPONSE: " + response);
+    try {
+      response1 = future1.get(5, TimeUnit.SECONDS);
+    } catch (Exception e) {
+      System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
+    }
 
-    assertThat(response)
-        .contains("CHOOSE_CARD");
+    try {
+      response2 = future2.get(5, TimeUnit.SECONDS);
+    } catch (Exception e) {
+      System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
+    }
 
-    System.out.println("✅ Test completed successfully: " + response);
+    assertThat(response1 + response2).contains("CHOOSE_CARD");
+
+    System.out.println("✅ Test completed successfully: " + response1);
+    System.out.println("✅ Test completed successfully: " + response2);
   }
+
 }

@@ -20,28 +20,47 @@ public class TestInitialCardsReceivedEndpoint {
 
   private final GameRoom gameRoom;
   private final CompletableFuture<String> completableFuture;
-  private int playerId = 0;
+  private static int playerId = 0;
+  private Session session;
 
   @OnOpen
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
 
+    this.session = session;
+
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
-          "type", "INITIAL_CARDS_RECEIVED",
+          "type", "GET_INITIAL_CARDS",
           "roomId", gameRoom.getRoomId(),
-          "playerId", String.valueOf(playerId++)
+          "playerId", "1"
       )));
     } catch (Exception e) {
       e.printStackTrace();
       completableFuture.completeExceptionally(e);
     }
+
+    System.out.println("✅ WebSocket connection established");
   }
 
   @OnMessage
   public void onMessage(String message) {
     System.out.println("📥 Received message: " + message);
-    completableFuture.complete(message);
+
+    if (message.contains("SENT_INITIAL_CARDS")) {
+      try {
+        session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
+            "type", "INITIAL_CARDS_RECEIVED",
+            "roomId", gameRoom.getRoomId(),
+            "playerId", String.valueOf(playerId++)
+        )));
+      } catch (Exception e) {
+        e.printStackTrace();
+        completableFuture.completeExceptionally(e);
+      }
+    } else if (message.contains("CHOOSE_CARD")) {
+      completableFuture.complete(message);
+    }
   }
 
   @OnError
