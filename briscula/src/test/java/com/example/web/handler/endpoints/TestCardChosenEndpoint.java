@@ -28,7 +28,7 @@ public class TestCardChosenEndpoint {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "CARD_CHOSEN",
           "roomId", gameRoom.getRoomId(),
-          "playerId", "1",
+          "playerId", "0",
           "card", "0"
       )));
     } catch (Exception e) {

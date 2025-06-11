@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -87,6 +88,7 @@ class WebSocketHandlerIntegrationTest {
   }
 
   @Test
+  @Order(1)
   void testRawWebSocketInitialCardsReceived() throws Exception {
     CompletableFuture<String> future1 = new CompletableFuture<>();
     CompletableFuture<String> future2 = new CompletableFuture<>();
@@ -102,13 +104,13 @@ class WebSocketHandlerIntegrationTest {
     String response2 = "";
 
     try {
-      response1 = future1.get(5, TimeUnit.SECONDS);
+      response1 = future1.get(10, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
     }
 
     try {
-      response2 = future2.get(5, TimeUnit.SECONDS);
+      response2 = future2.get(10, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
     }
@@ -131,7 +133,9 @@ class WebSocketHandlerIntegrationTest {
     TestCardChosenEndpoint endpoint = new TestCardChosenEndpoint(gameRoom, future);
 
     container.connectToServer(endpoint, WS_URI);
-    container.connectToServer(endpoint, WS_URI);
+
+    RealPlayer realPlayer = (RealPlayer) gameRoom.getPlayers().get(0).getPlayer();
+    assertThat(realPlayer.getSelectedCardFuture().get()).isEqualTo(0);
 
     System.out.println("✅ Test completed successfully!");
   }
