@@ -1,8 +1,9 @@
 package com.example.briscula.user.player;
 
+import static com.example.web.utils.Constants.RANDOM;
+
 import com.example.briscula.model.card.Card;
 import java.util.List;
-import java.util.Random;
 
 public class Bot extends Player {
 
@@ -11,7 +12,7 @@ public class Bot extends Player {
   }
 
   public Card playRound(){
-    Card tempCard = playerCards.get(new Random().nextInt(playerCards.size()));
+    Card tempCard = playerCards.get(RANDOM.nextInt(playerCards.size()));
     playerCards.remove(tempCard);
 
     return tempCard;

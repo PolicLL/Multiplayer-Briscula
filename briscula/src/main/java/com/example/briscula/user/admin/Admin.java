@@ -1,7 +1,7 @@
 package com.example.briscula.user.admin;
 
 import static com.example.briscula.utilities.constants.Constants.HUMAN_PLAYER;
-import static com.example.briscula.utilities.constants.Constants.getRandomNumber;
+import static com.example.web.utils.Constants.getRandomNumber;
 
 import com.example.briscula.game.RoundWinner;
 import com.example.briscula.model.card.Card;
@@ -157,8 +157,7 @@ public class Admin {
   public GameEndStatus notifyPlayers() {
     GameEndStatus gameEndStatus = getGameEndStatus();
 
-    // TODO: Check if there is no winner then sent third message.
-    if (gameEndStatus.status().equals(Status.NO_WINNER)) {
+    if (Status.NO_WINNER.equals(gameEndStatus.status())) {
       players.stream()
           .filter(player -> player.getPlayer() instanceof RealPlayer)
           .map(player -> (RealPlayer) player.getPlayer())

@@ -1,6 +1,5 @@
 package com.example.briscula.model.card;
 
-import com.example.briscula.exceptions.NoCardWithNumberTwoException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -48,8 +47,7 @@ public class Deck {
     deckCards.stream()
         .filter(card -> card.cardValue() == CardValue.TWO)
         .findFirst()
-        .map(deckCards::remove)
-        .orElseThrow(() -> new IllegalStateException(new NoCardWithNumberTwoException()));
+        .map(deckCards::remove);
   }
 
   public int getNumberOfDeckCards() {
