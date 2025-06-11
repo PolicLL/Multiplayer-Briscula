@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static utils.EntityUtils.getConnectedPlayer;
 
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import com.example.web.handler.endpoints.TestGetInitialCardsEndpoint;
+import com.example.web.handler.endpoints.TestInitialCardsReceivedEndpoint;
+import com.example.web.handler.endpoints.TestJoinRoomEndpoint;
 import com.example.web.model.GameRoom;
 import com.example.web.service.GameRoomService;
 import jakarta.websocket.ContainerProvider;
@@ -59,18 +62,40 @@ class WebSocketHandlerIntegrationTest {
   @Test
   void testRawWebSocketGetInitialCards() throws Exception {
     CompletableFuture<String> future = new CompletableFuture<>();
-
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
     TestGetInitialCardsEndpoint endpoint = new TestGetInitialCardsEndpoint(future, gameRoom);
 
     container.connectToServer(endpoint, WS_URI);
 
     String response = future.get(5, TimeUnit.SECONDS);
 
+    assertThat(response)
+        .contains("SENT_INITIAL_CARDS")
+        .contains("SENT_MAIN_CARD");
+
+    System.out.println("✅ Test completed successfully: " + response);
+  }
+
+  @Test
+  void testRawWebSocketInitialCardsReceived() throws Exception {
+    CompletableFuture<String> future = new CompletableFuture<>();
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
+    TestGetInitialCardsEndpoint endpointGetInitial = new TestGetInitialCardsEndpoint(future, gameRoom);
+    container.connectToServer(endpointGetInitial, WS_URI);
+    container.connectToServer(endpointGetInitial, WS_URI);
+
+    TestInitialCardsReceivedEndpoint endpoint = new TestInitialCardsReceivedEndpoint(gameRoom, future);
+    container.connectToServer(endpoint, WS_URI);
+    container.connectToServer(endpoint, WS_URI);
+
+    String response = future.get(5, TimeUnit.SECONDS);
+
     System.out.println("RESPONSE: " + response);
 
-    assertThat(response).contains("SENT_INITIAL_CARDS");
-    assertThat(response).contains("SENT_MAIN_CARD");
+    assertThat(response)
+        .contains("CHOOSE_CARD");
 
     System.out.println("✅ Test completed successfully: " + response);
   }

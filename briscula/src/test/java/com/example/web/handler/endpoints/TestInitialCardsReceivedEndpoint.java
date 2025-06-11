@@ -1,4 +1,4 @@
-package com.example.web.handler;
+package com.example.web.handler.endpoints;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
@@ -16,21 +16,21 @@ import lombok.RequiredArgsConstructor;
 
 @ClientEndpoint
 @RequiredArgsConstructor
-public class TestGetInitialCardsEndpoint {
+public class TestInitialCardsReceivedEndpoint {
 
-  private final CompletableFuture<String> completableFuture;
   private final GameRoom gameRoom;
-  private int tempNumberOfMessages = 0;
-  private final StringBuilder tempMessage = new StringBuilder();
+  private final CompletableFuture<String> completableFuture;
+  private int playerId = 0;
 
   @OnOpen
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
+
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
-          "type", "GET_INITIAL_CARDS",
+          "type", "INITIAL_CARDS_RECEIVED",
           "roomId", gameRoom.getRoomId(),
-          "playerId", "1"
+          "playerId", String.valueOf(playerId++)
       )));
     } catch (Exception e) {
       e.printStackTrace();
@@ -41,13 +41,7 @@ public class TestGetInitialCardsEndpoint {
   @OnMessage
   public void onMessage(String message) {
     System.out.println("📥 Received message: " + message);
-
-    tempMessage.append(message);
-    ++tempNumberOfMessages;
-
-    if (tempNumberOfMessages == 2) {
-      completableFuture.complete(tempMessage.toString());
-    }
+    completableFuture.complete(message);
   }
 
   @OnError

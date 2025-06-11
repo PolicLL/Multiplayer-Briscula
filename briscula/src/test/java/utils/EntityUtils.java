@@ -6,7 +6,6 @@ import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.UserDto;
-import com.example.web.handler.SimpleWebSocketSession;
 import com.example.web.model.ConnectedPlayer;
 import java.util.List;
 import java.util.Random;
