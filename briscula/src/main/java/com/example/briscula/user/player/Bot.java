@@ -17,4 +17,19 @@ public class Bot extends Player {
 
     return tempCard;
   }
+
+  @Override
+  public void sentLoosingMessage() {
+
+  }
+
+  @Override
+  public void sentWinningMessage() {
+
+  }
+
+  @Override
+  public void setNoWinnerMessage() {
+
+  }
 }

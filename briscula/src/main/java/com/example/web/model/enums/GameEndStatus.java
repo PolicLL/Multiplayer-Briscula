@@ -1,10 +1,11 @@
 package com.example.web.model.enums;
 
 import com.example.web.model.ConnectedPlayer;
+import java.util.List;
 import lombok.Getter;
 
 public record GameEndStatus(
-    ConnectedPlayer winner,
+    List<ConnectedPlayer> winners,
     Status status
 ) {
   @Getter

@@ -17,7 +17,6 @@ import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -166,28 +165,42 @@ public class Admin {
       return gameEndStatus;
     }
 
-    RealPlayer realPlayer = (RealPlayer) gameEndStatus.winner().getPlayer();
 
-    realPlayer.sentWinningMessage();
+    List<Integer> winnerIds = gameEndStatus.winners().stream()
+        .peek(cp -> cp.getPlayer().sentWinningMessage())
+        .map(ConnectedPlayer::getId)
+        .toList();
 
     players.stream()
-        .filter(player -> player.getPlayer() instanceof RealPlayer)
-        .filter(player -> player.getId() != gameEndStatus.winner().getId())
-        .map(player -> (RealPlayer) player.getPlayer())
-        .forEach(RealPlayer::sentLoosingMessage);
+        .filter(p -> !winnerIds.contains(p.getId()))
+        .map(ConnectedPlayer::getPlayer)
+        .forEach(Player::sentLoosingMessage);
 
     return gameEndStatus;
   }
 
   private GameEndStatus getGameEndStatus() {
+    if (players.stream().map(p -> p.getPlayer().getPoints()).distinct().count() == 1) {
+      return new GameEndStatus(List.of(), Status.NO_WINNER);
+    }
+
+    int maxPoints = players.stream()
+        .mapToInt(p -> p.getPlayer().getPoints())
+        .max()
+        .orElseThrow();
+
+    if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.FOUR_PLAYERS) {
+      List<ConnectedPlayer> winners = (players.get(0).getPlayer().getPoints() == maxPoints ||
+          players.get(2).getPlayer().getPoints() == maxPoints)
+          ? List.of(players.get(0), players.get(2))
+          : List.of(players.get(1), players.get(3));
+      return new GameEndStatus(winners, Status.WINNER_FOUND);
+    }
+
     return players.stream()
-        .map(p -> p.getPlayer().getPoints())
-        .distinct()
-        .count() == 1
-        ? new GameEndStatus(null, Status.NO_WINNER)
-        : players.stream()
-            .max(Comparator.comparingInt(p -> p.getPlayer().getPoints()))
-            .map(player -> new GameEndStatus(player, Status.WINNER_FOUND))
-            .orElse(null);
+        .filter(p -> p.getPlayer().getPoints() == maxPoints)
+        .findFirst()
+        .map(p -> new GameEndStatus(List.of(p), Status.WINNER_FOUND))
+        .orElse(null);
   }
 }

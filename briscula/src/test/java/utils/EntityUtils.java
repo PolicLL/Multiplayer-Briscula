@@ -1,7 +1,9 @@
 package utils;
 
+import static com.example.web.utils.Constants.getRandomNumber;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 
+import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
@@ -95,6 +97,14 @@ public class EntityUtils {
     return new ConnectedPlayer(
        getWebSocketSession(), player
     );
+  }
+
+  public static ConnectedPlayer getConnectedPlayer(Bot bot) {
+    return new ConnectedPlayer(bot);
+  }
+
+  public static ConnectedPlayer getConnectedPlayersBots() {
+    return new ConnectedPlayer(new Bot(null, "Bot " + getRandomNumber(100)));
   }
 
   public static WebSocketSession getWebSocketSession() {

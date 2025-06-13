@@ -53,20 +53,10 @@ public class Game {
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound(roundWinner);
+    updateCardsAndPointsState();
 
-    for (ConnectedPlayer player : admin.getPlayers()) {
-      if (player.getPlayer() instanceof RealPlayer realPlayer) {
-        realPlayer.sentMessageAboutNewCardsAndPoints();
-
-        if (admin.isLastRound()) {
-          realPlayer.sentMessageAboutRemovingMainCard();
-        }
-
-      }
-    }
-
-    log.info("ROUND ENDED.");
     logPlayersValues();
+    log.info("ROUND ENDED.");
   }
 
   public Card getMainCard() {
@@ -77,6 +67,19 @@ public class Game {
     return this.admin.getPlayers()
         .stream().filter(player -> player.getId() == playerId)
         .findFirst().get();
+  }
+
+  private void updateCardsAndPointsState() {
+    for (ConnectedPlayer player : admin.getPlayers()) {
+      if (player.getPlayer() instanceof RealPlayer realPlayer) {
+        realPlayer.sentMessageAboutNewCardsAndPoints();
+
+        if (admin.isLastRound()) {
+          realPlayer.sentMessageAboutRemovingMainCard();
+        }
+
+      }
+    }
   }
 
   private void logPlayersValues() {

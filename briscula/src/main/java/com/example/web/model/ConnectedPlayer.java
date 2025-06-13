@@ -19,6 +19,10 @@ public class ConnectedPlayer {
     this.player = player;
   }
 
+  public ConnectedPlayer(Player player) {
+    this.player = player;
+  }
+
   @Override
   public String toString() {
     return this.player.toString();

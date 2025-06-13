@@ -24,6 +24,10 @@ public abstract class Player {
   // TODO: I would like to when creating the players, use the same ID that is used in ConnectedPlayer task.
   public abstract Card playRound();
 
+  public abstract void sentLoosingMessage();
+  public abstract void sentWinningMessage();
+  public abstract void setNoWinnerMessage();
+
   public boolean isPlayerDone() {
     return playerCards.isEmpty();
   }
