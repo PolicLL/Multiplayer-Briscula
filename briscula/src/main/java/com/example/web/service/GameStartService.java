@@ -70,8 +70,8 @@ public class GameStartService {
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for rom {} are received.", roomId);
       CompletableFuture
-          .supplyAsync(() -> gameRoomService.getRoom(roomId).startGame()) // must return ConnectedPlayer
-          .thenAccept(gameEndService::update);            // consumes ConnectedPlayer
+          .supplyAsync(() -> gameRoomService.getRoom(roomId).startGame())
+          .thenAccept(gameEndService::update);
 
     }
   }

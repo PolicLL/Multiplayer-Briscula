@@ -1,10 +1,12 @@
 package com.example.briscula.user.player;
 
+import static com.example.briscula.utilities.constants.CardFormatter.formatCard;
 import static com.example.web.model.enums.ServerToClientMessageType.CARDS_STATE_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.CHOOSE_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.NO_WINNER;
 import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_LOST;
 import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_WON;
+import static com.example.web.model.enums.ServerToClientMessageType.RECEIVED_THROWN_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_MAIN_CARD;
 
@@ -52,17 +54,23 @@ public class RealPlayer extends Player {
   public void sentMessageAboutNewCardsAndPoints() {
 
 
-    Message sentCardsMessage = new Message(CARDS_STATE_UPDATE,
-        roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(),
-        CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points));
+    CompletableFuture<Void> pauseFuture = CompletableFuture
+        .runAsync(() -> {}, CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS));
 
-    log.info("Sent cards : " + sentCardsMessage);
 
-    try {
-      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
+    pauseFuture.thenRun(() -> {
+      Message sentCardsMessage = new Message(CARDS_STATE_UPDATE,
+          roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(),
+          CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points));
+
+      log.info("Sent cards : " + sentCardsMessage);
+
+      try {
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+      } catch (IOException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
   }
 
@@ -160,6 +168,18 @@ public class RealPlayer extends Player {
 
       Message sentCardsMessage = new Message(NO_WINNER, roomPlayerId.getRoomId(),
           roomPlayerId.getPlayerId(), "No winner.");
+
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
+    } catch (IOException e) {
+      log.info(String.valueOf(e));
+      throw new RuntimeException(e);
+    }
+  }
+
+  public void sentMessageAboutNewCardFromAnotherPlayer(Card card) {
+    try {
+      Message sentCardsMessage = new Message(RECEIVED_THROWN_CARD, roomPlayerId.getRoomId(),
+          roomPlayerId.getPlayerId(), formatCard(card));
 
       webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(sentCardsMessage)));
     } catch (IOException e) {

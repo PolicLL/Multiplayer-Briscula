@@ -10,5 +10,6 @@ public enum ServerToClientMessageType {
   PLAYER_LOST,
   PLAYER_WON,
   NO_WINNER,
-  SENT_MAIN_CARD
+  SENT_MAIN_CARD,
+  RECEIVED_THROWN_CARD
 }

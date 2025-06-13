@@ -44,7 +44,10 @@ public class Game {
     for (int i = 0; i < numberOfIterations; i++) {
       Player player = admin.getCurrentPlayer();
       Card card = player.playRound();
-      queueMoves.add(new Move(player, card));
+      Move newMove = new Move(player, card);
+      queueMoves.add(newMove);
+
+      sentMessageAboutNewCardToOtherPlayers(newMove);
 
       log.info("Move " + i + " -> " + player.getNickname() + " | " + card);
     }
@@ -57,6 +60,13 @@ public class Game {
 
     logPlayersValues();
     log.info("ROUND ENDED.");
+  }
+
+  private void sentMessageAboutNewCardToOtherPlayers(Move newMove) {
+    admin.getPlayers().stream()
+        .map(ConnectedPlayer::getPlayer)
+        .map(RealPlayer.class::cast)
+        .forEach(player -> player.sentMessageAboutNewCardFromAnotherPlayer(newMove.card()));
   }
 
   public Card getMainCard() {
