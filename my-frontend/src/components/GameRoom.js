@@ -5,6 +5,7 @@ function GameRoom() {
   const { roomId, playerId } = useParams();
   const [message, setMessage] = useState("");
   const [cards, setCards] = useState([]);
+  const [thrownCards, setThrownCards] = useState([]);
   const [points, setPoints] = useState(0);
   const [cardsClickable, setCardsClickable] = useState(false); // control globally
   const [mainCard, setMainCard] = useState({ cardType: "", cardValue: "" });
@@ -136,6 +137,7 @@ function GameRoom() {
         const { cards, points } = parsePlayerStatus(parsedMessage.content);
         setCards(cards);
         setPoints(points);
+        setThrownCards([]);
       }
 
       if (
@@ -207,6 +209,16 @@ function GameRoom() {
         setMessage("No winner.");
         setCardsClickable(false);
       }
+
+      if (
+        parsedMessage.type === "RECEIVED_THROWN_CARD" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        setThrownCards((prevCards) => [
+          ...prevCards,
+          parseCard(parsedMessage.content),
+        ]);
+      }
     };
 
     socket.onerror = (error) => {
@@ -254,6 +266,19 @@ function GameRoom() {
         ))}
 
         <h3>Points: {points}</h3>
+      </div>
+
+      <h3>Thrown cards</h3>
+
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+        {thrownCards.map((card) => (
+          <img
+            key={card.code}
+            src={card.imageUrl}
+            alt={card.code}
+            style={{ width: "100px", cursor: "pointer" }}
+          />
+        ))}
       </div>
 
       {cardsClickable && timeLeft > 0 && (
