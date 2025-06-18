@@ -36,7 +36,6 @@ function GameRoom() {
     // TODO CONTINUE HERE TO REMOVE LAST ELEMENT IF IT IS A NUMBER TO NOT BE SHOWN AS A CARD
     const cardArray = cardString.trim().split(" ");
 
-    // Check if the last element is a number
     const lastElement = cardArray[cardArray.length - 1];
     const lastIsNumber = !isNaN(lastElement);
 
@@ -123,9 +122,11 @@ function GameRoom() {
         parsedMessage.type === "SENT_INITIAL_CARDS" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        const { cards, points } = parsePlayerStatus(parsedMessage.content);
+        const { cards, numberOfPoints } = parsePlayerStatus(
+          parsedMessage.content
+        );
         setCards(cards);
-        setPoints(points);
+        setPoints(numberOfPoints);
 
         socket.send(
           JSON.stringify({
@@ -140,14 +141,15 @@ function GameRoom() {
         parsedMessage.type === "CARDS_STATE_UPDATE" &&
         parsedMessage.playerId === parseInt(playerId)
       ) {
-        const { cards, points } = parsePlayerStatus(parsedMessage.content);
+        const { cards, numberOfPoints } = parsePlayerStatus(
+          parsedMessage.content
+        );
+
         console.log("TEMP");
-        console.log("cards : " + cards);
-        console.log("cards length: " + cards.length);
-        console.log("points : " + points);
-        console.log("TEMP");
+        console.log("points : " + numberOfPoints);
+
         setCards(cards);
-        setPoints(points);
+        setPoints(numberOfPoints);
         setThrownCards([]);
       }
 
@@ -157,7 +159,7 @@ function GameRoom() {
       ) {
         setMessage(parsedMessage.content);
         setCardsClickable(true);
-        setTimeLeft(10); // start countdown
+        setTimeLeft(30); // start countdown
 
         if (timerRef.current) clearInterval(timerRef.current);
 
@@ -291,6 +293,10 @@ function GameRoom() {
       {cardsClickable && timeLeft > 0 && (
         <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>
       )}
+
+      <div>
+        <h3>Points: {points}</h3>
+      </div>
 
       <div>
         <h3>Messages: {message}</h3>
