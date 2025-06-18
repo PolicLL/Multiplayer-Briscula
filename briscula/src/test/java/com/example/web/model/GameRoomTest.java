@@ -21,10 +21,10 @@ class GameRoomTest {
   void testStartGameWithTwoPlayersMockedEnterNumber() {
     Set<ConnectedPlayer> playerList = new HashSet<>();
 
-    RealPlayer realPlayer1 = spy(new RealPlayer(null, null, "Player1", getWebSocketSession()));
+    RealPlayer realPlayer1 = spy(new RealPlayer(null, "Player1", getWebSocketSession()));
     doReturn(0).when(realPlayer1).enterNumber();
 
-    RealPlayer realPlayer2 = spy(new RealPlayer(null, null, "Player2", getWebSocketSession()));
+    RealPlayer realPlayer2 = spy(new RealPlayer(null, "Player2", getWebSocketSession()));
     doReturn(0).when(realPlayer2).enterNumber();
 
     ConnectedPlayer connectedPlayer1 = getConnectedPlayer(realPlayer1);

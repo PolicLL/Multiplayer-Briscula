@@ -15,18 +15,17 @@ public abstract class Player {
   @Getter
   protected int points;
 
-  public Player(List<Card> playerCards, String nickname) {
+  protected Player(List<Card> playerCards, String nickname) {
     this.playerCards = playerCards;
     this.nickname = nickname;
   }
 
-
   // TODO: I would like to when creating the players, use the same ID that is used in ConnectedPlayer task.
   public abstract Card playRound();
-
   public abstract void sentLoosingMessage();
   public abstract void sentWinningMessage();
   public abstract void setNoWinnerMessage();
+  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card);
 
   public boolean isPlayerDone() {
     return playerCards.isEmpty();

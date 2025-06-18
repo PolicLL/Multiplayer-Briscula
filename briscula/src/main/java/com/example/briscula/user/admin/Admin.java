@@ -104,7 +104,7 @@ public class Admin {
   private void addBotPlayersAndHuman(GameOptionNumberOfPlayers gameOptions) {
     setAllBotPlayers(gameOptions);
     // TODO: Update logic so that web socket session is set for RealPlayers.
-    players.set(players.size() - 1, new ConnectedPlayer(null, new RealPlayer(null,
+    players.set(players.size() - 1, new ConnectedPlayer(null, new RealPlayer(
         listOfCardsForAllPlayers.get(listOfCardsForAllPlayers.size() - 1), HUMAN_PLAYER, null)));
   }
 

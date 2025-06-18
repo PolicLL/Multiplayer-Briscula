@@ -33,10 +33,16 @@ function GameRoom() {
   const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
 
-    const cardArray = cardString.split(" ");
-    const numberOfPoints = parseInt(cardArray[cardArray.length - 1], 10);
+    // TODO CONTINUE HERE TO REMOVE LAST ELEMENT IF IT IS A NUMBER TO NOT BE SHOWN AS A CARD
+    const cardArray = cardString.trim().split(" ");
 
-    const cardCodes = cardArray.slice(0, n);
+    // Check if the last element is a number
+    const lastElement = cardArray[cardArray.length - 1];
+    const lastIsNumber = !isNaN(lastElement);
+
+    // If it's a number, parse it and remove from array
+    const numberOfPoints = lastIsNumber ? parseInt(lastElement, 10) : null;
+    const cardCodes = lastIsNumber ? cardArray.slice(0, -1) : cardArray;
 
     const cards = cardCodes.map((cardCode) => ({
       code: cardCode,
@@ -135,6 +141,11 @@ function GameRoom() {
         parsedMessage.playerId === parseInt(playerId)
       ) {
         const { cards, points } = parsePlayerStatus(parsedMessage.content);
+        console.log("TEMP");
+        console.log("cards : " + cards);
+        console.log("cards length: " + cards.length);
+        console.log("points : " + points);
+        console.log("TEMP");
         setCards(cards);
         setPoints(points);
         setThrownCards([]);
@@ -237,9 +248,6 @@ function GameRoom() {
 
   return (
     <div>
-      <h2>Game Room id : {roomId}</h2>
-      <h2>Player id : {playerId}</h2>
-
       {mainCard && mainCard.code && mainCard.imageUrl && (
         <>
           <h2>Main Card</h2>
@@ -254,6 +262,7 @@ function GameRoom() {
         </>
       )}
 
+      <h3>Your cards</h3>
       <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
         {cards.map((card) => (
           <img
@@ -264,8 +273,6 @@ function GameRoom() {
             onClick={() => cardsClickable && handleCardClick(card)}
           />
         ))}
-
-        <h3>Points: {points}</h3>
       </div>
 
       <h3>Thrown cards</h3>

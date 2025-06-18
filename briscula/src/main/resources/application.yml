@@ -19,6 +19,8 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
+briscula:
+  waiting-time-in-seconds-for-choosing-card: 15
 #logging:
 #  level:
 #    org.springframework.security: DEBUG

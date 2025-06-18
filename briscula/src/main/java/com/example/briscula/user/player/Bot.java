@@ -32,4 +32,9 @@ public class Bot extends Player {
   public void setNoWinnerMessage() {
 
   }
+
+  @Override
+  public void sentMessageAboutNewCardFromAnotherPlayer(Card card) {
+
+  }
 }

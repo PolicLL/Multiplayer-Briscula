@@ -43,7 +43,7 @@ public class GamePrepareService {
 
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(null,
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
         null, WebSocketMessageReader.getValueFromJsonMessage(message, "playerName"), session));
 
     int numberOfPlayersOption = Integer.parseInt(
