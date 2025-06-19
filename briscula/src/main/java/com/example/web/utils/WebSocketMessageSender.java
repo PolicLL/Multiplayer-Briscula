@@ -23,4 +23,17 @@ public class WebSocketMessageSender {
       throw new RuntimeException(e);
     }
   }
+
+  public static void sendMessage(WebSocketSession webSocketSession,
+      ServerToClientMessageType messageType,
+      String roomId,
+      int playerId) {
+    try {
+      Message message = new Message(messageType, roomId, playerId);
+      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
+    } catch (IOException e) {
+      log.error("Error sending message: " + e.getMessage());
+      throw new RuntimeException(e);
+    }
+  }
 }

@@ -1,6 +1,8 @@
 package com.example.web.service;
 
+import static com.example.web.model.enums.ServerToClientMessageType.CHOOSE_POINTS_SHOWING_ON_OFF;
 import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
+import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
@@ -8,7 +10,6 @@ import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -17,10 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
-
 
 @Slf4j
 @Component
@@ -47,7 +46,6 @@ public class GamePrepareService {
         WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
 
     if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
-
       log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
       return;
     }
@@ -63,18 +61,17 @@ public class GamePrepareService {
         GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
             GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption));
 
+        ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
+        sendMessage(firstPlayer.getWebSocketSession(), CHOOSE_POINTS_SHOWING_ON_OFF,
+            gameRoom.getRoomId(), firstPlayer.getId());
+
         waitingPlayers.forEach(tempUser -> {
-          try {
-            log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-            tempUser.getWebSocketSession().sendMessage(new TextMessage(
-                String.format("%s %s %s", GAME_STARTED, gameRoom.getRoomId(), tempUser.getId())));
-          } catch (IOException e) {
-            log.error("Error sending game start message", e);
-          }
+          log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+          sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
         });
 
-      waitingPlayers.clear();
+        waitingPlayers.clear();
+      }
     }
-  }
   }
 }
