@@ -13,6 +13,8 @@ function GameRoom() {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
 
+  const [pointsVisible, setPointsVisible] = useState(true); // default to true
+
   const socketRef = useRef(null);
 
   const parseWebSocketMessage = (message) => {
@@ -33,13 +35,11 @@ function GameRoom() {
   const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
 
-    // TODO CONTINUE HERE TO REMOVE LAST ELEMENT IF IT IS A NUMBER TO NOT BE SHOWN AS A CARD
     const cardArray = cardString.trim().split(" ");
 
     const lastElement = cardArray[cardArray.length - 1];
     const lastIsNumber = !isNaN(lastElement);
 
-    // If it's a number, parse it and remove from array
     const numberOfPoints = lastIsNumber ? parseInt(lastElement, 10) : null;
     const cardCodes = lastIsNumber ? cardArray.slice(0, -1) : cardArray;
 
@@ -127,6 +127,11 @@ function GameRoom() {
         );
         setCards(cards);
         setPoints(numberOfPoints);
+
+        // 🟢 Check if content contains visibility flag
+        if (parsedMessage.hasOwnProperty("showPoints")) {
+          setPointsVisible(parsedMessage.showPoints);
+        }
 
         socket.send(
           JSON.stringify({
@@ -294,9 +299,11 @@ function GameRoom() {
         <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>
       )}
 
-      <div>
-        <h3>Points: {points}</h3>
-      </div>
+      {pointsVisible && (
+        <div>
+          <h3>Points: {points}</h3>
+        </div>
+      )}
 
       <div>
         <h3>Messages: {message}</h3>

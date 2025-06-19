@@ -1,12 +1,11 @@
 package com.example.web.model;
 
 import com.example.briscula.user.player.Player;
+import java.util.Objects;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import org.springframework.web.socket.WebSocketSession;
 
 @Data
-@EqualsAndHashCode
 public class ConnectedPlayer {
   private int id;
   private String roomId;
@@ -19,12 +18,15 @@ public class ConnectedPlayer {
     this.player = player;
   }
 
-  public ConnectedPlayer(Player player) {
-    this.player = player;
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ConnectedPlayer that)) return false;
+    return Objects.equals(this.player, that.player);
   }
 
   @Override
-  public String toString() {
-    return this.player.toString();
+  public int hashCode() {
+    return Objects.hash(player);
   }
 }

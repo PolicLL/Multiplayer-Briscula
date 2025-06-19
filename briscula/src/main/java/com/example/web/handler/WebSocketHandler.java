@@ -4,9 +4,6 @@ import com.example.web.exception.WebSocketException;
 import com.example.web.service.GamePrepareService;
 import com.example.web.service.GameStartService;
 import com.example.web.utils.WebSocketMessageReader;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,15 +33,5 @@ public class WebSocketHandler extends TextWebSocketHandler {
       case CARD_CHOSEN -> gameStartService.handleChosenCard(message);
       default -> throw new WebSocketException();
     }
-  }
-
-  @OnClose
-  public void onClose(WebSocketSession session, CloseReason reason) {
-    log.warn("WebSocket CLOSED for session {}: {}", session.getId(), reason);
-  }
-
-  @OnError
-  public void onError(WebSocketSession session, Throwable throwable) {
-    log.error("WebSocket ERROR for session {}", session.getId(), throwable);
   }
 }

@@ -27,7 +27,6 @@ import org.springframework.web.socket.WebSocketSession;
 @RequiredArgsConstructor
 public class GamePrepareService {
 
-
   private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();
 
   {
@@ -38,46 +37,44 @@ public class GamePrepareService {
 
   private final GameRoomService gameRoomService;
 
-
   // TODO: Check -> When I clicked join from the anonymous user twice, it started the game.
 
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
-        null, WebSocketMessageReader.getValueFromJsonMessage(message, "playerName"), session));
 
+    String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
     int numberOfPlayersOption = Integer.parseInt(
         WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
 
-    if (isThereUserFromThisWebSession(session)) {
-      log.info("User {} from this session already joined.", connectedPlayer);
+    if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
+
+      log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
       return;
     }
 
-    mapPreparingPlayers.get(numberOfPlayersOption).add(connectedPlayer);
+    synchronized (mapPreparingPlayers) {
+      ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
+          null, playerName, session));
 
-    if (mapPreparingPlayers.get(numberOfPlayersOption).size() == numberOfPlayersOption) {
-      GameRoom gameRoom = gameRoomService.createRoom(mapPreparingPlayers.get(numberOfPlayersOption),
-          GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption));
+      Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
+      waitingPlayers.add(connectedPlayer);
 
-      mapPreparingPlayers.get(numberOfPlayersOption).forEach(tempUser -> {
-        try {
-          log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-          tempUser.getWebSocketSession().sendMessage(new TextMessage(
-              String.format("%s %s %s", GAME_STARTED, gameRoom.getRoomId(), tempUser.getId())));
-        } catch (IOException e) {
-          throw new RuntimeException(e);
-        }
-      });
+      if (waitingPlayers.size() == numberOfPlayersOption) {
+        GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
+            GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption));
 
-      mapPreparingPlayers.get(numberOfPlayersOption).clear();
+        waitingPlayers.forEach(tempUser -> {
+          try {
+            log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+            tempUser.getWebSocketSession().sendMessage(new TextMessage(
+                String.format("%s %s %s", GAME_STARTED, gameRoom.getRoomId(), tempUser.getId())));
+          } catch (IOException e) {
+            log.error("Error sending game start message", e);
+          }
+        });
+
+      waitingPlayers.clear();
     }
   }
-
-  private boolean isThereUserFromThisWebSession(WebSocketSession session) {
-    return mapPreparingPlayers.values().stream()
-        .flatMap(Set::stream)
-        .anyMatch(player -> player.getWebSocketSession().equals(session));
   }
-
 }

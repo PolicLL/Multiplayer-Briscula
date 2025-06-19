@@ -3,6 +3,7 @@ package com.example.briscula.user.player;
 
 import com.example.briscula.model.card.Card;
 import java.util.List;
+import java.util.Objects;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -45,5 +46,17 @@ public abstract class Player {
 
   public void setPlayerCards(List<Card> playerCards) {
     this.playerCards = playerCards;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Player player)) return false;
+    return Objects.equals(nickname, player.nickname);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(nickname);
   }
 }
