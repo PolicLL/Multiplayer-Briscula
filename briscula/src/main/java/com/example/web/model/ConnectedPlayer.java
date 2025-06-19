@@ -39,8 +39,6 @@ public class ConnectedPlayer {
     return Objects.equals(this.webSocketSession.getId(), that.webSocketSession.getId());
   }
 
-  // TODO: It's a bad idea to have ability to set null for web socket session.
-
   @Override
   public int hashCode() {
     return Objects.hash(webSocketSession.getId());
