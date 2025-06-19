@@ -1,6 +1,5 @@
 package com.example.web.service;
 
-import static com.example.web.model.enums.ServerToClientMessageType.CHOOSE_POINTS_SHOWING_ON_OFF;
 import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
@@ -60,10 +59,6 @@ public class GamePrepareService {
       if (waitingPlayers.size() == numberOfPlayersOption) {
         GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
             GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption));
-
-        ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
-        sendMessage(firstPlayer.getWebSocketSession(), CHOOSE_POINTS_SHOWING_ON_OFF,
-            gameRoom.getRoomId(), firstPlayer.getId());
 
         waitingPlayers.forEach(tempUser -> {
           log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());

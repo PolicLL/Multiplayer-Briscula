@@ -2,7 +2,6 @@ package com.example.web.model.enums;
 
 public enum ServerToClientMessageType {
   GAME_STARTED,
-  CHOOSE_POINTS_SHOWING_ON_OFF,
   SENT_INITIAL_CARDS,
   CARDS_STATE_UPDATE,
   CHOOSE_CARD,

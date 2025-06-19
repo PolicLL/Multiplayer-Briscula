@@ -14,15 +14,28 @@ function PrepareGame() {
   const navigate = useNavigate();
   let socket;
 
-  // Function to handle WebSocket connection
+  const parseWebSocketMessage = (message) => {
+    try {
+      const parsed = JSON.parse(message);
+      return {
+        type: parsed.type,
+        roomId: parsed.roomId,
+        playerId: parsed.playerId,
+        content: parsed.content,
+      };
+    } catch (error) {
+      console.error("Invalid JSON.", error);
+      return null;
+    }
+  };
+
   const joinGame = (numberOfPlayers) => {
     if (!name.trim()) {
       alert("You did not enter a name.");
       return;
     }
 
-    socket = new WebSocket("ws://localhost:8080/game/prepare"); // Change port if needed
-
+    socket = new WebSocket("ws://localhost:8080/game/prepare");
     socket.onopen = () => {
       setStatus("Connected to the server successfully!");
       socket.send(
@@ -36,11 +49,13 @@ function PrepareGame() {
 
     socket.onmessage = (event) => {
       const message = event.data;
+      const parsedMessage = parseWebSocketMessage(message);
+
+      if (!parsedMessage) return;
 
       if (message.includes("GAME_STARTED")) {
         console.log("Game starting...");
-        const [_, roomId, playerId] = message.split(" ");
-        navigate(`/game/${roomId}/${playerId}`);
+        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
       } else {
         setReceivedMessage(message);
       }
