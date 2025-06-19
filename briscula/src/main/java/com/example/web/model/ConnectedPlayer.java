@@ -36,7 +36,6 @@ public class ConnectedPlayer {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof ConnectedPlayer that)) return false;
-    if (that.webSocketSession == null) return false;
     return Objects.equals(this.webSocketSession.getId(), that.webSocketSession.getId());
   }
 
@@ -44,6 +43,6 @@ public class ConnectedPlayer {
 
   @Override
   public int hashCode() {
-    return Objects.hash(webSocketSession == null ? 0 : webSocketSession.getId());
+    return Objects.hash(webSocketSession.getId());
   }
 }

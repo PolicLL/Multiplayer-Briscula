@@ -108,7 +108,8 @@ public class EntityUtils {
   }
 
   public static ConnectedPlayer getConnectedPlayersBots() {
-    return new ConnectedPlayer(new Bot(null, "Bot " + getRandomNumber(100)));
+    return new ConnectedPlayer(getWebSocketSession(), new Bot(null, "Bot " + getRandomNumber(100)),
+        true);
   }
 
   public static WebSocketSession getWebSocketSession() {
