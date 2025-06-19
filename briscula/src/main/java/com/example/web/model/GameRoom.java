@@ -25,7 +25,8 @@ public class GameRoom {
 
   private int playerIndex = 0;
 
-  public GameRoom(Collection<ConnectedPlayer> playerList, GameOptionNumberOfPlayers gameOptionNumberOfPlayers) {
+  public GameRoom(Collection<ConnectedPlayer> playerList,
+      GameOptionNumberOfPlayers gameOptionNumberOfPlayers, boolean showPoints) {
     this.roomId = UUID.randomUUID().toString().substring(0, 6);
 
     // TODO: It's not clean, but I will set setting of index like this for now.
@@ -42,7 +43,7 @@ public class GameRoom {
 
     this.players.addAll(playerList);
 
-    this.game = new Game(gameOptionNumberOfPlayers, GameMode.ALL_HUMANS, players);
+    this.game = new Game(gameOptionNumberOfPlayers, GameMode.ALL_HUMANS, players, showPoints);
 
   }
 

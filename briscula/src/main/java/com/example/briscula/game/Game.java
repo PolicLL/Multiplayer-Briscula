@@ -17,10 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 public class Game {
   private final GameOptionNumberOfPlayers gameOptions;
   private final Admin admin;
+  private boolean showPoints = true;
 
-  public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players) {
+  public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players, boolean showPoints) {
     this.gameOptions = gameOptions;
     this.admin = new Admin();
+    this.showPoints = showPoints;
 
     admin.prepareDeckAndPlayers(gameOptions, gameMode, players);
 
@@ -81,7 +83,7 @@ public class Game {
   private void updateCardsAndPointsState() {
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {
-        realPlayer.sentMessageAboutNewCardsAndPoints();
+        realPlayer.sentMessageAboutNewCardsAndPoints(showPoints);
 
         if (admin.isLastRound()) {
           realPlayer.sentMessageAboutRemovingMainCard();

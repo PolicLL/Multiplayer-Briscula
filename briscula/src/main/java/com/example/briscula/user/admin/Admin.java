@@ -104,14 +104,18 @@ public class Admin {
   private void addBotPlayersAndHuman(GameOptionNumberOfPlayers gameOptions) {
     setAllBotPlayers(gameOptions);
     // TODO: Update logic so that web socket session is set for RealPlayers.
-    players.set(players.size() - 1, new ConnectedPlayer(null, new RealPlayer(
-        listOfCardsForAllPlayers.get(listOfCardsForAllPlayers.size() - 1), HUMAN_PLAYER, null)));
+    players.set(players.size() - 1, ConnectedPlayer.builder()
+            .player(new RealPlayer(listOfCardsForAllPlayers.get(listOfCardsForAllPlayers.size() - 1),
+                HUMAN_PLAYER, null))
+        .build());
   }
 
   private void setAllBotPlayers(GameOptionNumberOfPlayers gameOptions) {
     players = new ArrayList<>();
     for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
-      players.add(new ConnectedPlayer(null, new Bot(listOfCardsForAllPlayers.get(i), "Name " + i)));
+      players.add(ConnectedPlayer.builder()
+              .player(new Bot(listOfCardsForAllPlayers.get(i), "Name " + i))
+          .build());
     }
   }
 

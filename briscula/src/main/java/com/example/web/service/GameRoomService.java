@@ -16,8 +16,8 @@ public class GameRoomService {
   private final Map<String, GameRoom> activeRooms = new ConcurrentHashMap<>();
 
   public GameRoom createRoom(Collection<ConnectedPlayer> playerList,
-      GameOptionNumberOfPlayers gameOptionNumberOfPlayers) {
-    GameRoom room = new GameRoom(playerList, gameOptionNumberOfPlayers);
+      GameOptionNumberOfPlayers gameOptionNumberOfPlayers, boolean showPoints) {
+    GameRoom room = new GameRoom(playerList, gameOptionNumberOfPlayers, showPoints);
     activeRooms.put(room.getRoomId(), room);
     return room;
   }

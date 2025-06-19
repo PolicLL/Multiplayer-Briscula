@@ -55,12 +55,14 @@ public class RealPlayer extends Player {
     return playerCards.remove(numberInput);
   }
 
-  public void sentMessageAboutNewCardsAndPoints() {
+  public void sentMessageAboutNewCardsAndPoints(boolean showPoints) {
     CompletableFuture<Void> pauseFuture = CompletableFuture
         .runAsync(() -> {}, CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS));
 
     pauseFuture.thenRun(() -> {
-      String formattedState = CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points);
+      String formattedState = showPoints ?
+          CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points) :
+          CardFormatter.formatTemporaryPlayerState(this.playerCards, -1) ;
       log.info("Sent cards state update");
       sendMessage(webSocketSession, CARDS_STATE_UPDATE, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), formattedState);
     });

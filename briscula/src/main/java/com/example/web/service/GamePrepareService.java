@@ -41,6 +41,8 @@ public class GamePrepareService {
       throws JsonProcessingException {
 
     String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
+    boolean shouldPointsShow = Boolean.parseBoolean(
+        WebSocketMessageReader.getValueFromJsonMessage(message, "shouldShowPoints"));
     int numberOfPlayersOption = Integer.parseInt(
         WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
 
@@ -51,14 +53,16 @@ public class GamePrepareService {
 
     synchronized (mapPreparingPlayers) {
       ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
-          null, playerName, session));
+          null, playerName, session), shouldPointsShow);
 
       Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
       waitingPlayers.add(connectedPlayer);
 
       if (waitingPlayers.size() == numberOfPlayersOption) {
+        ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
+
         GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
-            GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption));
+            GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption), firstPlayer.isDoesWantPointsToShow());
 
         waitingPlayers.forEach(tempUser -> {
           log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());

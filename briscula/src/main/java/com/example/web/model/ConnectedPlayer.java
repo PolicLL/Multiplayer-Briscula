@@ -3,10 +3,13 @@ package com.example.web.model;
 import com.example.briscula.user.player.Player;
 import java.util.Objects;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
 import org.springframework.web.socket.WebSocketSession;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class ConnectedPlayer {
   private int id;
@@ -15,9 +18,13 @@ public class ConnectedPlayer {
   private Player player;
   private boolean initialCardsReceived = false;
 
-  public ConnectedPlayer(WebSocketSession webSocketSession, Player player) {
+  @Getter
+  private boolean doesWantPointsToShow = true;
+
+  public ConnectedPlayer(WebSocketSession webSocketSession, Player player, boolean doesWantPointsToShow) {
     this.webSocketSession = webSocketSession;
     this.player = player;
+    this.doesWantPointsToShow = doesWantPointsToShow;
   }
 
   public ConnectedPlayer(Player player) {
@@ -28,11 +35,11 @@ public class ConnectedPlayer {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof ConnectedPlayer that)) return false;
-    return Objects.equals(this.player, that.player);
+    return Objects.equals(this.webSocketSession.getId(), that.webSocketSession.getId());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(player);
+    return Objects.hash(webSocketSession.getId());
   }
 }

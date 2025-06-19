@@ -33,7 +33,7 @@ class GameRoomTest {
     playerList.add(connectedPlayer1);
     playerList.add(connectedPlayer2);
 
-    GameRoom gameRoom = new GameRoom(playerList, GameOptionNumberOfPlayers.TWO_PLAYERS);
+    GameRoom gameRoom = new GameRoom(playerList, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
 
     GameEndStatus gameEndStatus = gameRoom.startGame();
 
@@ -59,7 +59,7 @@ class GameRoomTest {
   @Test
   void testStartGameWithTwoBots() {
     GameRoom gameRoom = new GameRoom(new HashSet<>(Set.of(getConnectedPlayersBots(), getConnectedPlayersBots())),
-        GameOptionNumberOfPlayers.TWO_PLAYERS);
+        GameOptionNumberOfPlayers.TWO_PLAYERS, true);
 
     GameEndStatus gameEndStatus = gameRoom.startGame();
 

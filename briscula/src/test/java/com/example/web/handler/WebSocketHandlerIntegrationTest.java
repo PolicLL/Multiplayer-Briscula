@@ -43,7 +43,7 @@ class WebSocketHandlerIntegrationTest {
     WS_URI = new URI("ws://localhost:" + port + "/game/prepare");
 
     gameRoom = gameRoomService.createRoom(List.of(getConnectedPlayer(), getConnectedPlayer()),
-        GameOptionNumberOfPlayers.TWO_PLAYERS);
+        GameOptionNumberOfPlayers.TWO_PLAYERS, true);
 
     gameRoom.getPlayers()
         .stream()
