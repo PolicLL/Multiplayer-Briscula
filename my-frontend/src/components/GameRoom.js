@@ -10,6 +10,8 @@ function GameRoom() {
   const [cardsClickable, setCardsClickable] = useState(false); // control globally
   const [mainCard, setMainCard] = useState({ cardType: "", cardValue: "" });
 
+  const [shouldShowPoints, setShouldShowPoints] = useState(true);
+
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
 
@@ -124,7 +126,12 @@ function GameRoom() {
           parsedMessage.content
         );
         setCards(cards);
-        setPoints(numberOfPoints);
+
+        if (numberOfPoints === -1) {
+          setShouldShowPoints(false);
+        } else {
+          setPoints(numberOfPoints);
+        }
 
         socket.send(
           JSON.stringify({
@@ -143,11 +150,13 @@ function GameRoom() {
           parsedMessage.content
         );
 
-        console.log("TEMP");
-        console.log("points : " + numberOfPoints);
-
         setCards(cards);
-        setPoints(numberOfPoints);
+
+        if (numberOfPoints === -1) {
+          setShouldShowPoints(false);
+        } else {
+          setPoints(numberOfPoints);
+        }
         setThrownCards([]);
       }
 
@@ -292,9 +301,11 @@ function GameRoom() {
         <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>
       )}
 
-      <div>
-        <h3>Points: {points}</h3>
-      </div>
+      {shouldShowPoints && (
+        <div>
+          <h3>Points: {points}</h3>
+        </div>
+      )}
 
       <div>
         <h3>Messages: {message}</h3>
