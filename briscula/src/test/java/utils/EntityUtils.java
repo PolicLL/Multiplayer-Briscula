@@ -81,6 +81,10 @@ public class EntityUtils {
     return new RoomPlayerId("roomId" + RANDOM.nextInt(500), RANDOM.nextInt(500));
   }
 
+  public static String getPlayerName() {
+    return "Player + " + RANDOM.nextInt(100000);
+  }
+
   public static RealPlayer getRealPlayer() {
     return new RealPlayer(getRoomPlayerId(), List.of(),
         "Nickname" + RANDOM.nextInt(500), getWebSocketSession()

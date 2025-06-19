@@ -1,6 +1,7 @@
 package com.example.web.handler.endpoints;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static utils.EntityUtils.getPlayerName;
 
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
@@ -25,7 +26,7 @@ public class TestJoinRoomEndpoint {
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "JOIN_ROOM",
-          "playerName", "TestPlayer",
+          "playerName", getPlayerName(),
           "numberOfPlayers", 2
       )));
     } catch (Exception e) {

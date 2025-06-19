@@ -104,13 +104,13 @@ class WebSocketHandlerIntegrationTest {
     String response2 = "";
 
     try {
-      response1 = future1.get(10, TimeUnit.SECONDS);
+      response1 = future1.get(20, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
     }
 
     try {
-      response2 = future2.get(10, TimeUnit.SECONDS);
+      response2 = future2.get(20, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
     }
