@@ -93,13 +93,13 @@ public class EntityUtils {
 
   public static ConnectedPlayer getConnectedPlayer() {
     return new ConnectedPlayer(
-       getWebSocketSession(), getRealPlayer()
+       getWebSocketSession(), getRealPlayer(), true
     );
   }
 
   public static ConnectedPlayer getConnectedPlayer(Player player) {
     return new ConnectedPlayer(
-       getWebSocketSession(), player
+       getWebSocketSession(), player, true
     );
   }
 

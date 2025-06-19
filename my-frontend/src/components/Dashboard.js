@@ -14,11 +14,19 @@ function Dashboard() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const [shouldShowPoints, setShouldShowPoints] = useState(false);
+
   const socketRef = useRef(null);
 
   const getPhotoUrl = (photoId) => {
     console.log(`Getting photo by id ${photoId}`);
     return `http://localhost:8080/api/photo/${photoId}`;
+  };
+
+  const handleCheckboxChange = (event) => {
+    setShouldShowPoints(event.target.checked);
   };
 
   useEffect(() => {
@@ -95,8 +103,11 @@ function Dashboard() {
           type: "JOIN_ROOM",
           playerName: username,
           numberOfPlayers: numberOfPlayers,
+          shouldShowPoints: shouldShowPoints,
         })
       );
+
+      setIsDisabled(true);
     } else {
       setStatus("Socket not connected.");
     }
@@ -146,9 +157,24 @@ function Dashboard() {
           )}
 
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-          <button onClick={() => joinGame(2)}>Join Game (2v2)</button>
-          <button onClick={() => joinGame(3)}>Join Game (3v3)</button>
-          <button onClick={() => joinGame(4)}>Join Game (4v4)</button>
+          <button onClick={() => joinGame(2)} disabled={isDisabled}>
+            Join Game (2v2)
+          </button>
+          <button onClick={() => joinGame(3)} disabled={isDisabled}>
+            Join Game (3v3)
+          </button>
+          <button onClick={() => joinGame(4)} disabled={isDisabled}>
+            Join Game (4v4)
+          </button>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={shouldShowPoints}
+              onChange={handleCheckboxChange}
+            />
+            Show Points
+          </label>
 
           <button disabled={!isStartEnabled}>Start Game</button>
         </>

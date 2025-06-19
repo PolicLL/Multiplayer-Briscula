@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -11,8 +11,13 @@ function PrepareGame() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [name, setName] = useState("");
   const [isStartEnabled, setIsStartEnabled] = useState(false);
+  const [shouldShowPoints, setShouldShowPoints] = useState(false);
   const navigate = useNavigate();
   let socket;
+
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const socketRef = useRef(null);
 
   const parseWebSocketMessage = (message) => {
     try {
@@ -29,23 +34,39 @@ function PrepareGame() {
     }
   };
 
+  const handleCheckboxChange = (event) => {
+    setShouldShowPoints(event.target.checked);
+  };
+
+  useEffect(() => {
+    const socket = new WebSocket("ws://localhost:8080/game/prepare");
+    socketRef.current = socket;
+
+    return () => {
+      socket.close();
+    };
+  }, [navigate]);
+
   const joinGame = (numberOfPlayers) => {
     if (!name.trim()) {
       alert("You did not enter a name.");
       return;
     }
 
-    socket = new WebSocket("ws://localhost:8080/game/prepare");
-    socket.onopen = () => {
-      setStatus("Connected to the server successfully!");
+    const socket = socketRef.current;
+
+    if (socket && socket.readyState === WebSocket.OPEN) {
       socket.send(
         JSON.stringify({
           type: "JOIN_ROOM",
           playerName: name,
           numberOfPlayers: numberOfPlayers,
+          shouldShowPoints: shouldShowPoints,
         })
       );
-    };
+
+      setIsDisabled(true);
+    }
 
     socket.onmessage = (event) => {
       const message = event.data;
@@ -86,8 +107,21 @@ function PrepareGame() {
             />
 
             <button onClick={() => joinGame(2)}>Join Game (2v2)</button>
-            <button onClick={() => joinGame(3)}>Join Game (3v3)</button>
-            <button onClick={() => joinGame(4)}>Join Game (4v4)</button>
+            <button onClick={() => joinGame(3)} disabled={isDisabled}>
+              Join Game (3v3)
+            </button>
+            <button onClick={() => joinGame(4)} disabled={isDisabled}>
+              Join Game (4v4)
+            </button>
+
+            <label>
+              <input
+                type="checkbox"
+                checked={shouldShowPoints}
+                onChange={handleCheckboxChange}
+              />
+              Show Points
+            </label>
 
             <button disabled={!isStartEnabled}>Start Game</button>
 

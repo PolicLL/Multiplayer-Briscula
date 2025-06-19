@@ -27,6 +27,7 @@ public class TestJoinRoomEndpoint {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "JOIN_ROOM",
           "playerName", getPlayerName(),
+          "shouldShowPoints", "true",
           "numberOfPlayers", 2
       )));
     } catch (Exception e) {
