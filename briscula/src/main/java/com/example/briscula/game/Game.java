@@ -9,8 +9,10 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -58,7 +60,7 @@ public class Game {
     roundWinner.player().incrementPoints(roundWinner.numberOfPoints());
 
     admin.dealNextRound(roundWinner);
-    updateCardsAndPointsState();
+    updateCardsAndPointsState().join();
 
     logPlayersValues();
     log.info("ROUND ENDED.");
@@ -80,17 +82,20 @@ public class Game {
         .findFirst().get();
   }
 
-  private void updateCardsAndPointsState() {
+  private CompletableFuture<Void> updateCardsAndPointsState() {
+    List<CompletableFuture<Void>> futures = new ArrayList<>();
+
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {
-        realPlayer.sentMessageAboutNewCardsAndPoints(showPoints);
+        futures.add(realPlayer.sentMessageAboutNewCardsAndPoints(showPoints));
 
         if (admin.isLastRound()) {
           realPlayer.sentMessageAboutRemovingMainCard();
         }
-
       }
     }
+
+    return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
   }
 
   private void logPlayersValues() {
