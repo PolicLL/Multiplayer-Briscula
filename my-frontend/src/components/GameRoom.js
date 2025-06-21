@@ -130,6 +130,7 @@ function GameRoom() {
         if (numberOfPoints === -1) {
           setShouldShowPoints(false);
         } else {
+          setShouldShowPoints(true);
           setPoints(numberOfPoints);
         }
 
@@ -155,6 +156,7 @@ function GameRoom() {
         if (numberOfPoints === -1) {
           setShouldShowPoints(false);
         } else {
+          setShouldShowPoints(true);
           setPoints(numberOfPoints);
         }
         setThrownCards([]);

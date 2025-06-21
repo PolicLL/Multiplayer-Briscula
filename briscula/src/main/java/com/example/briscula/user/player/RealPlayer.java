@@ -36,6 +36,7 @@ public class RealPlayer extends Player {
 
   @Setter
   private int waitingTimeForChoosingCardInSeconds = BrisculaConfig.getWaitingTimeStatic();
+  private int waitingTimeAfterRoundInSeconds = 0;
 
   public RealPlayer(List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
@@ -54,14 +55,13 @@ public class RealPlayer extends Player {
   @Override
   public Card playRound() {
     printInstructions();
-    System.out.println("ENTER NUMBER.");
     int numberInput = enterNumber();
     return playerCards.remove(numberInput);
   }
 
   public CompletableFuture<Void> sentMessageAboutNewCardsAndPoints(boolean showPoints) {
     return CompletableFuture
-        .runAsync(() -> {}, CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS))
+        .runAsync(() -> {}, CompletableFuture.delayedExecutor(waitingTimeAfterRoundInSeconds, TimeUnit.SECONDS))
         .thenRun(() -> {
           String formattedState = showPoints
               ? CardFormatter.formatTemporaryPlayerState(this.playerCards, this.points)
