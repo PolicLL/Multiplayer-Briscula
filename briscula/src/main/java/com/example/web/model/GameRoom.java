@@ -24,6 +24,8 @@ public class GameRoom {
   private final Game game;
 
   private int playerIndex = 0;
+  private int numberOfPlayersThatLeft = 0;
+  private boolean shouldGameStop = false;
 
   public GameRoom(Collection<ConnectedPlayer> playerList,
       GameOptionNumberOfPlayers gameOptionNumberOfPlayers, boolean showPoints) {
@@ -57,11 +59,24 @@ public class GameRoom {
 
   public GameEndStatus startGame() {
     log.info("Game is staring.");
-    while (!game.isGameOver()) {
+    while (!game.isGameOver() && (!shouldGameStop)) {
       game.playRound();
     }
 
     log.info("Game ended.");
     return game.notifyPlayersAndGetWinner();
+  }
+
+  public void notifyPlayerLeft(int playerId) {
+    if (players.get(playerId).getPlayer() instanceof RealPlayer realPlayer) {
+      realPlayer.setWaitingTimeForChoosingCardInSeconds(0);
+    }
+
+    ++numberOfPlayersThatLeft;
+
+    if (numberOfPlayersThatLeft == players.size()) {
+      this.shouldGameStop = true;
+      log.info("All players left room, game stops.");
+    }
   }
 }

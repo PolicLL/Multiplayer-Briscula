@@ -34,6 +34,9 @@ public class RealPlayer extends Player {
   @Setter
   private CompletableFuture<Integer> selectedCardFuture;
 
+  @Setter
+  private int waitingTimeForChoosingCardInSeconds = BrisculaConfig.getWaitingTimeStatic();
+
   public RealPlayer(List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
     super(playerCards, nickname);
@@ -51,6 +54,7 @@ public class RealPlayer extends Player {
   @Override
   public Card playRound() {
     printInstructions();
+    System.out.println("ENTER NUMBER.");
     int numberInput = enterNumber();
     return playerCards.remove(numberInput);
   }
@@ -78,7 +82,7 @@ public class RealPlayer extends Player {
   public int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
-      return selectedCardFuture.get(BrisculaConfig.getWaitingTimeStatic(), TimeUnit.SECONDS);
+      return selectedCardFuture.get(waitingTimeForChoosingCardInSeconds, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
       sendMessage(webSocketSession, CHOOSE_CARD, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "");

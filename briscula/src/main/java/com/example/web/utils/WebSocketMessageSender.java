@@ -15,12 +15,17 @@ public class WebSocketMessageSender {
       String roomId,
       int playerId,
       String messageText) {
-    try {
-      Message message = new Message(messageType, roomId, playerId, messageText);
-      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
-    } catch (IOException e) {
-      log.error("Error sending message: " + e.getMessage());
-      throw new RuntimeException(e);
+    if (isSessionOpen(webSocketSession)) {
+      try {
+        Message message = new Message(messageType, roomId, playerId, messageText);
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
+      } catch (IOException e) {
+        log.error("Error sending message: " + e.getMessage(), e);
+        throw new RuntimeException(e);
+      }
+    } else {
+      log.warn("WebSocket session is closed. Cannot send message of type {} to player {} in room {}",
+          messageType, playerId, roomId);
     }
   }
 
@@ -28,12 +33,21 @@ public class WebSocketMessageSender {
       ServerToClientMessageType messageType,
       String roomId,
       int playerId) {
-    try {
-      Message message = new Message(messageType, roomId, playerId);
-      webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
-    } catch (IOException e) {
-      log.error("Error sending message: " + e.getMessage());
-      throw new RuntimeException(e);
+    if (isSessionOpen(webSocketSession)) {
+      try {
+        Message message = new Message(messageType, roomId, playerId);
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
+      } catch (IOException e) {
+        log.error("Error sending message: " + e.getMessage(), e);
+        throw new RuntimeException(e);
+      }
+    } else {
+      log.warn("WebSocket session is closed. Cannot send message of type {} to player {} in room {}",
+          messageType, playerId, roomId);
     }
+  }
+
+  private static boolean isSessionOpen(WebSocketSession session) {
+    return session != null && session.isOpen();
   }
 }

@@ -7,10 +7,10 @@ function GameRoom() {
   const [cards, setCards] = useState([]);
   const [thrownCards, setThrownCards] = useState([]);
   const [points, setPoints] = useState(0);
-  const [cardsClickable, setCardsClickable] = useState(false); // control globally
+  const [cardsClickable, setCardsClickable] = useState(false);
   const [mainCard, setMainCard] = useState({ cardType: "", cardValue: "" });
 
-  const [shouldShowPoints, setShouldShowPoints] = useState(true);
+  const [shouldShowPoints, setShouldShowPoints] = useState(false);
 
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
@@ -249,9 +249,30 @@ function GameRoom() {
       console.log("Websocket connection closed.");
     };
 
+    // Handle browser/tab close or navigation
+    const handleUnload = () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(
+          JSON.stringify({
+            type: "DISCONNECT_FROM_GAME",
+            roomId: roomId,
+            playerId: playerId,
+          })
+        );
+        socket.close();
+      }
+    };
+
+    window.addEventListener("beforeunload", handleUnload);
+    window.addEventListener("unload", handleUnload);
+
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      socket.close();
+
+      handleUnload(); // ensure clean disconnect on unmount
+
+      window.removeEventListener("beforeunload", handleUnload);
+      window.removeEventListener("unload", handleUnload);
     };
   }, [roomId]);
 

@@ -71,7 +71,11 @@ public class GameStartService {
       log.info("Initial cards for rom {} are received.", roomId);
       CompletableFuture
           .supplyAsync(() -> gameRoomService.getRoom(roomId).startGame())
-          .thenAccept(gameEndService::update);
+          .thenAccept(gameEndService::update)
+          .exceptionally(ex -> {
+            log.error("Game failed due to error: ", ex);
+            return null;
+          });;
 
     }
   }
