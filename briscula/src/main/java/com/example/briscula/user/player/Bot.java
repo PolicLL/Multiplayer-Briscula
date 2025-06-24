@@ -4,6 +4,7 @@ import static com.example.web.utils.Constants.RANDOM;
 
 import com.example.briscula.model.card.Card;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class Bot extends Player {
 
@@ -36,5 +37,10 @@ public class Bot extends Player {
   @Override
   public void sentMessageAboutNewCardFromAnotherPlayer(Card card) {
 
+  }
+
+  @Override
+  public CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards) {
+    return null;
   }
 }

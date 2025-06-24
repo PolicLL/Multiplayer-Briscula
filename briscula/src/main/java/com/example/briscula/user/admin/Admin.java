@@ -64,7 +64,8 @@ public class Admin {
   }
 
   public boolean isLastRound() {
-    return this.deck.getDeckCards().isEmpty();
+    return deck.getDeckCards().isEmpty() &&
+        listOfCardsForAllPlayers.stream().allMatch(cards -> cards.size() == 4);
   }
 
   private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {

@@ -1,5 +1,7 @@
 package com.example.briscula.game;
 
+import static com.example.briscula.utilities.constants.GameOptionNumberOfPlayers.FOUR_PLAYERS;
+
 import com.example.briscula.model.card.Card;
 import com.example.briscula.user.admin.Admin;
 import com.example.briscula.user.player.Player;
@@ -84,6 +86,15 @@ public class Game {
 
   private CompletableFuture<Void> updateCardsAndPointsState() {
     List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+    if (admin.isLastRound() && FOUR_PLAYERS == gameOptions) {
+      List<ConnectedPlayer> listPlayers = admin.getPlayers();
+
+      futures.add(listPlayers.get(0).getPlayer().sentInformationAboutColleaguesCards(admin.getCardsForPlayer(2)));
+      futures.add(listPlayers.get(1).getPlayer().sentInformationAboutColleaguesCards(admin.getCardsForPlayer(3)));
+      futures.add(listPlayers.get(2).getPlayer().sentInformationAboutColleaguesCards(admin.getCardsForPlayer(0)));
+      futures.add(listPlayers.get(3).getPlayer().sentInformationAboutColleaguesCards(admin.getCardsForPlayer(1)));
+    }
 
     for (ConnectedPlayer player : admin.getPlayers()) {
       if (player.getPlayer() instanceof RealPlayer realPlayer) {

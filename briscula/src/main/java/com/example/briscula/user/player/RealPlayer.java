@@ -9,6 +9,7 @@ import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_WON;
 import static com.example.web.model.enums.ServerToClientMessageType.RECEIVED_THROWN_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_MAIN_CARD;
+import static com.example.web.model.enums.ServerToClientMessageType.SENT_COLLEAGUES_CARDS;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.configuration.BrisculaConfig;
@@ -92,6 +93,18 @@ public class RealPlayer extends Player {
       throw new RuntimeException("Failed to receive input", e);
     }
   }
+
+
+  @Override
+  public CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards) {
+    log.info("Sent information to playerId={} about colleagues cards.", this.roomPlayerId.getPlayerId());
+
+    sendMessage(webSocketSession, SENT_COLLEAGUES_CARDS, roomPlayerId.getRoomId(),
+        roomPlayerId.getPlayerId(), CardFormatter.formatCards(cards));
+
+    return CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS));
+  }
+
 
   public void completeSelectedCard(int selectedCardIndex) {
     selectedCardFuture.complete(selectedCardIndex);

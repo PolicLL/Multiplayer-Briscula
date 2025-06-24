@@ -4,6 +4,7 @@ package com.example.briscula.user.player;
 import com.example.briscula.model.card.Card;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -27,6 +28,8 @@ public abstract class Player {
   public abstract void sentWinningMessage();
   public abstract void setNoWinnerMessage();
   public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card);
+
+  public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
 
   public boolean isPlayerDone() {
     return playerCards.isEmpty();

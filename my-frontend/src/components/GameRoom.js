@@ -6,6 +6,7 @@ function GameRoom() {
   const [message, setMessage] = useState("");
   const [cards, setCards] = useState([]);
   const [thrownCards, setThrownCards] = useState([]);
+  const [colleaguesCards, setColleaguesCards] = useState([]);
   const [points, setPoints] = useState(0);
   const [cardsClickable, setCardsClickable] = useState(false);
   const [mainCard, setMainCard] = useState({ cardType: "", cardValue: "" });
@@ -69,6 +70,7 @@ function GameRoom() {
     setCards((prevCards) => prevCards.filter((tempCard) => tempCard !== card));
     setCardsClickable(false);
     setMessage("");
+    setTimeLeft(0);
 
     const socket = socketRef.current;
 
@@ -117,6 +119,8 @@ function GameRoom() {
     socket.onmessage = (event) => {
       const message = event.data;
       const parsedMessage = parseWebSocketMessage(message);
+
+      console.log("Received message type: " + parsedMessage.type);
 
       if (
         parsedMessage.type === "SENT_INITIAL_CARDS" &&
@@ -241,6 +245,33 @@ function GameRoom() {
           parseCard(parsedMessage.content),
         ]);
       }
+
+      if (
+        parsedMessage.type === "SENT_COLLEAGUES_CARDS" &&
+        parsedMessage.playerId === parseInt(playerId)
+      ) {
+        console.log("Entered block for SENT_COLLEAGUES_CARDS.");
+
+        const { cards } = parsePlayerStatus(parsedMessage.content);
+
+        setColleaguesCards(cards); // Set the value
+
+        setTimeLeft(9);
+
+        if (timerRef.current) clearInterval(timerRef.current);
+
+        timerRef.current = setInterval(() => {
+          setTimeLeft((prevTime) => {
+            if (prevTime <= 1) {
+              clearInterval(timerRef.current);
+              setCardsClickable(false);
+              setColleaguesCards([]);
+              return 0;
+            }
+            return prevTime - 1;
+          });
+        }, 1000);
+      }
     };
 
     socket.onerror = (error) => {
@@ -320,9 +351,19 @@ function GameRoom() {
         ))}
       </div>
 
-      {cardsClickable && timeLeft > 0 && (
-        <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>
-      )}
+      <h3>Colleagues cards:</h3>
+      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
+        {colleaguesCards.map((card) => (
+          <img
+            key={card.code}
+            src={card.imageUrl}
+            alt={card.code}
+            style={{ width: "100px", cursor: "pointer" }}
+          />
+        ))}
+      </div>
+
+      {timeLeft > 0 && <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>}
 
       {shouldShowPoints && (
         <div>
