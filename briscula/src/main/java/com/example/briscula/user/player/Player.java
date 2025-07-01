@@ -7,8 +7,10 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @ToString
+@SuperBuilder
 public abstract class Player {
 
   protected List<Card> playerCards;

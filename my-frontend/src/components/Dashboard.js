@@ -101,6 +101,7 @@ function Dashboard() {
       socket.send(
         JSON.stringify({
           type: "JOIN_ROOM",
+          userId: userInfo.id,
           playerName: username,
           numberOfPlayers: numberOfPlayers,
           shouldShowPoints: shouldShowPoints,

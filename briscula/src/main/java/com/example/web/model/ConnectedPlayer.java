@@ -13,6 +13,7 @@ import org.springframework.web.socket.WebSocketSession;
 @AllArgsConstructor
 public class ConnectedPlayer {
   private int id;
+  private String userId;
   private String roomId;
   private WebSocketSession webSocketSession;
   private Player player;

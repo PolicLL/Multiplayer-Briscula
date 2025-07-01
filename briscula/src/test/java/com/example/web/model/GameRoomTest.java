@@ -12,6 +12,8 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +47,12 @@ class GameRoomTest {
     }
 
     else {
-      ConnectedPlayer winner = gameEndStatus.winners().get(0);
+      List<ConnectedPlayer> winners = gameEndStatus.playerResults().entrySet().stream()
+          .filter(Map.Entry::getValue)
+          .map(Map.Entry::getKey)
+          .toList();
+
+      ConnectedPlayer winner = winners.get(0);
 
       assertThat(winner).isNotNull()
           .withFailMessage("Game should return a winner after completion.");
@@ -71,7 +78,12 @@ class GameRoomTest {
     }
 
     else {
-      ConnectedPlayer winner = gameEndStatus.winners().get(0);
+      List<ConnectedPlayer> winners = gameEndStatus.playerResults().entrySet().stream()
+          .filter(Map.Entry::getValue)
+          .map(Map.Entry::getKey)
+          .toList();
+
+      ConnectedPlayer winner = winners.get(0);
 
       assertThat(winner).isNotNull()
           .withFailMessage("Game should return a winner after completion.");

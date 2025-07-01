@@ -19,7 +19,10 @@ import com.example.web.model.enums.GameEndStatus.Status;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -171,9 +174,10 @@ public class Admin {
     }
 
 
-    List<Integer> winnerIds = gameEndStatus.winners().stream()
-        .peek(cp -> cp.getPlayer().sentWinningMessage())
-        .map(ConnectedPlayer::getId)
+    List<Integer> winnerIds = gameEndStatus.playerResults().entrySet().stream()
+        .filter(Map.Entry::getValue)
+        .peek(entry -> entry.getKey().getPlayer().sentWinningMessage())
+        .map(entry -> entry.getKey().getId())
         .toList();
 
     players.stream()
@@ -186,7 +190,9 @@ public class Admin {
 
   private GameEndStatus getGameEndStatus() {
     if (players.stream().map(p -> p.getPlayer().getPoints()).distinct().count() == 1) {
-      return new GameEndStatus(List.of(), Status.NO_WINNER);
+      Map<ConnectedPlayer, Boolean> noWinnerPlayers = this.players.stream()
+          .collect(Collectors.toMap(p -> p, p -> false));
+      return new GameEndStatus(noWinnerPlayers, Status.NO_WINNER);
     }
 
     int maxPoints = players.stream()
@@ -194,18 +200,27 @@ public class Admin {
         .max()
         .orElseThrow();
 
+    Set<ConnectedPlayer> winners;
+
     if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.FOUR_PLAYERS) {
-      List<ConnectedPlayer> winners = (players.get(0).getPlayer().getPoints() == maxPoints ||
-          players.get(2).getPlayer().getPoints() == maxPoints)
-          ? List.of(players.get(0), players.get(2))
-          : List.of(players.get(1), players.get(3));
-      return new GameEndStatus(winners, Status.WINNER_FOUND);
+      winners = (players.get(0).getPlayer().getPoints() +
+          players.get(2).getPlayer().getPoints() > 60)
+          ? Set.of(players.get(0), players.get(2))
+          : Set.of(players.get(1), players.get(3));
+    } else {
+      winners = players.stream()
+          .filter(p -> p.getPlayer().getPoints() == maxPoints)
+          .findFirst()
+          .map(Set::of)
+          .orElse(Set.of());
     }
 
-    return players.stream()
-        .filter(p -> p.getPlayer().getPoints() == maxPoints)
-        .findFirst()
-        .map(p -> new GameEndStatus(List.of(p), Status.WINNER_FOUND))
-        .orElse(null);
+    Map<ConnectedPlayer, Boolean> results = players.stream()
+        .collect(Collectors.toMap(
+            p -> p,
+            winners::contains
+        ));
+
+    return new GameEndStatus(results, Status.WINNER_FOUND);
   }
 }

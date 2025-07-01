@@ -1,11 +1,11 @@
 package com.example.web.model.enums;
 
 import com.example.web.model.ConnectedPlayer;
-import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 
 public record GameEndStatus(
-    List<ConnectedPlayer> winners,
+    Map<ConnectedPlayer, Boolean> playerResults,
     Status status
 ) {
   @Getter
@@ -18,6 +18,5 @@ public record GameEndStatus(
     Status(String value) {
       this.value = value;
     }
-
   }
 }

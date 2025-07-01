@@ -17,9 +17,10 @@ import org.springframework.web.socket.WebSocketMessage;
 public class GameEndService {
 
   private final GameRoomService gameRoomService;
+  private final UserService userService;
 
   public void update(GameEndStatus gameEndStatus) {
-    log.info("Update.");
+
   }
 
   public void handleDisconnectionFromGame(WebSocketMessage<?> message)
