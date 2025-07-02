@@ -1,118 +1,63 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import JoinGamePanel from "./common/JoinGamePanel";
+import { useGameWebSocket } from "../hooks/useGameWebSocket";
 import EditUserForm from "./EditUserForm";
 import Menu from "./Menu";
+import axios from "axios";
 
 function Dashboard() {
   const navigate = useNavigate();
-  const [message, setMessage] = useState("");
   const [userInfo, setUserInfo] = useState({});
-  const [status, setStatus] = useState("Click 'Join Game' to connect.");
   const [username] = useState(() => localStorage.getItem("username"));
-  const [isStartEnabled, setIsStartEnabled] = useState(false);
-  const [receivedMessage, setReceivedMessage] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-
-  const [isDisabled, setIsDisabled] = useState(false);
-
+  const [message, setMessage] = useState("");
   const [shouldShowPoints, setShouldShowPoints] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [receivedMessage, setReceivedMessage] = useState("");
+  const [status, setStatus] = useState("");
 
-  const socketRef = useRef(null);
-
-  const getPhotoUrl = (photoId) => {
-    console.log(`Getting photo by id ${photoId}`);
-    return `http://localhost:8080/api/photo/${photoId}`;
-  };
-
-  const handleCheckboxChange = (event) => {
-    setShouldShowPoints(event.target.checked);
-  };
+  const socketRef = useGameWebSocket({
+    onGameStart: (roomId, playerId) => {
+      navigate(`/game/${roomId}/${playerId}`);
+    },
+    onMessage: setReceivedMessage,
+    onStatusChange: setStatus,
+  });
 
   useEffect(() => {
-    if (!localStorage.getItem("jwtToken")) {
-      navigate("/");
-    }
+    const token = localStorage.getItem("jwtToken");
+    if (!token) return navigate("/");
 
-    const fetchUserInfo = async () => {
-      try {
-        const token = localStorage.getItem("jwtToken");
-        if (!token) {
-          setMessage("Please log in first.");
-          return;
-        }
-        const userResponse = await axios.get(
-          "http://localhost:8080/api/users/by",
-          {
-            params: { username },
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        console.log(userResponse);
-
-        setUserInfo(userResponse.data);
-      } catch (error) {
-        setMessage("Error fetching user information.");
-        console.error(error);
-      }
-    };
-
-    fetchUserInfo();
-
-    // 🔌 Create WebSocket connection once on mount
-    const socket = new WebSocket("ws://localhost:8080/game/prepare");
-    socketRef.current = socket;
-
-    socket.onopen = () => {
-      setStatus("Connected to the server successfully!");
-    };
-
-    socket.onmessage = (event) => {
-      const message = event.data;
-
-      if (message.includes("GAME_STARTED")) {
-        const [_, roomId, playerId] = message.split(" ");
-        navigate(`/game/${roomId}/${playerId}`);
-      } else {
-        setReceivedMessage(message);
-      }
-    };
-
-    socket.onerror = () => {
-      setStatus("Failed to connect to the server.");
-    };
-
-    socket.onclose = () => {
-      setStatus("Disconnected from server.");
-    };
-
-    // 🔌 Cleanup on unmount
-    return () => {
-      socket.close();
-    };
+    axios
+      .get("http://localhost:8080/api/users/by", {
+        params: { username },
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => setUserInfo(res.data))
+      .catch(() => setMessage("Error fetching user info."));
   }, [navigate, username]);
 
   const joinGame = (numberOfPlayers) => {
-    const socket = socketRef.current;
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      socket.send(
-        JSON.stringify({
-          type: "JOIN_ROOM",
-          userId: userInfo.id,
-          playerName: username,
-          numberOfPlayers: numberOfPlayers,
-          shouldShowPoints: shouldShowPoints,
-        })
-      );
-
-      setIsDisabled(true);
-    } else {
+    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
       setStatus("Socket not connected.");
+      return;
     }
+
+    socketRef.current.send(
+      JSON.stringify({
+        type: "JOIN_ROOM",
+        userId: userInfo.id,
+        playerName: username,
+        numberOfPlayers,
+        shouldShowPoints,
+      })
+    );
+
+    setIsDisabled(true);
   };
+
+  const getPhotoUrl = (id) => `http://localhost:8080/api/photo/${id}`;
 
   return (
     <div>
@@ -141,43 +86,22 @@ function Dashboard() {
                 borderRadius: "50%",
                 objectFit: "cover",
               }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = "/images/anonymous.png";
-              }}
+              onError={(e) => (e.target.src = "/images/anonymous.png")}
             />
           )}
-
-          {userInfo && (
-            <div>
-              <h3>Welcome, {userInfo.username}!</h3>
-              <p>Age: {userInfo.age}</p>
-              <p>Country: {userInfo.country}</p>
-              <p>Email: {userInfo.email}</p>
-            </div>
-          )}
-
+          <h3>Welcome, {userInfo.username}!</h3>
+          <p>Age: {userInfo.age}</p>
+          <p>Country: {userInfo.country}</p>
+          <p>Email: {userInfo.email}</p>
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
-          <button onClick={() => joinGame(2)} disabled={isDisabled}>
-            Join Game (2v2)
-          </button>
-          <button onClick={() => joinGame(3)} disabled={isDisabled}>
-            Join Game (3v3)
-          </button>
-          <button onClick={() => joinGame(4)} disabled={isDisabled}>
-            Join Game (4v4)
-          </button>
 
-          <label>
-            <input
-              type="checkbox"
-              checked={shouldShowPoints}
-              onChange={handleCheckboxChange}
-            />
-            Show Points
-          </label>
-
-          <button disabled={!isStartEnabled}>Start Game</button>
+          <JoinGamePanel
+            shouldShowPoints={shouldShowPoints}
+            handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
+            joinGame={joinGame}
+            isDisabled={isDisabled}
+            isStartEnabled={false}
+          />
         </>
       )}
     </div>

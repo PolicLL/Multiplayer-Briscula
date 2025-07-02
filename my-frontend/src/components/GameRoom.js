@@ -107,6 +107,10 @@ function GameRoom() {
     socketRef.current = socket;
 
     socket.onopen = () => {
+      console.log("Sending get initial cards.");
+      console.log("Room id: " + roomId);
+      console.log("Player id: " + playerId);
+
       socket.send(
         JSON.stringify({
           type: "GET_INITIAL_CARDS",
