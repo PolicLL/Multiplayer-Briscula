@@ -7,8 +7,10 @@ import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
-import com.example.web.dto.UserDto;
+import com.example.web.dto.tournament.TournamentCreateDto;
+import com.example.web.dto.user.UserDto;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.enums.TournamentStatus;
 import java.util.List;
 import java.util.Random;
 import org.springframework.mock.web.MockMultipartFile;
@@ -17,6 +19,8 @@ import org.springframework.web.socket.WebSocketSession;
 
 public class EntityUtils {
   private static final Random RANDOM = new Random();
+
+  private static int counter = 0;
 
   public static final String PHOTO_ID = "00000000-0000-0000-0000-000000000000";
   private static final String[] COUNTRIES = {"USA", "Canada", "UK", "Germany", "France", "India"};
@@ -75,6 +79,15 @@ public class EntityUtils {
     if (value != null) {
       builder.param(key, value);
     }
+  }
+
+  public static TournamentCreateDto generateValidTournamentCreateDto() {
+    return TournamentCreateDto.builder()
+        .name("Test Tournament" + counter++)
+        .numberOfPlayers(8)
+        .status(TournamentStatus.INITIALIZING)
+        .roundsToWin(2)
+        .build();
   }
 
   public static RoomPlayerId getRoomPlayerId() {

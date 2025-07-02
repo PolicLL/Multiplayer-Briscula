@@ -1,9 +1,9 @@
 package com.example.web.controller;
 
-import com.example.web.dto.UpdateUserRequest;
-import com.example.web.dto.UserDto;
-import com.example.web.dto.UserLoginDto;
-import com.example.web.dto.UserStatsDto;
+import com.example.web.dto.user.UpdateUserRequest;
+import com.example.web.dto.user.UserDto;
+import com.example.web.dto.user.UserLoginDto;
+import com.example.web.dto.user.UserStatsDto;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;

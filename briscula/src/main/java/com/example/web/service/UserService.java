@@ -2,10 +2,10 @@ package com.example.web.service;
 
 import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
 
-import com.example.web.dto.UpdateUserRequest;
-import com.example.web.dto.UserDto;
-import com.example.web.dto.UserLoginDto;
-import com.example.web.dto.UserStatsDto;
+import com.example.web.dto.user.UpdateUserRequest;
+import com.example.web.dto.user.UserDto;
+import com.example.web.dto.user.UserLoginDto;
+import com.example.web.dto.user.UserStatsDto;
 import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;

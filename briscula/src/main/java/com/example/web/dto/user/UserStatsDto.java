@@ -1,4 +1,4 @@
-package com.example.web.dto;
+package com.example.web.dto.user;
 
 public record UserStatsDto(
     String username,

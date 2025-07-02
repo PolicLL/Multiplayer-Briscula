@@ -1,4 +1,4 @@
-package com.example.web.dto;
+package com.example.web.dto.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Max;
@@ -9,11 +9,13 @@ import jakarta.validation.constraints.Size;
 import lombok.Builder;
 
 @Builder
-public record UpdateUserRequest(
+public record UserDto(
     String id,
     @NotBlank(message = "Username is required.")
     @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters.")
     String username,
+    @NotBlank(message = "Password is required.")
+    String password,
     @NotNull(message = "Age is required.")
     @Min(value = 3, message = "Age must be at least 3.")
     @Max(value = 100, message = "Age must be no more than 100.")
@@ -23,5 +25,6 @@ public record UpdateUserRequest(
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     String email,
-    String photoId
+    String photoId,
+    String jwtToken
 ) {}

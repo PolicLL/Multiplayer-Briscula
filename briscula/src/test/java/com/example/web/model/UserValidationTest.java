@@ -7,7 +7,7 @@ import static utils.EntityUtils.randomEmail;
 import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
-import com.example.web.dto.UserDto;
+import com.example.web.dto.user.UserDto;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

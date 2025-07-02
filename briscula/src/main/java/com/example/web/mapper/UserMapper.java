@@ -1,9 +1,9 @@
 package com.example.web.mapper;
 
-import com.example.web.dto.UpdateUserRequest;
-import com.example.web.dto.UserDto;
-import com.example.web.dto.UserResponse;
-import com.example.web.dto.UserStatsDto;
+import com.example.web.dto.user.UpdateUserRequest;
+import com.example.web.dto.user.UserDto;
+import com.example.web.dto.user.UserResponse;
+import com.example.web.dto.user.UserStatsDto;
 import com.example.web.model.User;
 import com.example.web.model.entity.UserStatsProjection;
 import java.util.UUID;

@@ -16,8 +16,11 @@ import static utils.EntityUtils.randomCountry;
 import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
-import com.example.web.dto.UserDto;
+import com.example.web.dto.ErrorResponse;
+import com.example.web.dto.user.UserDto;
 import com.example.web.utils.JsonUtils;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,7 +75,21 @@ class UserControllerTest {
 
     mockMvc.perform(firstRequest)
         .andExpect(status().isBadRequest())
-        .andExpect(content().string("Username is already taken!"));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(result -> {
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.registerModule(new JavaTimeModule());
+          ErrorResponse errorResponse = objectMapper.readValue(
+              result.getResponse().getContentAsString(),
+              ErrorResponse.class
+          );
+
+          assertThat(errorResponse.status()).isEqualTo(400);
+          assertThat(errorResponse.error()).isEqualTo("User Already Exists");
+          assertThat(errorResponse.message()).isEqualTo("Username is already taken!");
+          assertThat(errorResponse.timestamp()).isNotNull();
+        });
+
   }
 
   @Test
@@ -103,7 +120,21 @@ class UserControllerTest {
 
     mockMvc.perform(secondRequest)
         .andExpect(status().isBadRequest())
-        .andExpect(content().string("Email is already taken!"));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(result -> {
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.registerModule(new JavaTimeModule());
+          ErrorResponse errorResponse = objectMapper.readValue(
+              result.getResponse().getContentAsString(),
+              ErrorResponse.class
+          );
+
+          assertThat(errorResponse.status()).isEqualTo(400);
+          assertThat(errorResponse.error()).isEqualTo("User Already Exists");
+          assertThat(errorResponse.message()).isEqualTo("Email is already taken!");
+          assertThat(errorResponse.timestamp()).isNotNull();
+        });
+
   }
 
   @Test
@@ -142,7 +173,20 @@ class UserControllerTest {
             .header("Authorization", adminToken)
             .contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
-        .andExpect(content().string("User not found with id: " + "NON-EXISTING-ID"));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(result -> {
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.registerModule(new JavaTimeModule());
+          ErrorResponse errorResponse = objectMapper.readValue(
+              result.getResponse().getContentAsString(),
+              ErrorResponse.class
+          );
+
+          assertThat(errorResponse.status()).isEqualTo(404);
+          assertThat(errorResponse.error()).isEqualTo("Entity Not Found");
+          assertThat(errorResponse.message()).isEqualTo("User not found with id: NON-EXISTING-ID");
+          assertThat(errorResponse.timestamp()).isNotNull();
+        });
   }
 
   @Test
