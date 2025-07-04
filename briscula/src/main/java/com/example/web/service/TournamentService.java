@@ -7,6 +7,7 @@ import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.exception.TournamentIsFullException;
 import com.example.web.exception.TournamentWithIdDoesNotExists;
+import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.Tournament;
@@ -59,7 +60,7 @@ public class TournamentService {
         });
 
     if (tournament.getUsers().contains(user)) {
-      throw new RuntimeException("User is already assigned to this tournament.");
+      throw new UserAlreadyAssignedToTournament();
     }
 
     log.info("Adding user {} to tournament {}", user.getId(), tournament.getId());

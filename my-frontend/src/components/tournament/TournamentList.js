@@ -27,16 +27,24 @@ export default function TournamentList({ onJoin }) {
         <p>No tournaments available.</p>
       ) : (
         <ul className="space-y-3">
-          {tournaments.map((t) => (
-            <li key={t.id} className="border p-3 rounded shadow">
+          {tournaments.map((tournament) => (
+            <li key={tournament.id} className="border p-3 rounded shadow">
               <div>
-                <strong>{t.name}</strong> ({t.numberOfPlayers} players,{" "}
-                {t.roundsToWin} rounds to win)
+                <strong>{tournament.name}</strong> ({tournament.numberOfPlayers}{" "}
+                players, {tournament.roundsToWin} rounds to win)
               </div>
-              <div>Status: {t.status}</div>
+              <div>Status: {tournament.status}</div>
+              <div>
+                Current players: {tournament.currentNumberOfPlayers} /
+                {tournament.numberOfPlayers}
+              </div>
               <button
                 className="mt-2 bg-blue-600 text-white px-3 py-1 rounded"
-                onClick={() => onJoin?.(t)}
+                onClick={() => onJoin?.(tournament)}
+                disabled={
+                  tournament.currentNumberOfPlayers >=
+                  tournament.numberOfPlayers
+                }
               >
                 Join
               </button>

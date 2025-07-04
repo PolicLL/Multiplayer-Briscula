@@ -1,6 +1,7 @@
 package com.example.web.controller;
 
 import com.example.web.dto.ErrorResponse;
+import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserAlreadyExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,18 @@ public class GlobalExceptionHandler {
         HttpStatus.BAD_REQUEST.value(),
         "Validation Error",
         message,
+        request.getRequestURI()
+    );
+  }
+
+  @ExceptionHandler(UserAlreadyAssignedToTournament.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleUserAlreadyAssignedToTournament(UserAlreadyAssignedToTournament ex,  HttpServletRequest request) {
+    return new ErrorResponse(
+        LocalDateTime.now(),
+        HttpStatus.BAD_REQUEST.value(),
+        "Validation Error",
+        ex.getMessage(),
         request.getRequestURI()
     );
   }

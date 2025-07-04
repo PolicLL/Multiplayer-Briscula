@@ -122,10 +122,23 @@ function Dashboard() {
                   userId: userInfo.id,
                 };
 
-                const response = await axios.post(
-                  "http://localhost:8080/api/tournament/join",
-                  joinTournament
-                );
+                try {
+                  const response = await axios.post(
+                    "http://localhost:8080/api/tournament/join",
+                    joinTournament
+                  );
+
+                  console.log("Join success:", response.data);
+                } catch (error) {
+                  if (error.response) {
+                    const backendError = error.response.data;
+                    alert(`Error joining tournament: ${backendError.message}`);
+                  } else if (error.request) {
+                    alert("No response from server. Please try again later.");
+                  } else {
+                    alert("Error: " + error.message);
+                  }
+                }
               }}
             />
           )}

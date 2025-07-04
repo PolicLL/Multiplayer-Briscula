@@ -16,6 +16,9 @@ public interface TournamentMapper {
 
   Tournament toEntity(TournamentCreateDto dto);
 
+
+  @Mapping(target = "currentNumberOfPlayers",
+      expression = "java(entity.getUsers() != null ? entity.getUsers().size() : 0)")
   TournamentResponseDto toResponseDto(Tournament entity);
 
   @Mapping(target = "userIds", source = "users", qualifiedByName = "mapUsersToIds")
