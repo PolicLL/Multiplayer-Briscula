@@ -9,10 +9,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,7 +28,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-@EqualsAndHashCode
+@NamedEntityGraph(
+    name = "Tournament.users",
+    attributeNodes = @NamedAttributeNode("users")
+)
 public class Tournament {
 
   @Id
@@ -46,10 +52,21 @@ public class Tournament {
       joinColumns = @JoinColumn(name = "tournament_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id")
   )
-  private Set<User> users;
+  private Set<User> users = new HashSet<>();
 
   @Column(name = "rounds_to_win", nullable = false)
   private int roundsToWin;
+
+  public void addUser(User user) {
+    users.add(user);
+    user.getTournaments().add(this); // make sure this exists
+  }
+
+  public void removeUser(User user) {
+    users.remove(user);
+    user.getTournaments().remove(this);
+  }
+
 
   public boolean isFull() {
     return users.size() >= numberOfPlayers;
@@ -70,4 +87,18 @@ public class Tournament {
     }
     this.roundsToWin = roundsToWin;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Tournament that = (Tournament) o;
+    return Objects.equals(id, that.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
+  }
+
 }

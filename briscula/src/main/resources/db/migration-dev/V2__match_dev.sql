@@ -14,9 +14,9 @@ CREATE TABLE match (
 );
 
 CREATE TABLE user_tournament (
-  id VARCHAR PRIMARY KEY,
   user_id VARCHAR NOT NULL,
   tournament_id VARCHAR NOT NULL,
+  PRIMARY KEY (user_id, tournament_id),
   FOREIGN KEY (user_id) REFERENCES users(id),
   FOREIGN KEY (tournament_id) REFERENCES tournament(id)
 );

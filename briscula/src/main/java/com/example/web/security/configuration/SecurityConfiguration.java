@@ -34,8 +34,10 @@ public class SecurityConfiguration {
   public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
     return httpSecurity.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(request -> request
-            .requestMatchers("/api/users/create", "/api/users/login", "/api/users", "/api/game/**", "/actuator/**").permitAll()
+            .requestMatchers("/api/users/create", "/api/users/login",
+                "/api/users", "/api/game/**", "/actuator/**").permitAll()
             .requestMatchers("/api/photo/**").permitAll()
+            .requestMatchers("/api/tournament/**").permitAll()
             .requestMatchers("/game/**").permitAll()
             .anyRequest().permitAll())
         .httpBasic(Customizer.withDefaults())

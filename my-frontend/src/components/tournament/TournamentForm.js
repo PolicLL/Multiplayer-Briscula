@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 const initialForm = {
   name: "",
   numberOfPlayers: 4,
-  status: "INITIALIZING", // adjust based on your TournamentStatus enum values
+  status: "INITIALIZING",
   roundsToWin: 1,
 };
 

@@ -116,8 +116,16 @@ function Dashboard() {
 
           {showTournaments && (
             <TournamentList
-              onJoin={(tournament) => {
-                alert(`You clicked Join for: ${tournament.name}`);
+              onJoin={async (tournament) => {
+                const joinTournament = {
+                  tournamentId: tournament.id,
+                  userId: userInfo.id,
+                };
+
+                const response = await axios.post(
+                  "http://localhost:8080/api/tournament/join",
+                  joinTournament
+                );
               }}
             />
           )}

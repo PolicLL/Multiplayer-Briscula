@@ -1,8 +1,8 @@
 package com.example.web.service;
 
 
+import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.JoinTournamentResponse;
-import com.example.web.dto.tournament.JoinTournamentReuqest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.exception.TournamentIsFullException;
@@ -15,7 +15,6 @@ import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,22 +37,39 @@ public class TournamentService {
     return tournamentMapper.toResponseDto(tournament);
   }
 
-  public JoinTournamentResponse joinTournament(JoinTournamentReuqest request) {
-    Tournament tournament = tournamentRepository.findById(request.tournamentId())
-        .orElseThrow(() -> new TournamentWithIdDoesNotExists(request.tournamentId()));
+  public JoinTournamentResponse joinTournament(JoinTournamentRequest request) {
+    log.info("Received join tournament request: userId={}, tournamentId={}",
+        request.userId(), request.tournamentId());
+
+    Tournament tournament = tournamentRepository.findWithUsersById(request.tournamentId())
+        .orElseThrow(() -> {
+          log.warn("Tournament with id {} not found", request.tournamentId());
+          return new TournamentWithIdDoesNotExists(request.tournamentId());
+        });
 
     if (tournament.isFull()) {
+      log.warn("Tournament {} is full, user {} cannot join", request.tournamentId(), request.userId());
       throw new TournamentIsFullException(request.tournamentId());
     }
 
     User user = userRepository.findById(request.userId())
-        .orElseThrow(() -> new UserNotFoundException(request.userId()));
+        .orElseThrow(() -> {
+          log.warn("User with id {} not found", request.userId());
+          return new UserNotFoundException(request.userId());
+        });
 
-    tournament.getUsers().add(user);
+    if (tournament.getUsers().contains(user)) {
+      throw new RuntimeException("User is already assigned to this tournament.");
+    }
 
-    return tournamentMapper.toJoinTournamentResponseDto(tournamentRepository.save(tournament));
+    log.info("Adding user {} to tournament {}", user.getId(), tournament.getId());
+    tournament.addUser(user);
+
+    Tournament savedTournament = tournamentRepository.save(tournament);
+    log.info("User {} successfully joined tournament {}", user.getId(), savedTournament.getId());
+
+    return tournamentMapper.toJoinTournamentResponseDto(savedTournament);
   }
-
 
   public TournamentResponseDto getById(String id) {
     log.info("Fetching tournament with ID: {}", id);
