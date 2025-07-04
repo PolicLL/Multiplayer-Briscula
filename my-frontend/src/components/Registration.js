@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { getNames } from "country-list";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const countries = getNames();
 
@@ -16,10 +17,16 @@ function UserForm() {
     level: 1,
   });
 
+  const navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
   const [user, setUser] = useState(null);
+
+  const [loginFormData, setLoginFormData] = useState({
+    username: "",
+    password: "",
+  });
 
   const validateForm = () => {
     let tempErrors = {};
@@ -62,10 +69,6 @@ function UserForm() {
       tempErrors.confirmPassword = "Passwords do not match.";
     }
 
-    if (!file) {
-      tempErrors.photo = "Photo is required.";
-    }
-
     setErrors(tempErrors);
     return Object.keys(tempErrors).length === 0;
   };
@@ -96,15 +99,16 @@ function UserForm() {
     if (!validateForm()) return;
 
     try {
-      const photoId = await uploadPhoto(file);
-
       const formDataToSend = new FormData();
+
+      if (file !== null) {
+        const photoId = await uploadPhoto(file);
+        formDataToSend.append("photoId", photoId);
+      }
 
       Object.keys(formData).forEach((key) => {
         formDataToSend.append(key, formData[key]);
       });
-
-      formDataToSend.append("photoId", photoId); // Send photo ID, not the file
 
       const response = await axios.post(
         "http://localhost:8080/api/users/create",
@@ -127,6 +131,23 @@ function UserForm() {
       });
       setFile(null);
       setErrors({});
+
+      //
+
+      setLoginFormData();
+
+      const loginResponse = await axios.post(
+        "http://localhost:8080/api/users/login",
+        formData
+      );
+
+      const token = loginResponse.data;
+
+      localStorage.setItem("jwtToken", token);
+      localStorage.setItem("username", formData.username);
+      setMessage("Login successful!");
+
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error creating user:", error);
       const errorData = error.response?.data;
