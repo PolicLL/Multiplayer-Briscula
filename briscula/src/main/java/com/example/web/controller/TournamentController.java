@@ -1,5 +1,7 @@
 package com.example.web.controller;
 
+import com.example.web.dto.tournament.JoinTournamentResponse;
+import com.example.web.dto.tournament.JoinTournamentReuqest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.service.TournamentService;
@@ -29,6 +31,12 @@ public class TournamentController {
   public ResponseEntity<TournamentResponseDto> create(@Valid @RequestBody TournamentCreateDto dto) {
     log.info("Received request to create tournament: {}", dto);
     return ResponseEntity.ok(tournamentService.create(dto));
+  }
+
+  @PostMapping("/join")
+  public ResponseEntity<JoinTournamentResponse> joinTournament(@Valid @RequestBody JoinTournamentReuqest joinTournamentReuqest) {
+    log.info("Received request to join tournament: {}", joinTournamentReuqest);
+    return ResponseEntity.ok(tournamentService.joinTournament(joinTournamentReuqest));
   }
 
   @GetMapping("/{id}")

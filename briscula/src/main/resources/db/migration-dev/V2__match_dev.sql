@@ -13,6 +13,14 @@ CREATE TABLE match (
   FOREIGN KEY (tournament_id) REFERENCES tournament(id)
 );
 
+CREATE TABLE user_tournament (
+  id VARCHAR PRIMARY KEY,
+  user_id VARCHAR NOT NULL,
+  tournament_id VARCHAR NOT NULL,
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (tournament_id) REFERENCES tournament(id)
+);
+
 CREATE TABLE user_match (
   id VARCHAR PRIMARY KEY,
   user_id VARCHAR NOT NULL,

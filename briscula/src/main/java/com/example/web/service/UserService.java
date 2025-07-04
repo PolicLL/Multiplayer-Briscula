@@ -44,7 +44,7 @@ public class UserService {
       throw new UserAlreadyExistsException("Email is already taken!");
     }
 
-    if (!photoService.existsById(userDto.photoId())) {
+    if (userDto.photoId() != null && !photoService.existsById(userDto.photoId())) {
       throw new RuntimeException("Photo id does not exists.");
     }
 

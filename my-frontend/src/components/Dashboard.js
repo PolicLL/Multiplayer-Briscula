@@ -5,6 +5,8 @@ import { useGameWebSocket } from "../hooks/useGameWebSocket";
 import EditUserForm from "./EditUserForm";
 import Menu from "./Menu";
 import axios from "axios";
+import TournamentForm from "../components/tournament/TournamentForm";
+import TournamentList from "./tournament/TournamentList";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -16,6 +18,7 @@ function Dashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [showTournaments, setShowTournaments] = useState(false);
 
   const socketRef = useGameWebSocket({
     onGameStart: (roomId, playerId) => {
@@ -94,6 +97,30 @@ function Dashboard() {
           <p>Country: {userInfo.country}</p>
           <p>Email: {userInfo.email}</p>
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+
+          <div style={{ marginTop: "1rem" }}>
+            <button
+              onClick={() => navigate("/tournament/create")} // ✅ navigate to creation page
+              className="bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Create Tournament
+            </button>
+          </div>
+
+          <button
+            onClick={() => setShowTournaments((prev) => !prev)}
+            className="bg-blue-500 text-white px-4 py-2 rounded mt-4 ml-2"
+          >
+            {showTournaments ? "Hide Tournaments" : "View Tournaments"}
+          </button>
+
+          {showTournaments && (
+            <TournamentList
+              onJoin={(tournament) => {
+                alert(`You clicked Join for: ${tournament.name}`);
+              }}
+            />
+          )}
 
           <JoinGamePanel
             shouldShowPoints={shouldShowPoints}

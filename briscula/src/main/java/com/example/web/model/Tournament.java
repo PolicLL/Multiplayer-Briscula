@@ -6,7 +6,11 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -36,8 +40,20 @@ public class Tournament {
   @Column(nullable = false, length = 20)
   private TournamentStatus status;
 
+  @ManyToMany
+  @JoinTable(
+      name = "user_tournament",
+      joinColumns = @JoinColumn(name = "tournament_id"),
+      inverseJoinColumns = @JoinColumn(name = "user_id")
+  )
+  private Set<User> users;
+
   @Column(name = "rounds_to_win", nullable = false)
   private int roundsToWin;
+
+  public boolean isFull() {
+    return users.size() >= numberOfPlayers;
+  }
 
   public void setNumberOfPlayers(int numberOfPlayers) {
     if (numberOfPlayers != 4 && numberOfPlayers != 8 &&

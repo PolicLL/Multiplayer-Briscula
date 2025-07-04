@@ -7,6 +7,7 @@ import Login from "./components/Login";
 import Registration from "./components/Registration";
 import Dashboard from "./components/Dashboard";
 import GameRoom from "./components/GameRoom";
+import TournamentPage from "./pages/TournamentPage";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />}></Route>
         <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
         <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
+        <Route path="/tournament/create" element={<TournamentPage />} />
       </Routes>
     </Router>
   );
