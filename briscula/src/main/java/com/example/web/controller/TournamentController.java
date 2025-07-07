@@ -34,7 +34,7 @@ public class TournamentController {
   }
 
   @PostMapping("/join")
-  public ResponseEntity<JoinTournamentResponse> joinTournament(@Valid @RequestBody JoinTournamentRequest joinTournamentRequest) {
+  public ResponseEntity<TournamentResponseDto> joinTournament(@Valid @RequestBody JoinTournamentRequest joinTournamentRequest) {
     log.info("Received request to join tournament: {}", joinTournamentRequest);
     return ResponseEntity.ok(tournamentService.joinTournament(joinTournamentRequest));
   }

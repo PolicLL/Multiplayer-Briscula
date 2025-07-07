@@ -2,7 +2,6 @@ package com.example.web.service;
 
 
 import com.example.web.dto.tournament.JoinTournamentRequest;
-import com.example.web.dto.tournament.JoinTournamentResponse;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.exception.TournamentIsFullException;
@@ -12,6 +11,7 @@ import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
+import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -38,7 +38,7 @@ public class TournamentService {
     return tournamentMapper.toResponseDto(tournament);
   }
 
-  public JoinTournamentResponse joinTournament(JoinTournamentRequest request) {
+  public TournamentResponseDto joinTournament(JoinTournamentRequest request) {
     log.info("Received join tournament request: userId={}, tournamentId={}",
         request.userId(), request.tournamentId());
 
@@ -66,10 +66,13 @@ public class TournamentService {
     log.info("Adding user {} to tournament {}", user.getId(), tournament.getId());
     tournament.addUser(user);
 
+    if (tournament.isFull())
+      tournament.setStatus(TournamentStatus.IN_PROGRESS);
+
     Tournament savedTournament = tournamentRepository.save(tournament);
     log.info("User {} successfully joined tournament {}", user.getId(), savedTournament.getId());
 
-    return tournamentMapper.toJoinTournamentResponseDto(savedTournament);
+    return tournamentMapper.toResponseDto(savedTournament);
   }
 
   public TournamentResponseDto getById(String id) {
@@ -98,8 +101,6 @@ public class TournamentService {
 
     Tournament newTournament =  tournamentMapper.toEntity(dto);
     newTournament.setId(id);
-
-    System.out.println(newTournament);
 
     tournamentRepository.save(newTournament);
     log.debug("Updated tournament: {}", newTournament);

@@ -7,6 +7,7 @@ public record JoinTournamentResponse(
     String id,
     String name,
     int numberOfPlayers,
+    int currentNumberOfPlayers,
     TournamentStatus status,
     Set<String> userIds,
     int roundsToWin

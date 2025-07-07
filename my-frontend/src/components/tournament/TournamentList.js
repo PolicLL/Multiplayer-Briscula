@@ -19,6 +19,17 @@ export default function TournamentList({ onJoin }) {
     fetchTournaments();
   }, []);
 
+  const handleJoin = async (tournament) => {
+    if (!onJoin) return;
+
+    const updated = await onJoin(tournament);
+    if (!updated) return;
+
+    setTournaments((prev) =>
+      prev.map((t) => (t.id === updated.id ? updated : t))
+    );
+  };
+
   return (
     <div>
       <h3 className="text-xl font-semibold mb-2">Available Tournaments</h3>
@@ -40,7 +51,7 @@ export default function TournamentList({ onJoin }) {
               </div>
               <button
                 className="mt-2 bg-blue-600 text-white px-3 py-1 rounded"
-                onClick={() => onJoin?.(tournament)}
+                onClick={() => handleJoin(tournament)}
                 disabled={
                   tournament.currentNumberOfPlayers >=
                   tournament.numberOfPlayers

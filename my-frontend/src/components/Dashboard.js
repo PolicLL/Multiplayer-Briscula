@@ -129,6 +129,9 @@ function Dashboard() {
                   );
 
                   console.log("Join success:", response.data);
+
+                  const updatedTournament = response.data; // <- this is JoinTournamentResponse
+                  return updatedTournament; // <- pass it back to TournamentList
                 } catch (error) {
                   if (error.response) {
                     const backendError = error.response.data;
