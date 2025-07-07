@@ -1,5 +1,6 @@
 package com.example.web.configuration;
 
+import com.example.web.handler.TournamentWebSocketHandler;
 import com.example.web.handler.WebSocketHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +17,14 @@ public class WebSocketConfig implements WebSocketConfigurer {
   @Autowired
   private WebSocketHandler webSocketHandler;
 
+  @Autowired
+  private TournamentWebSocketHandler tournamentWebSocketHandler;
+
   public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
     registry
         .addHandler(webSocketHandler, "/game/prepare")
         .addHandler(webSocketHandler, "/game/**")
+        .addHandler(tournamentWebSocketHandler, "/tournament/**")
         .setAllowedOrigins("*");
 
     log.info("WebSocket handler registered for path /game");

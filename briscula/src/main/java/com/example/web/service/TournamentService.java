@@ -8,6 +8,7 @@ import com.example.web.exception.TournamentIsFullException;
 import com.example.web.exception.TournamentWithIdDoesNotExists;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
+import com.example.web.handler.TournamentWebSocketHandler;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
@@ -29,6 +30,8 @@ public class TournamentService {
   private final TournamentRepository tournamentRepository;
   private final UserRepository userRepository;
   private final TournamentMapper tournamentMapper;
+
+  private final TournamentWebSocketHandler tournamentWebSocketHandler;
 
   public TournamentResponseDto create(TournamentCreateDto dto) {
     Tournament tournament = tournamentMapper.toEntity(dto);
@@ -72,7 +75,11 @@ public class TournamentService {
     Tournament savedTournament = tournamentRepository.save(tournament);
     log.info("User {} successfully joined tournament {}", user.getId(), savedTournament.getId());
 
-    return tournamentMapper.toResponseDto(savedTournament);
+    TournamentResponseDto tournamentResponse =  tournamentMapper.toResponseDto(savedTournament);
+
+    tournamentWebSocketHandler.broadcastTournamentUpdate(tournamentResponse);
+
+    return tournamentResponse;
   }
 
   public TournamentResponseDto getById(String id) {

@@ -7,6 +7,7 @@ import Menu from "./Menu";
 import axios from "axios";
 import TournamentForm from "../components/tournament/TournamentForm";
 import TournamentList from "./tournament/TournamentList";
+import { useTournamentWebSocket } from "../hooks/useTournamentWebSocket";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -19,6 +20,16 @@ function Dashboard() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
   const [showTournaments, setShowTournaments] = useState(false);
+
+  const [tournaments, setTournaments] = useState([]);
+
+  const onTournamentUpdate = React.useCallback((updatedTournament) => {
+    setTournaments((prev) =>
+      prev.map((t) => (t.id === updatedTournament.id ? updatedTournament : t))
+    );
+  }, []);
+
+  useTournamentWebSocket(onTournamentUpdate);
 
   const socketRef = useGameWebSocket({
     onGameStart: (roomId, playerId) => {
@@ -39,6 +50,10 @@ function Dashboard() {
       })
       .then((res) => setUserInfo(res.data))
       .catch(() => setMessage("Error fetching user info."));
+
+    axios
+      .get("http://localhost:8080/api/tournament")
+      .then((res) => setTournaments(res.data));
   }, [navigate, username]);
 
   const joinGame = (numberOfPlayers) => {
@@ -116,6 +131,8 @@ function Dashboard() {
 
           {showTournaments && (
             <TournamentList
+              tournaments={tournaments}
+              setTournaments={setTournaments}
               onJoin={async (tournament) => {
                 const joinTournament = {
                   tournamentId: tournament.id,
@@ -128,18 +145,15 @@ function Dashboard() {
                     joinTournament
                   );
 
-                  console.log("Join success:", response.data);
-
-                  const updatedTournament = response.data; // <- this is JoinTournamentResponse
-                  return updatedTournament; // <- pass it back to TournamentList
+                  const updatedTournament = response.data;
+                  return updatedTournament;
                 } catch (error) {
                   if (error.response) {
-                    const backendError = error.response.data;
-                    alert(`Error joining tournament: ${backendError.message}`);
-                  } else if (error.request) {
-                    alert("No response from server. Please try again later.");
+                    alert(
+                      `Error joining tournament: ${error.response.data.message}`
+                    );
                   } else {
-                    alert("Error: " + error.message);
+                    alert("Error joining tournament. Please try again.");
                   }
                 }
               }}
