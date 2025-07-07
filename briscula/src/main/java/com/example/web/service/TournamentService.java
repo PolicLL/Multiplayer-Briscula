@@ -62,7 +62,7 @@ public class TournamentService {
           return new UserNotFoundException(request.userId());
         });
 
-    if (tournament.getUsers().contains(user)) {
+    if (tournamentRepository.isUserInActiveTournaments(request.userId())) {
       throw new UserAlreadyAssignedToTournament();
     }
 

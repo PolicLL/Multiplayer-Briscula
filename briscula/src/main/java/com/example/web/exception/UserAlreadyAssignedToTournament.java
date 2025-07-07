@@ -8,6 +8,6 @@ public class UserAlreadyAssignedToTournament extends RuntimeException{
   }
 
   public UserAlreadyAssignedToTournament() {
-    super("User is already assigned to this tournament.");
+    super("User is already assigned to some tournament.");
   }
 }
