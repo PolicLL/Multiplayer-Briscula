@@ -16,6 +16,9 @@ export function useTournamentWebSocket(onTournamentUpdate) {
       const tournamentUpdate = JSON.parse(event.data);
       console.log("Received tournament update:", tournamentUpdate);
 
+      // if tournament is full and game should start
+      //navigate(`/game/${roomId}/${playerId}`);
+
       if (onTournamentUpdate) {
         onTournamentUpdate(tournamentUpdate);
       }

@@ -1,26 +1,39 @@
 package com.example.web.service;
 
 
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
+
+import com.example.briscula.user.player.RealPlayer;
 import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.exception.TournamentIsFullException;
-import com.example.web.exception.TournamentWithIdDoesNotExists;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
-import com.example.web.handler.TournamentWebSocketHandler;
 import com.example.web.mapper.TournamentMapper;
+import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Tournament;
-import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
+import com.example.web.utils.WebSocketMessageReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 @Service
 @RequiredArgsConstructor
@@ -31,71 +44,74 @@ public class TournamentService {
   private final UserRepository userRepository;
   private final TournamentMapper tournamentMapper;
 
-  private final TournamentWebSocketHandler tournamentWebSocketHandler;
+  private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
+
+  @PostConstruct
+  public void init() {
+    for (Tournament tournament : tournamentRepository.findAll()) {
+      if (tournament.getStatus().equals(TournamentStatus.INITIALIZING)) {
+        tournamentPlayers.put(tournament.getId(), new HashSet<>());
+      }
+    }
+  }
 
   public TournamentResponseDto create(TournamentCreateDto dto) {
     Tournament tournament = tournamentMapper.toEntity(dto);
     tournament.setId(UUID.randomUUID().toString());
     tournamentRepository.save(tournament);
     log.debug("Tournament saved: {}", tournament);
-    return tournamentMapper.toResponseDto(tournament);
+
+    tournamentPlayers.put(tournament.getId(), new HashSet<>());
+    return tournamentMapper.toResponseDto(tournament, 0);
   }
 
-  public TournamentResponseDto joinTournament(JoinTournamentRequest request) {
-    log.info("Received join tournament request: userId={}, tournamentId={}",
-        request.userId(), request.tournamentId());
+  public TournamentResponseDto joinTournament(JoinTournamentRequest request, WebSocketSession webSocketSession) {
+    log.info("Received join tournament request: userId={}, tournamentId={}", request.userId(), request.tournamentId());
 
-    Tournament tournament = tournamentRepository.findWithUsersById(request.tournamentId())
-        .orElseThrow(() -> {
-          log.warn("Tournament with id {} not found", request.tournamentId());
-          return new TournamentWithIdDoesNotExists(request.tournamentId());
-        });
+    Tournament tournament = receiveTournament(request.tournamentId());
 
-    if (tournament.isFull()) {
+    if (isTournamentFull(tournament.getId())) {
       log.warn("Tournament {} is full, user {} cannot join", request.tournamentId(), request.userId());
       throw new TournamentIsFullException(request.tournamentId());
     }
 
-    User user = userRepository.findById(request.userId())
+    userRepository.findById(request.userId())
         .orElseThrow(() -> {
           log.warn("User with id {} not found", request.userId());
           return new UserNotFoundException(request.userId());
         });
 
-    if (tournamentRepository.isUserInActiveTournaments(request.userId())) {
+    if (isSessionUsed(webSocketSession)) {
       throw new UserAlreadyAssignedToTournament();
     }
 
-    log.info("Adding user {} to tournament {}", user.getId(), tournament.getId());
-    tournament.addUser(user);
 
-    if (tournament.isFull())
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
+        null, request.userId(), webSocketSession), true);
+
+    tournamentPlayers.get(tournament.getId()).add(connectedPlayer);
+
+    if (isTournamentFull(tournament.getId()))
       tournament.setStatus(TournamentStatus.IN_PROGRESS);
 
-    Tournament savedTournament = tournamentRepository.save(tournament);
-    log.info("User {} successfully joined tournament {}", user.getId(), savedTournament.getId());
+    TournamentResponseDto tournamentResponse = tournamentMapper.toResponseDto(
+        tournament, getNumberOfPlayersInTournament(tournament.getId()));
 
-    TournamentResponseDto tournamentResponse =  tournamentMapper.toResponseDto(savedTournament);
-
-    tournamentWebSocketHandler.broadcastTournamentUpdate(tournamentResponse);
+    broadcastTournamentUpdate(tournamentResponse, isTournamentFull(tournament.getId()));
 
     return tournamentResponse;
   }
 
   public TournamentResponseDto getById(String id) {
     log.info("Fetching tournament with ID: {}", id);
-    Tournament tournament = tournamentRepository.findById(id)
-        .orElseThrow(() -> {
-          log.warn("Tournament not found: {}", id);
-          return new EntityNotFoundException("Tournament not found with id: " + id);
-        });
-    return tournamentMapper.toResponseDto(tournament);
+    Tournament tournament = receiveTournament(id);
+    return tournamentMapper.toResponseDto(tournament, getNumberOfPlayersInTournament(id));
   }
 
   public List<TournamentResponseDto> getAll() {
     log.info("Fetching all tournaments");
     return tournamentRepository.findAll().stream()
-        .map(tournamentMapper::toResponseDto)
+        .map(response -> tournamentMapper.toResponseDto(response, getNumberOfPlayersInTournament(response.getId())))
         .toList();
   }
 
@@ -111,7 +127,7 @@ public class TournamentService {
 
     tournamentRepository.save(newTournament);
     log.debug("Updated tournament: {}", newTournament);
-    return tournamentMapper.toResponseDto(newTournament);
+    return tournamentMapper.toResponseDto(newTournament, getNumberOfPlayersInTournament(newTournament.getId()));
   }
 
   public void delete(String id) {
@@ -122,5 +138,99 @@ public class TournamentService {
     }
     tournamentRepository.deleteById(id);
     log.info("Tournament deleted: {}", id);
+  }
+
+  private Tournament receiveTournament(String id) {
+    return tournamentRepository.findById(id)
+        .orElseThrow(() -> {
+          log.warn("Tournament not found: {}", id);
+          return new EntityNotFoundException("Tournament not found with id: " + id);
+        });
+  }
+
+  public void handle(WebSocketSession session, WebSocketMessage<?> message)
+      throws JsonProcessingException {
+    String tournamentId = WebSocketMessageReader.getValueFromJsonMessage(message, "tournamentId");
+    String playerId = WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
+
+    joinTournament(JoinTournamentRequest.builder()
+        .tournamentId(tournamentId)
+        .userId(playerId)
+        .build(), session);
+  }
+
+  public void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
+    List<WebSocketSession> webSocketSessions =
+        tournamentPlayers.get(tournamentResponseDto.id())
+            .stream()
+            .map(ConnectedPlayer::getWebSocketSession)
+            .toList();
+
+    synchronized (webSocketSessions) {
+      for (WebSocketSession session : webSocketSessions) {
+        try {
+          if (session.isOpen()) {
+            String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
+            session.sendMessage(new TextMessage(json));
+          }
+        } catch (Exception e) {
+          log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
+        }
+      }
+    }
+  }
+
+  private int getNumberOfPlayersInTournament(String tournamentId) {
+    return tournamentPlayers.get(tournamentId).size();
+  }
+
+  public void removePlayerWithSession(WebSocketSession session) {
+    String changedTournamentId = tournamentPlayers.entrySet().stream()
+        .filter(entry -> entry.getValue().removeIf(p -> p.getWebSocketSession().equals(session)))
+        .map(Map.Entry::getKey)
+        .findFirst()
+        .orElse(null);
+
+    if (changedTournamentId == null) {
+      return;
+    }
+
+    Tournament tournament = receiveTournament(changedTournamentId);
+
+    TournamentResponseDto tournamentResponseDto = tournamentMapper.toResponseDto(
+        tournament, getNumberOfPlayersInTournament(changedTournamentId));
+
+    try {
+      String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
+
+      tournamentPlayers.getOrDefault(changedTournamentId, Set.of())
+          .forEach(player -> {
+            try {
+              player.getWebSocketSession().sendMessage(new TextMessage(json));
+            } catch (IOException e) {
+              throw new RuntimeException("Failed to send WebSocket message", e);
+            }
+          });
+
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to serialize tournament DTO", e);
+    }
+  }
+
+  private boolean isSessionUsed(WebSocketSession session) {
+    Collection<Set<ConnectedPlayer>> values = tournamentPlayers.values();
+
+    for (Set<ConnectedPlayer> set : values) {
+      for (ConnectedPlayer connectedPlayer : set) {
+        if (session.equals(connectedPlayer.getWebSocketSession()))
+          return true;
+      }
+    }
+
+    return false;
+  }
+
+  private boolean isTournamentFull(String tournamentId) {
+    return receiveTournament(tournamentId).getNumberOfPlayers() == tournamentPlayers.get(tournamentId).size();
   }
 }

@@ -29,7 +29,7 @@ function Dashboard() {
     );
   }, []);
 
-  useTournamentWebSocket(onTournamentUpdate);
+  const tournamentSocketRef = useTournamentWebSocket(onTournamentUpdate);
 
   const socketRef = useGameWebSocket({
     onGameStart: (roomId, playerId) => {
@@ -140,14 +140,15 @@ function Dashboard() {
                 };
 
                 try {
-                  const response = await axios.post(
-                    "http://localhost:8080/api/tournament/join",
-                    joinTournament
+                  tournamentSocketRef.current.send(
+                    JSON.stringify({
+                      type: "JOIN_TOURNAMENT",
+                      tournamentId: tournament.id,
+                      playerId: userInfo.id,
+                    })
                   );
-
-                  const updatedTournament = response.data;
-                  return updatedTournament;
                 } catch (error) {
+                  console.log("Error: " + error);
                   if (error.response) {
                     alert(
                       `Error joining tournament: ${error.response.data.message}`

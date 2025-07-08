@@ -1,33 +1,38 @@
 package com.example.web.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import com.example.web.exception.WebSocketException;
+import com.example.web.service.TournamentService;
+import com.example.web.utils.WebSocketMessageReader;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class TournamentWebSocketHandler extends TextWebSocketHandler {
 
-  private final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
-  private final ObjectMapper objectMapper = new ObjectMapper();
+
+  private final TournamentService tournamentService;
 
   @Override
-  public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-    sessions.add(session);
+  public void afterConnectionEstablished(WebSocketSession session) {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
   @Override
-  public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
-
+  public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
+      throws JsonProcessingException {
+    switch (WebSocketMessageReader.getMessageType(message)) {
+      case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
+      default -> throw new WebSocketException();
+    }
   }
 
   @Override
@@ -37,7 +42,7 @@ public class TournamentWebSocketHandler extends TextWebSocketHandler {
 
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-    sessions.remove(session);
+    tournamentService.removePlayerWithSession(session);
     log.info("Tournament WebSocket disconnected: {}", session.getId());
   }
 
@@ -46,18 +51,4 @@ public class TournamentWebSocketHandler extends TextWebSocketHandler {
     return false;
   }
 
-  public void broadcastTournamentUpdate(Object updatedTournament) {
-    synchronized (sessions) {
-      for (WebSocketSession session : sessions) {
-        try {
-          if (session.isOpen()) {
-            String json = objectMapper.writeValueAsString(updatedTournament);
-            session.sendMessage(new TextMessage(json));
-          }
-        } catch (Exception e) {
-          log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
-        }
-      }
-    }
-  }
 }
