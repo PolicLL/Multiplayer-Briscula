@@ -19,11 +19,9 @@ import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class TournamentWebSocketHandlerIntegrationTest {
+class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
   @LocalServerPort
   private int port;
@@ -55,19 +53,17 @@ class TournamentWebSocketHandlerIntegrationTest {
 
   }
 
+  // TODO: Test is sometimes failing, has to be rechecked
   @Test
-  void testRawWebSocketJoinRoom() throws Exception {
+  void testRawWebSocketJoinTournament() throws Exception {
     List<CompletableFuture<JoinTournamentResponse>> futures = new ArrayList<>();
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
     List<TestJoinTournamentEndpoint> endpoints = new ArrayList<>();
-    List<JoinTournamentResponse> responses = new ArrayList<>();
 
     for (int i = 0; i < 4; ++i) {
       futures.add(new CompletableFuture<>());
       endpoints.add(new TestJoinTournamentEndpoint(futures.get(i), tournamentId, userIds.get(i)));
       container.connectToServer(endpoints.get(i), WS_URI);
-//      responses.add(futures.get(i).get(15, TimeUnit.SECONDS));
-//      assertThat(responses.get(i).currentNumberOfPlayers()).isEqualTo(4);
     }
 
     JoinTournamentResponse response1 = futures.get(0).get(30, TimeUnit.SECONDS);
@@ -80,7 +76,7 @@ class TournamentWebSocketHandlerIntegrationTest {
     assertThat(response3.currentNumberOfPlayers()).isEqualTo(4);
     assertThat(response4.currentNumberOfPlayers()).isEqualTo(4);
 
-    //System.out.println("✅ Test completed successfully: " + response);
+    System.out.println("✅ Test completed successfully");
   }
 
 }

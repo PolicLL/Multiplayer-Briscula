@@ -21,8 +21,6 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
-import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,7 +32,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -46,6 +43,9 @@ public class TournamentService {
   private final TournamentRepository tournamentRepository;
   private final UserRepository userRepository;
   private final TournamentMapper tournamentMapper;
+
+  private final WebSocketMessageDispatcher messageDispatcher;
+
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
 
@@ -87,13 +87,12 @@ public class TournamentService {
     ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
         null, user.getUsername(), webSocketSession), true);
 
-    if (tournamentPlayers.get(tournament.getId()).contains(connectedPlayer)) {
-      System.out.println("Contains.");
-    }
-
     if (!tournamentPlayers.get(tournament.getId()).add(connectedPlayer)) {
       throw new UserAlreadyAssignedToTournament();
     }
+
+    tournamentPlayers.get(request.tournamentId()).add(connectedPlayer);
+    messageDispatcher.registerSession(webSocketSession);
 
 
     if (isTournamentFull(tournament.getId()))
@@ -165,6 +164,7 @@ public class TournamentService {
   }
 
   public void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
+    log.info("Broadcasting tournament update to players.");
     List<WebSocketSession> webSocketSessions =
         tournamentPlayers.get(tournamentResponseDto.id())
             .stream()
@@ -172,16 +172,15 @@ public class TournamentService {
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
-    synchronized (webSocketSessions) {
-      for (WebSocketSession session : webSocketSessions) {
-        try {
-          if (session.isOpen()) {
-            String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
-            session.sendMessage(new TextMessage(json));
-          }
-        } catch (Exception e) {
-          log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
+    for (WebSocketSession session : webSocketSessions) {
+      try {
+        if (session.isOpen()) {
+          String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
+          messageDispatcher.sendMessage(session, json);
+
         }
+      } catch (Exception e) {
+        log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
       }
     }
   }
@@ -211,31 +210,14 @@ public class TournamentService {
 
       tournamentPlayers.getOrDefault(changedTournamentId, Set.of())
           .forEach(player -> {
-            try {
-              player.getWebSocketSession().sendMessage(new TextMessage(json));
-            } catch (IOException e) {
-              throw new RuntimeException("Failed to send WebSocket message", e);
-            }
+            messageDispatcher.sendMessage(player.getWebSocketSession(), json);
+            messageDispatcher.unregisterSession(session);
+
           });
 
     } catch (JsonProcessingException e) {
       throw new RuntimeException("Failed to serialize tournament DTO", e);
     }
-  }
-
-  private boolean isUserAlreadyIn(WebSocketSession session, String username) {
-    Collection<Set<ConnectedPlayer>> values = tournamentPlayers.values();
-
-    for (Set<ConnectedPlayer> set : values) {
-      for (ConnectedPlayer connectedPlayer : set) {
-        if (session.equals(connectedPlayer.getWebSocketSession()))
-          return true;
-        if (username.equals(connectedPlayer.getPlayer().getNickname()))
-          return true;
-      }
-    }
-
-    return false;
   }
 
   private boolean isTournamentFull(String tournamentId) {
