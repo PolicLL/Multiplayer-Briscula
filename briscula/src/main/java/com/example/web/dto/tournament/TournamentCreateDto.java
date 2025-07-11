@@ -18,7 +18,7 @@ public record TournamentCreateDto(
     int numberOfPlayers,
 
     @NotNull(message = "Status is mandatory")
-    TournamentStatus status,
+    TournamentStatus status, // TODO: This should be deleted when creating, default is Initializing.
 
     @Min(value = 1, message = "Rounds to win must be between 1 and 4")
     @Max(value = 4, message = "Rounds to win must be between 1 and 4")

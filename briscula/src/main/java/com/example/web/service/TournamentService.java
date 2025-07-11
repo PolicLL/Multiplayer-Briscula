@@ -27,8 +27,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -167,7 +169,8 @@ public class TournamentService {
         tournamentPlayers.get(tournamentResponseDto.id())
             .stream()
             .map(ConnectedPlayer::getWebSocketSession)
-            .toList();
+            .filter(Objects::nonNull)
+            .collect(Collectors.toList());
 
     synchronized (webSocketSessions) {
       for (WebSocketSession session : webSocketSessions) {

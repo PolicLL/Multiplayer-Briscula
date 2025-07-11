@@ -40,10 +40,10 @@ public class EntityUtils {
   }
 
   public static String randomEmail() {
-    return "user" + RANDOM.nextInt(1000) + "@example.com";
+    return "user" + RANDOM.nextInt(100000) + "@example.com";
   }
 
-  public static String randomPassword() { return "password" +  RANDOM.nextInt(1000); };
+  public static String randomPassword() { return "password" +  RANDOM.nextInt(100000); };
 
   public static UserDto generateValidUserDto() {
     return UserDto.builder()
@@ -53,6 +53,16 @@ public class EntityUtils {
         .email(randomEmail())
         .password(randomPassword())
         .photoId(PHOTO_ID)
+        .build();
+  }
+
+  public static UserDto generateValidUserDtoWithoutPhoto() {
+    return UserDto.builder()
+        .username(randomUsername())
+        .age( randomAge())
+        .country(randomCountry())
+        .email(randomEmail())
+        .password(randomPassword())
         .build();
   }
 
@@ -94,6 +104,15 @@ public class EntityUtils {
     return new RoomPlayerId("roomId" + RANDOM.nextInt(500), RANDOM.nextInt(500));
   }
 
+  public static String getPlayerId() {
+    return String.valueOf(RANDOM.nextInt(100000));
+  }
+
+  public static String getTournamentId() {
+    return String.valueOf(RANDOM.nextInt(100000));
+  }
+
+
   public static String getPlayerName() {
     return "Player + " + RANDOM.nextInt(100000);
   }
@@ -127,6 +146,15 @@ public class EntityUtils {
 
   public static WebSocketSession getWebSocketSession() {
     return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
+  }
+
+  public static TournamentCreateDto createTournamentCreateDto() {
+    return TournamentCreateDto.builder()
+        .name("Tournament." + getRandomNumber(10000))
+        .numberOfPlayers(4)
+        .status(TournamentStatus.INITIALIZING)
+        .roundsToWin(1)
+        .build();
   }
 
 }
