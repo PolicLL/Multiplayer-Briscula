@@ -35,13 +35,19 @@ public class ConnectedPlayer {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof ConnectedPlayer that)) return false;
-    return Objects.equals(this.webSocketSession.getId(), that.webSocketSession.getId());
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    ConnectedPlayer that = (ConnectedPlayer) o;
+    return Objects.equals(webSocketSession.getId(), that.webSocketSession.getId())
+        || Objects.equals(player.getNickname(), that.player.getNickname());
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(webSocketSession.getId());
+    return 0;
   }
 }

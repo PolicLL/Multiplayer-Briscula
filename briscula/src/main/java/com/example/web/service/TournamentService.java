@@ -13,6 +13,7 @@ import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Tournament;
+import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
@@ -75,21 +76,23 @@ public class TournamentService {
       throw new TournamentIsFullException(request.tournamentId());
     }
 
-    userRepository.findById(request.userId())
+    User user = userRepository.findById(request.userId())
         .orElseThrow(() -> {
           log.warn("User with id {} not found", request.userId());
           return new UserNotFoundException(request.userId());
         });
 
-    if (isSessionUsed(webSocketSession)) {
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
+        null, user.getUsername(), webSocketSession), true);
+
+    if (tournamentPlayers.get(tournament.getId()).contains(connectedPlayer)) {
+      System.out.println("Contains.");
+    }
+
+    if (!tournamentPlayers.get(tournament.getId()).add(connectedPlayer)) {
       throw new UserAlreadyAssignedToTournament();
     }
 
-
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
-        null, request.userId(), webSocketSession), true);
-
-    tournamentPlayers.get(tournament.getId()).add(connectedPlayer);
 
     if (isTournamentFull(tournament.getId()))
       tournament.setStatus(TournamentStatus.IN_PROGRESS);
@@ -217,12 +220,14 @@ public class TournamentService {
     }
   }
 
-  private boolean isSessionUsed(WebSocketSession session) {
+  private boolean isUserAlreadyIn(WebSocketSession session, String username) {
     Collection<Set<ConnectedPlayer>> values = tournamentPlayers.values();
 
     for (Set<ConnectedPlayer> set : values) {
       for (ConnectedPlayer connectedPlayer : set) {
         if (session.equals(connectedPlayer.getWebSocketSession()))
+          return true;
+        if (username.equals(connectedPlayer.getPlayer().getNickname()))
           return true;
       }
     }

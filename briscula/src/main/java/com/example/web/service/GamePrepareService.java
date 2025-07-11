@@ -56,7 +56,10 @@ public class GamePrepareService {
           null, playerName, session), shouldPointsShow);
 
       Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
-      waitingPlayers.add(connectedPlayer);
+
+      if (!waitingPlayers.add(connectedPlayer)) {
+        throw new RuntimeException("User already entered this game.");
+      }
 
       if (waitingPlayers.size() == numberOfPlayersOption) {
         ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
