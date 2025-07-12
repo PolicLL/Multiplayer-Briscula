@@ -53,28 +53,28 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
 
   }
 
-  // TODO: Test is sometimes failing, has to be rechecked
   @Test
   void testRawWebSocketJoinTournament() throws Exception {
-    List<CompletableFuture<JoinTournamentResponse>> futures = new ArrayList<>();
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+    List<CompletableFuture<JoinTournamentResponse>> futures = new ArrayList<>();
     List<TestJoinTournamentEndpoint> endpoints = new ArrayList<>();
 
-    for (int i = 0; i < 4; ++i) {
-      futures.add(new CompletableFuture<>());
-      endpoints.add(new TestJoinTournamentEndpoint(futures.get(i), tournamentId, userIds.get(i)));
-      container.connectToServer(endpoints.get(i), WS_URI);
+    for (int i = 0; i < 4; i++) {
+      CompletableFuture<JoinTournamentResponse> future = new CompletableFuture<>();
+      futures.add(future);
+      TestJoinTournamentEndpoint endpoint = new TestJoinTournamentEndpoint(future, tournamentId, userIds.get(i));
+      endpoints.add(endpoint);
+      container.connectToServer(endpoint, WS_URI);
     }
 
-    JoinTournamentResponse response1 = futures.get(0).get(30, TimeUnit.SECONDS);
-    JoinTournamentResponse response2 = futures.get(1).get(30, TimeUnit.SECONDS);
-    JoinTournamentResponse response3 = futures.get(2).get(30, TimeUnit.SECONDS);
-    JoinTournamentResponse response4 = futures.get(3).get(30, TimeUnit.SECONDS);
+    List<JoinTournamentResponse> responses = new ArrayList<>();
+    for (CompletableFuture<JoinTournamentResponse> future : futures) {
+      responses.add(future.get(30, TimeUnit.SECONDS));
+    }
 
-    assertThat(response1.currentNumberOfPlayers()).isEqualTo(4);
-    assertThat(response2.currentNumberOfPlayers()).isEqualTo(4);
-    assertThat(response3.currentNumberOfPlayers()).isEqualTo(4);
-    assertThat(response4.currentNumberOfPlayers()).isEqualTo(4);
+    for (JoinTournamentResponse response : responses) {
+      assertThat(response.currentNumberOfPlayers()).isEqualTo(4);
+    }
 
     System.out.println("✅ Test completed successfully");
   }

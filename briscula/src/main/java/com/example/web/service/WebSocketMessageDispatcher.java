@@ -52,7 +52,10 @@ public class WebSocketMessageDispatcher {
   public void sendMessage(WebSocketSession session, String message) {
     BlockingQueue<String> queue = sessionQueues.get(session);
     if (queue != null) {
-      queue.offer(message);
+      boolean isAdded = queue.add(message);
+      if (!isAdded)
+        throw new RuntimeException(String.format("Message %s is not being send to session %s.",
+            message, session));
     } else {
       log.warn("Attempted to send message to unregistered session: {}", session.getId());
     }
