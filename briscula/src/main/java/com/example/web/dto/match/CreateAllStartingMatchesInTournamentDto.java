@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record CreateMatchDto(
+public record CreateAllStartingMatchesInTournamentDto(
     MatchType type,
     String tournamentId,
     List<String> userIds

@@ -4,7 +4,8 @@ package com.example.web.service;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
 import com.example.briscula.user.player.RealPlayer;
-import com.example.web.dto.match.CreateMatchDto;
+import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
+import com.example.web.dto.match.MatchDto;
 import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
@@ -13,9 +14,9 @@ import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
-import com.example.web.model.Match;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
+import com.example.web.model.enums.MatchType;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
@@ -206,15 +207,13 @@ public class TournamentService {
 
     tournamentRepository.save(tournament);
 
-    // 4 -> 3
-    // 8 -> 7
-    // 16 -> 15
-
     int numberOfFirstRoundMatches = numberOfPlayers / 2;
-    int numberOfMatches = numberOfPlayers - 1;
 
     for (int i = 0; i < numberOfFirstRoundMatches; ++i) {
-      Match match = matchService.createMatch(CreateMatchDto.builder()
+      MatchDto match = matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
+              .tournamentId(tournamentId)
+              .type(MatchType.fromInt(numberOfPlayers))
+              .userIds(tournamentUsers.get(tournamentId).stream().map(User::getId).toList())
           .build());
     }
   }
