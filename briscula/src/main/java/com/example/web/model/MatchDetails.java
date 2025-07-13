@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_match")
-public class UserMatch {
+@Table(name = "match_details")
+public class MatchDetails {
 
   @Id
   private String id;

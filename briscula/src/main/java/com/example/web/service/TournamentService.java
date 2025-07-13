@@ -4,6 +4,7 @@ package com.example.web.service;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.web.dto.match.CreateMatchDto;
 import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
@@ -12,6 +13,7 @@ import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.Match;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
@@ -44,16 +46,20 @@ public class TournamentService {
   private final UserRepository userRepository;
   private final TournamentMapper tournamentMapper;
 
+  private final MatchService matchService;
+
   private final WebSocketMessageDispatcher messageDispatcher;
 
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
+  private final Map<String, Set<User>> tournamentUsers = new HashMap<>();
 
   @PostConstruct
   public void init() {
     for (Tournament tournament : tournamentRepository.findAll()) {
       if (tournament.getStatus().equals(TournamentStatus.INITIALIZING)) {
         tournamentPlayers.put(tournament.getId(), new HashSet<>());
+        tournamentUsers.put(tournament.getId(), new HashSet<>());
       }
     }
   }
@@ -65,6 +71,7 @@ public class TournamentService {
     log.debug("Tournament saved: {}", tournament);
 
     tournamentPlayers.put(tournament.getId(), new HashSet<>());
+    tournamentUsers.put(tournament.getId(), new HashSet<>());
     return tournamentMapper.toResponseDto(tournament, 0);
   }
 
@@ -92,6 +99,7 @@ public class TournamentService {
     }
 
     tournamentPlayers.get(request.tournamentId()).add(connectedPlayer);
+    tournamentUsers.get(request.tournamentId()).add(user);
     messageDispatcher.registerSession(webSocketSession);
 
 
@@ -178,12 +186,39 @@ public class TournamentService {
           String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
           messageDispatcher.sendMessage(session, json);
 
+          if (isFull) {
+
+          }
+
         }
       } catch (Exception e) {
         log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
       }
     }
   }
+
+  private void organizeTournament(String tournamentId, int numberOfPlayers) {
+    Tournament tournament = receiveTournament(tournamentId);
+
+    Set<User> connectedUsers = tournamentUsers.get(tournamentId);
+
+    connectedUsers.forEach(tournament::addUser);
+
+    tournamentRepository.save(tournament);
+
+    // 4 -> 3
+    // 8 -> 7
+    // 16 -> 15
+
+    int numberOfFirstRoundMatches = numberOfPlayers / 2;
+    int numberOfMatches = numberOfPlayers - 1;
+
+    for (int i = 0; i < numberOfFirstRoundMatches; ++i) {
+      Match match = matchService.createMatch(CreateMatchDto.builder()
+          .build());
+    }
+  }
+
 
   private int getNumberOfPlayersInTournament(String tournamentId) {
     return tournamentPlayers.get(tournamentId).size();

@@ -10,11 +10,11 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
@@ -23,9 +23,11 @@ import lombok.NoArgsConstructor;
 @Table(name = "users")
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
   @Id
+  @EqualsAndHashCode.Include
   private String id;
 
   @Enumerated(EnumType.STRING)
@@ -48,21 +50,11 @@ public class User {
   private String photoId;
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-  private Set<UserMatch> userMatches = new HashSet<>();
+  private Set<MatchDetails> matchDetails = new HashSet<>();
 
   @ManyToMany(mappedBy = "users")
   private Set<Tournament> tournaments = new HashSet<>();
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
-    User that = (User) o;
-    return Objects.equals(id, that.id);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id);
-  }
+  @ManyToMany(mappedBy = "users")
+  private Set<Match> matches = new HashSet<>();
 }

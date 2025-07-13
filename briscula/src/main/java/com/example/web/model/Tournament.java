@@ -59,7 +59,7 @@ public class Tournament {
 
   public void addUser(User user) {
     users.add(user);
-    user.getTournaments().add(this); // make sure this exists
+    user.getTournaments().add(this);
   }
 
   public void removeUser(User user) {

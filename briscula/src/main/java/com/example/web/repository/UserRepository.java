@@ -24,7 +24,7 @@ public interface UserRepository extends JpaRepository<User, String> {
         COUNT(um.id) AS totalMatchesPlayed,
         SUM(CASE WHEN um.winner THEN 1 ELSE 0 END) AS totalWins
     FROM users u
-    LEFT JOIN user_match um ON u.id = um.user_id
+    LEFT JOIN match_details um ON u.id = um.user_id
     GROUP BY u.id, u.username, u.points, u.level
     ORDER BY u.points DESC
     """, nativeQuery = true)
