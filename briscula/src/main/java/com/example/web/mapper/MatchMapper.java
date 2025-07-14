@@ -1,8 +1,10 @@
 package com.example.web.mapper;
 
 import com.example.web.dto.match.CreateMatchDto;
+import com.example.web.dto.match.MatchDetailsDto;
 import com.example.web.dto.match.MatchDto;
 import com.example.web.model.Match;
+import com.example.web.model.MatchDetails;
 import com.example.web.model.User;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +19,11 @@ public interface MatchMapper {
 
   @Mapping(target = "userIds", source = "users", qualifiedByName = "mapUsersToIds")
   MatchDto toMatchDto(Match match);
+
+  @Mapping(target = "userId", source = "user.id")
+  @Mapping(target = "matchId", source = "match.id")
+  MatchDetailsDto toMatchDetailsDto(MatchDetails matchDetails);
+
 
   @Named("mapUsersToIds")
   default Set<String> mapUsersToIds(Set<User> users) {

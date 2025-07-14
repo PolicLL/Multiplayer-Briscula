@@ -1,10 +1,8 @@
 package com.example.web.model;
 
-import com.example.web.model.enums.MatchType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -30,10 +28,9 @@ public class Match {
   @Id
   private String id;
 
-  @Enumerated(EnumType.STRING)
-  private MatchType type;
+  private int numberOfPlayers;
 
-  private int tournamentId;
+  private String tournamentId;
 
   @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<MatchDetails> matchDetails;

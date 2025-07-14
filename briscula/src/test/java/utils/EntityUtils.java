@@ -91,15 +91,6 @@ public class EntityUtils {
     }
   }
 
-  public static TournamentCreateDto generateValidTournamentCreateDto() {
-    return TournamentCreateDto.builder()
-        .name("Test Tournament" + counter++)
-        .numberOfPlayers(8)
-        .status(TournamentStatus.INITIALIZING)
-        .roundsToWin(2)
-        .build();
-  }
-
   public static RoomPlayerId getRoomPlayerId() {
     return new RoomPlayerId("roomId" + RANDOM.nextInt(500), RANDOM.nextInt(500));
   }
@@ -148,9 +139,11 @@ public class EntityUtils {
     return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
   }
 
+  // Tournament
+
   public static TournamentCreateDto createTournamentCreateDto() {
     return TournamentCreateDto.builder()
-        .name("Tournament." + getRandomNumber(10000))
+        .name("Tournament." + counter++)
         .numberOfPlayers(4)
         .status(TournamentStatus.INITIALIZING)
         .roundsToWin(1)

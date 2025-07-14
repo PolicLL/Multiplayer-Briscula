@@ -8,7 +8,7 @@ CREATE TABLE tournament (
 
 CREATE TABLE match (
   id VARCHAR PRIMARY KEY,
-  type INT NOT NULL CHECK (type IN (2, 3, 4)),
+  number_of_players INT NOT NULL CHECK (number_of_players IN (2, 3, 4)),
   tournament_id VARCHAR,
   FOREIGN KEY (tournament_id) REFERENCES tournament(id)
 );
@@ -22,11 +22,11 @@ CREATE TABLE user_tournament (
 );
 
 CREATE TABLE user_match (
-  id VARCHAR PRIMARY KEY,
   user_id VARCHAR NOT NULL,
   match_id VARCHAR NOT NULL,
   FOREIGN KEY (user_id) REFERENCES users(id),
-  FOREIGN KEY (match_id) REFERENCES match(id)
+  FOREIGN KEY (match_id) REFERENCES match(id),
+  PRIMARY KEY (user_id, match_id)
 );
 
 CREATE TABLE match_details (
@@ -40,36 +40,36 @@ CREATE TABLE match_details (
   FOREIGN KEY (match_id) REFERENCES match(id)
 );
 
-INSERT INTO match (id, type) VALUES ('1', 2);
-INSERT INTO match (id, type) VALUES ('2', 3);
-INSERT INTO match (id, type) VALUES ('3', 4);
-INSERT INTO match (id, type) VALUES ('4', 2);
-INSERT INTO match (id, type) VALUES ('5', 4);
-INSERT INTO match (id, type) VALUES ('6', 3);
-INSERT INTO match (id, type) VALUES ('7', 2);
-INSERT INTO match (id, type) VALUES ('8', 4);
-INSERT INTO match (id, type) VALUES ('9', 2);
-INSERT INTO match (id, type) VALUES ('10', 3);
-INSERT INTO match (id, type) VALUES ('11', 4);
-INSERT INTO match (id, type) VALUES ('12', 2);
-INSERT INTO match (id, type) VALUES ('13', 4);
-INSERT INTO match (id, type) VALUES ('14', 3);
-INSERT INTO match (id, type) VALUES ('15', 2);
-INSERT INTO match (id, type) VALUES ('16', 4);
-INSERT INTO match (id, type) VALUES ('17', 2);
-INSERT INTO match (id, type) VALUES ('18', 3);
-INSERT INTO match (id, type) VALUES ('19', 4);
-INSERT INTO match (id, type) VALUES ('20', 2);
-INSERT INTO match (id, type) VALUES ('21', 3);
-INSERT INTO match (id, type) VALUES ('22', 4);
-INSERT INTO match (id, type) VALUES ('23', 2);
-INSERT INTO match (id, type) VALUES ('24', 3);
-INSERT INTO match (id, type) VALUES ('25', 4);
-INSERT INTO match (id, type) VALUES ('26', 2);
-INSERT INTO match (id, type) VALUES ('27', 3);
-INSERT INTO match (id, type) VALUES ('28', 4);
-INSERT INTO match (id, type) VALUES ('29', 2);
-INSERT INTO match (id, type) VALUES ('30', 4);
+INSERT INTO match (id, number_of_players) VALUES ('1', 2);
+INSERT INTO match (id, number_of_players) VALUES ('2', 3);
+INSERT INTO match (id, number_of_players) VALUES ('3', 4);
+INSERT INTO match (id, number_of_players) VALUES ('4', 2);
+INSERT INTO match (id, number_of_players) VALUES ('5', 4);
+INSERT INTO match (id, number_of_players) VALUES ('6', 3);
+INSERT INTO match (id, number_of_players) VALUES ('7', 2);
+INSERT INTO match (id, number_of_players) VALUES ('8', 4);
+INSERT INTO match (id, number_of_players) VALUES ('9', 2);
+INSERT INTO match (id, number_of_players) VALUES ('10', 3);
+INSERT INTO match (id, number_of_players) VALUES ('11', 4);
+INSERT INTO match (id, number_of_players) VALUES ('12', 2);
+INSERT INTO match (id, number_of_players) VALUES ('13', 4);
+INSERT INTO match (id, number_of_players) VALUES ('14', 3);
+INSERT INTO match (id, number_of_players) VALUES ('15', 2);
+INSERT INTO match (id, number_of_players) VALUES ('16', 4);
+INSERT INTO match (id, number_of_players) VALUES ('17', 2);
+INSERT INTO match (id, number_of_players) VALUES ('18', 3);
+INSERT INTO match (id, number_of_players) VALUES ('19', 4);
+INSERT INTO match (id, number_of_players) VALUES ('20', 2);
+INSERT INTO match (id, number_of_players) VALUES ('21', 3);
+INSERT INTO match (id, number_of_players) VALUES ('22', 4);
+INSERT INTO match (id, number_of_players) VALUES ('23', 2);
+INSERT INTO match (id, number_of_players) VALUES ('24', 3);
+INSERT INTO match (id, number_of_players) VALUES ('25', 4);
+INSERT INTO match (id, number_of_players) VALUES ('26', 2);
+INSERT INTO match (id, number_of_players) VALUES ('27', 3);
+INSERT INTO match (id, number_of_players) VALUES ('28', 4);
+INSERT INTO match (id, number_of_players) VALUES ('29', 2);
+INSERT INTO match (id, number_of_players) VALUES ('30', 4);
 
 -- Match 1 (2 players, group = 0)
 INSERT INTO match_details (id, user_id, match_id, points, winner, group_number) VALUES

@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static utils.EntityUtils.generateValidTournamentCreateDto;
+import static utils.EntityUtils.createTournamentCreateDto;
 
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
@@ -33,7 +33,7 @@ class TournamentControllerTest {
 
   @Test
   void createTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = generateValidTournamentCreateDto();
+    TournamentCreateDto createDto = createTournamentCreateDto();
 
     String requestBody = JsonUtils.toJson(createDto);
 
@@ -46,7 +46,7 @@ class TournamentControllerTest {
 
   @Test
   void getTournamentByIdSuccess() throws Exception {
-    TournamentCreateDto createDto = generateValidTournamentCreateDto();
+    TournamentCreateDto createDto = createTournamentCreateDto();
     String requestBody = JsonUtils.toJson(createDto);
 
     String response = mockMvc.perform(post("/api/tournament")
@@ -75,7 +75,7 @@ class TournamentControllerTest {
 
   @Test
   void deleteTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = generateValidTournamentCreateDto();
+    TournamentCreateDto createDto = createTournamentCreateDto();
     String requestBody = JsonUtils.toJson(createDto);
 
     String response = mockMvc.perform(post("/api/tournament")
@@ -95,7 +95,7 @@ class TournamentControllerTest {
 
   @Test
   void updateTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = generateValidTournamentCreateDto();
+    TournamentCreateDto createDto = createTournamentCreateDto();
     String requestBody = JsonUtils.toJson(createDto);
 
     String response = mockMvc.perform(post("/api/tournament")

@@ -4,10 +4,9 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record CreateMatchDto(
-    int numberOfPlayers,
+public record MatchesCreatedResponse(
     String tournamentId,
-    List<String> userIds
+    List<MatchDetailsDto> matchDetailsDtoList
 ) {
 
 }

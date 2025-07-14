@@ -5,13 +5,15 @@ import static com.example.web.utils.Constants.RANDOM;
 import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.CreateMatchDetailsDto;
 import com.example.web.dto.match.CreateMatchDto;
+import com.example.web.dto.match.MatchDetailsDto;
 import com.example.web.dto.match.MatchDto;
+import com.example.web.dto.match.MatchesCreatedResponse;
+import com.example.web.exception.MatchNotFoundException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.MatchMapper;
 import com.example.web.model.Match;
 import com.example.web.model.MatchDetails;
 import com.example.web.model.User;
-import com.example.web.model.enums.MatchType;
 import com.example.web.repository.MatchDetailsRepository;
 import com.example.web.repository.MatchRepository;
 import com.example.web.repository.UserRepository;
@@ -22,9 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class MatchService {
 
@@ -35,7 +39,7 @@ public class MatchService {
   private final UserRepository userRepository;
   private final MatchDetailsRepository matchDetailsRepository;
 
-  public MatchDto createMatches(
+  public MatchesCreatedResponse createMatches(
       CreateAllStartingMatchesInTournamentDto createAllStartingMatchesInTournamentDto) {
     List<String> userIds = new ArrayList<>(createAllStartingMatchesInTournamentDto.userIds());
     Collections.shuffle(userIds, RANDOM);
@@ -48,52 +52,70 @@ public class MatchService {
 
     int group = 0;
 
+    List<MatchDetailsDto> matchDetailsDtoList = new ArrayList<>();
+
     for (Map.Entry<String, String> entry : matchUsers.entrySet()) {
       Match newMatch = createMatch(CreateMatchDto.builder()
           .userIds(List.of(entry.getKey(), entry.getValue()))
-          .type(MatchType.TWO)
+          .numberOfPlayers(2)
           .tournamentId(createAllStartingMatchesInTournamentDto.tournamentId())
           .build());
 
-      createMatchDetails(CreateMatchDetailsDto.builder()
+      MatchDetailsDto firstMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
               .userId(entry.getKey())
               .group(group)
               .match(newMatch)
               .build());
 
-      createMatchDetails(CreateMatchDetailsDto.builder()
+      MatchDetailsDto secondMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
           .userId(entry.getValue())
           .group(group)
           .match(newMatch)
           .build());
 
-      ++group;
+      matchDetailsDtoList.add(firstMatchDetails);
+      matchDetailsDtoList.add(secondMatchDetails);
 
     }
 
-    return null;
+    return MatchesCreatedResponse.builder()
+        .matchDetailsDtoList(matchDetailsDtoList)
+        .tournamentId(createAllStartingMatchesInTournamentDto.tournamentId())
+        .build();
   }
 
 
-  public Match createMatch(CreateMatchDto createMatchDto) {
+  private Match createMatch(CreateMatchDto createMatchDto) {
     Match match = matchMapper.toMatch(createMatchDto);
     match.setId(UUID.randomUUID().toString());
+    match.setUsers(userRepository.findAllByIdIn(createMatchDto.userIds()));
 
     return matchRepository.save(match);
   }
 
-  public MatchDetails createMatchDetails(CreateMatchDetailsDto createMatchDto) {
+  private MatchDetailsDto createMatchDetails(CreateMatchDetailsDto createMatchDto) {
     User tempUser = userRepository.findById(createMatchDto.userId())
         .orElseThrow(() -> new UserNotFoundException(createMatchDto.userId()));
 
-    return matchDetailsRepository.save(MatchDetails.builder()
+    return matchMapper.toMatchDetailsDto(matchDetailsRepository.save(MatchDetails.builder()
         .user(tempUser)
         .match(createMatchDto.match())
         .group(createMatchDto.group())
         .id(UUID.randomUUID().toString())
         .points(0)
         .winner(false)
-        .build());
+        .build()));
+  }
+
+  public MatchDto getMatch(String matchId)  {
+    log.info("Fetching match with Id: {}", matchId);
+    return matchMapper.toMatchDto(retrieveMatch(matchId));
+
+  }
+
+  private Match retrieveMatch(String matchId) {
+    return matchRepository.findById(matchId)
+        .orElseThrow(() -> new MatchNotFoundException(matchId));
   }
 
 }
