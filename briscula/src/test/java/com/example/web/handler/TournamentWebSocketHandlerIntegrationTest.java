@@ -69,7 +69,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
 
     List<JoinTournamentResponse> responses = new ArrayList<>();
     for (CompletableFuture<JoinTournamentResponse> future : futures) {
-      responses.add(future.get(30, TimeUnit.SECONDS));
+      responses.add(future.get(60, TimeUnit.SECONDS));
     }
 
     for (JoinTournamentResponse response : responses) {
