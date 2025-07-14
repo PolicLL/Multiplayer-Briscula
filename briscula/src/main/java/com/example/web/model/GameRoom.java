@@ -23,6 +23,8 @@ public class GameRoom {
   private final List<ConnectedPlayer> players = new LinkedList<>();
   private final Game game;
 
+  private String matchId;
+
   private int playerIndex = 0;
   private int numberOfPlayersThatLeft = 0;
   private boolean shouldGameStop = false;

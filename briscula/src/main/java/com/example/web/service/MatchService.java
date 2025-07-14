@@ -53,6 +53,7 @@ public class MatchService {
     int group = 0;
 
     List<MatchDetailsDto> matchDetailsDtoList = new ArrayList<>();
+    List<Match> matches = new ArrayList<>();
 
     for (Map.Entry<String, String> entry : matchUsers.entrySet()) {
       Match newMatch = createMatch(CreateMatchDto.builder()
@@ -73,6 +74,7 @@ public class MatchService {
           .match(newMatch)
           .build());
 
+      matches.add(newMatch);
       matchDetailsDtoList.add(firstMatchDetails);
       matchDetailsDtoList.add(secondMatchDetails);
 
@@ -80,6 +82,7 @@ public class MatchService {
 
     return MatchesCreatedResponse.builder()
         .matchDetailsDtoList(matchDetailsDtoList)
+        .matches(matches)
         .tournamentId(createAllStartingMatchesInTournamentDto.tournamentId())
         .build();
   }

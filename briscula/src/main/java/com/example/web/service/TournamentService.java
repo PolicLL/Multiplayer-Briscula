@@ -14,6 +14,7 @@ import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.Match;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -45,6 +47,8 @@ public class TournamentService {
   private final TournamentRepository tournamentRepository;
   private final UserRepository userRepository;
   private final TournamentMapper tournamentMapper;
+
+  private final GameRoomService gameRoomService;
 
   private final MatchService matchService;
 
@@ -93,6 +97,8 @@ public class TournamentService {
 
     ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
         null, user.getUsername(), webSocketSession), true);
+
+    connectedPlayer.setUserId(user.getId());
 
     if (!tournamentPlayers.get(tournament.getId()).add(connectedPlayer)) {
       throw new UserAlreadyAssignedToTournament();
@@ -187,7 +193,10 @@ public class TournamentService {
           messageDispatcher.sendMessage(session, json);
 
           if (isFull) {
-
+            log.info("Tournament with id {} is full.", tournamentResponseDto.id());
+            MatchesCreatedResponse matchesCreatedResponse =
+                organizeTournament(tournamentResponseDto.id(), tournamentResponseDto.numberOfPlayers());
+            startTournament(matchesCreatedResponse);
           }
 
         }
@@ -197,8 +206,9 @@ public class TournamentService {
     }
   }
 
-  private void organizeTournament(String tournamentId, int numberOfPlayers) {
+  private MatchesCreatedResponse organizeTournament(String tournamentId, int numberOfPlayers) {
     Tournament tournament = receiveTournament(tournamentId);
+
 
     Set<User> connectedUsers = tournamentUsers.get(tournamentId);
 
@@ -206,14 +216,17 @@ public class TournamentService {
 
     tournamentRepository.save(tournament);
 
-    int numberOfFirstRoundMatches = numberOfPlayers / 2;
+    return matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
+            .tournamentId(tournamentId)
+            .numberOfPlayers(numberOfPlayers)
+            .userIds(tournamentUsers.get(tournamentId).stream().map(User::getId).toList())
+        .build());
+  }
 
-    for (int i = 0; i < numberOfFirstRoundMatches; ++i) {
-      MatchesCreatedResponse match = matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
-              .tournamentId(tournamentId)
-              .numberOfPlayers(numberOfPlayers)
-              .userIds(tournamentUsers.get(tournamentId).stream().map(User::getId).toList())
-          .build());
+  private void startTournament(MatchesCreatedResponse matchesCreatedResponse) {
+    log.info("Starting tournament with id {}.", matchesCreatedResponse.tournamentId());
+    for (Match match : matchesCreatedResponse.matches()) {
+      gameRoomService.startGameForMatch(match, tournamentPlayers.get(match.getTournamentId()));
     }
   }
 

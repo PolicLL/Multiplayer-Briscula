@@ -86,6 +86,15 @@ public class UserService {
     return userMapper.toDto(userRepository.save(updatedUser));
   }
 
+  public void updateUserRecord(String userId, boolean isThereWinner, boolean areYouWinner) {
+    User user = userRepository.findById(userId)
+        .orElseThrow(() -> new UserNotFoundException(userId));
+
+    user.setPoints(user.getPoints() + 10);
+
+    userRepository.save(user);
+  }
+
   public void deleteUser(String id) {
     if (!userRepository.existsById(id)) {
       throw new UserNotFoundException(id);

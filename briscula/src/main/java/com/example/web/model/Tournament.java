@@ -59,12 +59,10 @@ public class Tournament {
 
   public void addUser(User user) {
     users.add(user);
-    user.getTournaments().add(this);
   }
 
   public void removeUser(User user) {
     users.remove(user);
-    user.getTournaments().remove(this);
   }
 
 
@@ -73,7 +71,7 @@ public class Tournament {
   }
 
   public void setNumberOfPlayers(int numberOfPlayers) {
-    if (numberOfPlayers != 4 && numberOfPlayers != 8 &&
+    if (numberOfPlayers != 2 && numberOfPlayers != 4 && numberOfPlayers != 8 &&
         numberOfPlayers != 16 && numberOfPlayers != 32) {
       throw new IllegalArgumentException(
           "Number of players must be one of 4, 8, 16, 32.");

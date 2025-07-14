@@ -1,7 +1,7 @@
 CREATE TABLE tournament (
     id VARCHAR PRIMARY KEY,
     name VARCHAR(100) UNIQUE,
-    number_of_players INT CHECK (number_of_players IN (4, 8, 16, 32)),
+    number_of_players INT CHECK (number_of_players IN (2, 4, 8, 16, 32)),
     rounds_to_win INT CHECK (rounds_to_win IN (1, 2, 3, 4)),
     status VARCHAR(20) NOT NULL CHECK (status IN ('INITIALIZING', 'IN_PROGRESS', 'DONE'))
 );
