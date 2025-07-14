@@ -1,8 +1,10 @@
 // src/hooks/useTournamentWebSocket.js
 import { useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function useTournamentWebSocket(onTournamentUpdate) {
   const socketRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const socket = new WebSocket("ws://localhost:8080/tournament");
@@ -13,14 +15,15 @@ export function useTournamentWebSocket(onTournamentUpdate) {
     };
 
     socket.onmessage = (event) => {
-      const tournamentUpdate = JSON.parse(event.data);
-      console.log("Received tournament update:", tournamentUpdate);
+      const parsedMessage = JSON.parse(event.data);
 
-      // if tournament is full and game should start
-      //navigate(`/game/${roomId}/${playerId}`);
+      if (parsedMessage.type === "GAME_STARTED") {
+        console.log("Game started.");
+        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
+      }
 
       if (onTournamentUpdate) {
-        onTournamentUpdate(tournamentUpdate);
+        onTournamentUpdate(parsedMessage);
       }
     };
 

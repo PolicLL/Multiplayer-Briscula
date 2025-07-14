@@ -65,7 +65,7 @@ const TournamentForm = ({ onSuccess, onError }) => {
           onChange={handleChange}
           className="border p-1 w-full"
         >
-          {[4, 8, 16, 32].map((n) => (
+          {[2, 4, 8, 16, 32].map((n) => (
             <option key={n} value={n}>
               {n}
             </option>

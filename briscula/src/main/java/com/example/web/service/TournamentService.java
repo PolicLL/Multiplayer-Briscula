@@ -159,7 +159,7 @@ public class TournamentService {
   }
 
   private Tournament receiveTournament(String id) {
-    return tournamentRepository.findById(id)
+    return tournamentRepository.findWithUsersById(id)
         .orElseThrow(() -> {
           log.warn("Tournament not found: {}", id);
           return new EntityNotFoundException("Tournament not found with id: " + id);
@@ -177,6 +177,7 @@ public class TournamentService {
         .build(), session);
   }
 
+  @Transactional
   public void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
     log.info("Broadcasting tournament update to players.");
     List<WebSocketSession> webSocketSessions =
