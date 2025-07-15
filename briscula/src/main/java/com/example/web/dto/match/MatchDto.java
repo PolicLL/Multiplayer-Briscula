@@ -5,7 +5,7 @@ import java.util.Set;
 public record MatchDto(
     String id,
     int numberOfPlayers,
-    int tournamentId,
+    String tournamentId,
     Set<String> userIds
 ) {
 

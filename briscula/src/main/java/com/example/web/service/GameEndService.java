@@ -3,6 +3,7 @@ package com.example.web.service;
 import static com.example.web.utils.Constants.PLAYER_ID;
 import static com.example.web.utils.Constants.ROOM_ID;
 
+import com.example.web.dto.match.MatchDto;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
@@ -25,9 +26,10 @@ public class GameEndService {
   private final UserService userService;
 
   private final TournamentService tournamentService;
+  private final MatchService matchService;
 
   // TODO -> Has to be tested
-  public void update(GameEndStatus gameEndStatus) {
+  public void update(GameEndStatus gameEndStatus, String matchId) {
     log.info("Game ended with status {}, updating statistics.", gameEndStatus.status());
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       gameEndStatus.playerResults()
@@ -50,9 +52,11 @@ public class GameEndService {
       }
     }
 
+    MatchDto match = matchService.getMatch(matchId);
+
     if (winners.size() > 1) {
       log.info("Continuing to next round with {} winners.", winners.size());
-      tournamentService.startNextRound(winners , "");
+      tournamentService.startNextRound(winners , match.tournamentId());
     } else {
       log.info("Tournament ended. Final winner: {}", winners.get(0));
       tournamentService.finishTournament(winners.get(0));

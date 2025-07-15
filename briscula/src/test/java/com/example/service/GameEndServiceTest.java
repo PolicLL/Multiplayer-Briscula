@@ -38,7 +38,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 
-    gameEndService.update(gameEndStatus);
+    gameEndService.update(gameEndStatus, "");
 
     int updatedUserPoints = userService.getUserById(userDto.id()).points();
 
@@ -52,7 +52,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 
-    gameEndService.update(gameEndStatus);
+    gameEndService.update(gameEndStatus, "");
 
     int updatedUserPoints = userService.getUserById(userDto.id()).points();
 
