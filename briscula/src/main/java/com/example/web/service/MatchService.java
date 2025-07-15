@@ -88,7 +88,7 @@ public class MatchService {
   }
 
 
-  private Match createMatch(CreateMatchDto createMatchDto) {
+  public Match createMatch(CreateMatchDto createMatchDto) {
     Match match = matchMapper.toMatch(createMatchDto);
     match.setId(UUID.randomUUID().toString());
     match.setUsers(userRepository.findAllByIdIn(createMatchDto.userIds()));
@@ -112,7 +112,9 @@ public class MatchService {
 
   public MatchDto getMatch(String matchId)  {
     log.info("Fetching match with Id: {}", matchId);
-    return matchMapper.toMatchDto(retrieveMatch(matchId));
+    Match match = matchRepository.findWithUsersById(matchId)
+        .orElseThrow(() -> new MatchNotFoundException(matchId));
+    return matchMapper.toMatchDto(match);
 
   }
 

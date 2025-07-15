@@ -96,7 +96,7 @@ public class EntityUtils {
   }
 
   public static String getUserId() {
-    return "UserId " + String.valueOf(RANDOM.nextInt(100000));
+    return "UserId " + RANDOM.nextInt(100000);
   }
 
   public static String getPlayerId() {
@@ -143,7 +143,7 @@ public class EntityUtils {
   }
 
   public static ConnectedPlayer getConnectedPlayersBots() {
-    return new ConnectedPlayer(getWebSocketSession(), new Bot(null, "Bot " + getRandomNumber(100)),
+    return new ConnectedPlayer(getWebSocketSession(), new Bot(null, "Bot " + getRandomNumber(100000)),
         true);
   }
 

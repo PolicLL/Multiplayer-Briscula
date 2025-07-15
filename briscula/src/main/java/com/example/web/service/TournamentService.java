@@ -180,6 +180,7 @@ public class TournamentService {
   @Transactional
   private void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
     log.info("Broadcasting tournament update to players.");
+    // TODO: All should be notified
     List<WebSocketSession> webSocketSessions =
         tournamentPlayers.get(tournamentResponseDto.id())
             .stream()
