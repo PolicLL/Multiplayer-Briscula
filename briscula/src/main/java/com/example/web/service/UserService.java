@@ -87,6 +87,8 @@ public class UserService {
   }
 
   public void updateUserRecord(String userId, boolean isThereWinner, boolean areYouWinner) {
+    if (!areYouWinner) return;
+
     User user = userRepository.findById(userId)
         .orElseThrow(() -> new UserNotFoundException(userId));
 

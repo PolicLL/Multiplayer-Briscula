@@ -2,8 +2,10 @@ package com.example.web.model.enums;
 
 import com.example.web.model.ConnectedPlayer;
 import java.util.Map;
+import lombok.Builder;
 import lombok.Getter;
 
+@Builder
 public record GameEndStatus(
     Map<ConnectedPlayer, Boolean> playerResults,
     Status status

@@ -26,5 +26,6 @@ public record UserDto(
     @Email(message = "Invalid email format")
     String email,
     String photoId,
+    Integer points,
     String jwtToken
 ) {}

@@ -2,6 +2,7 @@ package com.example.web.handler.endpoints;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static utils.EntityUtils.getPlayerName;
+import static utils.EntityUtils.getUserId;
 
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
@@ -28,7 +29,8 @@ public class TestJoinRoomEndpoint {
           "type", "JOIN_ROOM",
           "playerName", getPlayerName(),
           "shouldShowPoints", "true",
-          "numberOfPlayers", 2
+          "numberOfPlayers", 2,
+          "userId" , getUserId()
       )));
     } catch (Exception e) {
       e.printStackTrace();

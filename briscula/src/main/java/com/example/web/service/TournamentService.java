@@ -178,7 +178,7 @@ public class TournamentService {
   }
 
   @Transactional
-  public void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
+  private void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
     log.info("Broadcasting tournament update to players.");
     List<WebSocketSession> webSocketSessions =
         tournamentPlayers.get(tournamentResponseDto.id())
@@ -195,9 +195,9 @@ public class TournamentService {
 
           if (isFull) {
             log.info("Tournament with id {} is full.", tournamentResponseDto.id());
-            MatchesCreatedResponse matchesCreatedResponse =
+            MatchesCreatedResponse createdMatches =
                 organizeTournament(tournamentResponseDto.id(), tournamentResponseDto.numberOfPlayers());
-            startTournament(matchesCreatedResponse);
+            startTournament(createdMatches);
           }
 
         }
@@ -222,6 +222,17 @@ public class TournamentService {
             .numberOfPlayers(numberOfPlayers)
             .userIds(tournamentUsers.get(tournamentId).stream().map(User::getId).toList())
         .build());
+  }
+
+  public void startNextRound(List<ConnectedPlayer> winners,  String tournamentId) {
+    MatchesCreatedResponse matches = matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
+        .tournamentId(tournamentId)
+        .userIds(winners.stream().map(ConnectedPlayer::getUserId).toList())
+        .build());
+    startTournament(matches);
+  }
+
+  public void finishTournament(ConnectedPlayer connectedPlayer) {
   }
 
   private void startTournament(MatchesCreatedResponse matchesCreatedResponse) {

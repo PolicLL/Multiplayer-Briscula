@@ -95,6 +95,10 @@ public class EntityUtils {
     return new RoomPlayerId("roomId" + RANDOM.nextInt(500), RANDOM.nextInt(500));
   }
 
+  public static String getUserId() {
+    return "UserId " + String.valueOf(RANDOM.nextInt(100000));
+  }
+
   public static String getPlayerId() {
     return String.valueOf(RANDOM.nextInt(100000));
   }
@@ -126,14 +130,24 @@ public class EntityUtils {
     );
   }
 
+  //  Connected Player
+
   public static ConnectedPlayer getConnectedPlayer(Bot bot) {
     return new ConnectedPlayer(bot);
+  }
+
+  public static ConnectedPlayer getConnectedPlayer(String userId) {
+    return ConnectedPlayer.builder()
+        .userId(userId)
+        .build();
   }
 
   public static ConnectedPlayer getConnectedPlayersBots() {
     return new ConnectedPlayer(getWebSocketSession(), new Bot(null, "Bot " + getRandomNumber(100)),
         true);
   }
+
+  // WebSocketSession
 
   public static WebSocketSession getWebSocketSession() {
     return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));

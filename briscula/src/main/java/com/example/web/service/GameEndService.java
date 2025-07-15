@@ -8,6 +8,8 @@ import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,19 +24,38 @@ public class GameEndService {
   private final GameRoomService gameRoomService;
   private final UserService userService;
 
+  private final TournamentService tournamentService;
+
   // TODO -> Has to be tested
   public void update(GameEndStatus gameEndStatus) {
+    log.info("Game ended with status {}, updating statistics.", gameEndStatus.status());
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       gameEndStatus.playerResults()
           .keySet()
           .forEach(user -> userService.updateUserRecord(null, false, false));
       return;
     }
+
+    List<ConnectedPlayer> winners = new ArrayList<>();
+
     for (Map.Entry<ConnectedPlayer, Boolean> entry : gameEndStatus.playerResults().entrySet()) {
       ConnectedPlayer connectedPlayer = entry.getKey();
       if (connectedPlayer.getUserId() != null) {
         userService.updateUserRecord(connectedPlayer.getUserId(), true, entry.getValue());
+
+        boolean hasPlayerWonTournamentMatch = entry.getValue();
+        if (hasPlayerWonTournamentMatch) {
+          winners.add(connectedPlayer);
+        }
       }
+    }
+
+    if (winners.size() > 1) {
+      log.info("Continuing to next round with {} winners.", winners.size());
+      tournamentService.startNextRound(winners , "");
+    } else {
+      log.info("Tournament ended. Final winner: {}", winners.get(0));
+      tournamentService.finishTournament(winners.get(0));
     }
   }
 
