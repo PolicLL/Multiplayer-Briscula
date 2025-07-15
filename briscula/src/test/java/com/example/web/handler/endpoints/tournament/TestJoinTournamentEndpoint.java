@@ -50,7 +50,7 @@ public class TestJoinTournamentEndpoint {
     } catch (JsonProcessingException e) {
       throw new RuntimeException(e);
     }
-    if (joinTournamentResponse.currentNumberOfPlayers() == 4) {
+    if (joinTournamentResponse.currentNumberOfPlayers() >= 4) {
       System.out.println("CONTAINS");
       completableFuture.complete(joinTournamentResponse);
     }
