@@ -39,6 +39,7 @@ public class GameEndService {
     }
 
     List<ConnectedPlayer> winners = new ArrayList<>();
+    List<ConnectedPlayer> losers = new ArrayList<>();
 
     for (Map.Entry<ConnectedPlayer, Boolean> entry : gameEndStatus.playerResults().entrySet()) {
       ConnectedPlayer connectedPlayer = entry.getKey();
@@ -49,18 +50,18 @@ public class GameEndService {
         if (hasPlayerWonTournamentMatch) {
           winners.add(connectedPlayer);
         }
+        else
+          losers.add(connectedPlayer);
       }
     }
 
+    // matchId is null if this is not tournament match
+    if (matchId == null) return;
+
     MatchDto match = matchService.getMatch(matchId);
 
-    if (winners.size() > 1) {
-      log.info("Continuing to next round with {} winners.", winners.size());
-      tournamentService.startNextRound(winners , match.tournamentId());
-    } else {
-      log.info("Tournament ended. Final winner: {}", winners.get(0));
-      tournamentService.finishTournament(winners.get(0));
-    }
+    log.info("Continuing to next round with {} winner.", winners.get(0));
+    tournamentService.collectWinnersForNextPhase(match.tournamentId(), winners.get(0), losers.get(0));
   }
 
   public void handleDisconnectionFromGame(WebSocketMessage<?> message)

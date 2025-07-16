@@ -20,7 +20,7 @@ spring:
       max-request-size: 10MB
 
 briscula:
-  waiting-time-in-seconds-for-choosing-card: 30
+  waiting-time-in-seconds-for-choosing-card: 0
 #logging:
 #  level:
 #    org.springframework.security: DEBUG

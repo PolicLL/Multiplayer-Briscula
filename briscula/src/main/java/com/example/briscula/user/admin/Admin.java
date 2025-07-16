@@ -66,9 +66,17 @@ public class Admin {
     return listOfCardsForAllPlayers.get(playerId);
   }
 
+  // TODO: Does this check correctly for 3 players ?
   public boolean isLastRound() {
+    int cardsInPlayerHand;
+    if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.THREE_PLAYERS) {
+      cardsInPlayerHand = 3;
+    } else {
+      cardsInPlayerHand = 4;
+    }
+
     return deck.getDeckCards().isEmpty() &&
-        listOfCardsForAllPlayers.stream().allMatch(cards -> cards.size() == 4);
+        listOfCardsForAllPlayers.stream().allMatch(cards -> cards.size() == cardsInPlayerHand);
   }
 
   private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {

@@ -40,6 +40,11 @@ public class Bot extends Player {
   }
 
   @Override
+  public void sendMessageToWaitForNextMatch() {
+
+  }
+
+  @Override
   public CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards) {
     return null;
   }

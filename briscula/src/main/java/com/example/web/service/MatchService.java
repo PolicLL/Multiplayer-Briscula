@@ -112,14 +112,13 @@ public class MatchService {
 
   public MatchDto getMatch(String matchId)  {
     log.info("Fetching match with Id: {}", matchId);
-    Match match = matchRepository.findWithUsersById(matchId)
-        .orElseThrow(() -> new MatchNotFoundException(matchId));
+    Match match = retrieveMatch(matchId);
     return matchMapper.toMatchDto(match);
 
   }
 
   private Match retrieveMatch(String matchId) {
-    return matchRepository.findById(matchId)
+    return matchRepository.findWithUsersById(matchId)
         .orElseThrow(() -> new MatchNotFoundException(matchId));
   }
 

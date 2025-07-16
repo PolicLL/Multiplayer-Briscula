@@ -77,7 +77,8 @@ class GameEndServiceTest extends AbstractIntegrationTest {
         .build());
 
     ConnectedPlayer connectedPlayer = getConnectedPlayer(userDto.id());
-    GameEndStatus gameEndStatus = new GameEndStatus(Map.of(connectedPlayer, true), Status.WINNER_FOUND);
+    ConnectedPlayer connectedPlayerLoser = getConnectedPlayer(userDto.id());
+    GameEndStatus gameEndStatus = new GameEndStatus(Map.of(connectedPlayer, true, connectedPlayerLoser, false), Status.WINNER_FOUND);
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 

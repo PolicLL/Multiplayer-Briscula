@@ -10,6 +10,7 @@ import static com.example.web.model.enums.ServerToClientMessageType.RECEIVED_THR
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_MAIN_CARD;
 import static com.example.web.model.enums.ServerToClientMessageType.SENT_COLLEAGUES_CARDS;
+import static com.example.web.model.enums.ServerToClientMessageType.WAIT_FOR_NEXT_MATCH;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.configuration.BrisculaConfig;
@@ -107,6 +108,10 @@ public class RealPlayer extends Player {
     return CompletableFuture.runAsync(() -> {}, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS));
   }
 
+  @Override
+  public void sendMessageToWaitForNextMatch() {
+    sendMessage(webSocketSession, WAIT_FOR_NEXT_MATCH, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "Wait for the next match.");
+  }
 
   public void completeSelectedCard(int selectedCardIndex) {
     selectedCardFuture.complete(selectedCardIndex);

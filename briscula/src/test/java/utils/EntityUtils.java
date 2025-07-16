@@ -118,6 +118,8 @@ public class EntityUtils {
     );
   }
 
+  //  Connected Player
+
   public static ConnectedPlayer getConnectedPlayer() {
     return new ConnectedPlayer(
        getWebSocketSession(), getRealPlayer(), true
@@ -130,14 +132,14 @@ public class EntityUtils {
     );
   }
 
-  //  Connected Player
-
   public static ConnectedPlayer getConnectedPlayer(Bot bot) {
     return new ConnectedPlayer(bot);
   }
 
   public static ConnectedPlayer getConnectedPlayer(String userId) {
     return ConnectedPlayer.builder()
+        .webSocketSession(getWebSocketSession())
+        .player(getRealPlayer())
         .userId(userId)
         .build();
   }

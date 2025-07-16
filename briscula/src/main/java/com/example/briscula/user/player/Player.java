@@ -32,6 +32,7 @@ public abstract class Player {
   public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card);
 
   public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
+  public abstract void sendMessageToWaitForNextMatch();
 
   public boolean isPlayerDone() {
     return playerCards.isEmpty();

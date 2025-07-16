@@ -57,6 +57,8 @@ public class TournamentService {
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
   private final Map<String, Set<User>> tournamentUsers = new HashMap<>();
+  private final Map<String, Set<ConnectedPlayer>> tournamentPlayersWinners = new HashMap<>();
+  private final Map<String, Integer> tournamentIdNumberOfWinners = new HashMap<>();
 
   @PostConstruct
   public void init() {
@@ -64,6 +66,8 @@ public class TournamentService {
       if (tournament.getStatus().equals(TournamentStatus.INITIALIZING)) {
         tournamentPlayers.put(tournament.getId(), new HashSet<>());
         tournamentUsers.put(tournament.getId(), new HashSet<>());
+        tournamentPlayersWinners.put(tournament.getId(), new HashSet<>());
+        tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
       }
     }
   }
@@ -76,48 +80,10 @@ public class TournamentService {
 
     tournamentPlayers.put(tournament.getId(), new HashSet<>());
     tournamentUsers.put(tournament.getId(), new HashSet<>());
+    tournamentPlayersWinners.put(tournament.getId(), new HashSet<>());
+    tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
+
     return tournamentMapper.toResponseDto(tournament, 0);
-  }
-
-  public TournamentResponseDto joinTournament(JoinTournamentRequest request, WebSocketSession webSocketSession) {
-    log.info("Received join tournament request: userId={}, tournamentId={}", request.userId(), request.tournamentId());
-
-    Tournament tournament = receiveTournament(request.tournamentId());
-
-    if (isTournamentFull(tournament.getId())) {
-      log.warn("Tournament {} is full, user {} cannot join", request.tournamentId(), request.userId());
-      throw new TournamentIsFullException(request.tournamentId());
-    }
-
-    User user = userRepository.findById(request.userId())
-        .orElseThrow(() -> {
-          log.warn("User with id {} not found", request.userId());
-          return new UserNotFoundException(request.userId());
-        });
-
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
-        null, user.getUsername(), webSocketSession), true);
-
-    connectedPlayer.setUserId(user.getId());
-
-    if (!tournamentPlayers.get(tournament.getId()).add(connectedPlayer)) {
-      throw new UserAlreadyAssignedToTournament();
-    }
-
-    tournamentPlayers.get(request.tournamentId()).add(connectedPlayer);
-    tournamentUsers.get(request.tournamentId()).add(user);
-    messageDispatcher.registerSession(webSocketSession);
-
-
-    if (isTournamentFull(tournament.getId()))
-      tournament.setStatus(TournamentStatus.IN_PROGRESS);
-
-    TournamentResponseDto tournamentResponse = tournamentMapper.toResponseDto(
-        tournament, getNumberOfPlayersInTournament(tournament.getId()));
-
-    broadcastTournamentUpdate(tournamentResponse, isTournamentFull(tournament.getId()));
-
-    return tournamentResponse;
   }
 
   public TournamentResponseDto getById(String id) {
@@ -177,6 +143,47 @@ public class TournamentService {
         .build(), session);
   }
 
+  public TournamentResponseDto joinTournament(JoinTournamentRequest request, WebSocketSession webSocketSession) {
+    log.info("Received join tournament request: userId={}, tournamentId={}", request.userId(), request.tournamentId());
+
+    Tournament tournament = receiveTournament(request.tournamentId());
+
+    if (isTournamentFull(tournament.getId())) {
+      log.warn("Tournament {} is full, user {} cannot join", request.tournamentId(), request.userId());
+      throw new TournamentIsFullException(request.tournamentId());
+    }
+
+    User user = userRepository.findById(request.userId())
+        .orElseThrow(() -> {
+          log.warn("User with id {} not found", request.userId());
+          return new UserNotFoundException(request.userId());
+        });
+
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
+        null, user.getUsername(), webSocketSession), true);
+
+    connectedPlayer.setUserId(user.getId());
+
+    if (!tournamentPlayers.get(tournament.getId()).add(connectedPlayer)) {
+      throw new UserAlreadyAssignedToTournament();
+    }
+
+    tournamentPlayers.get(request.tournamentId()).add(connectedPlayer);
+    tournamentUsers.get(request.tournamentId()).add(user);
+    messageDispatcher.registerSession(webSocketSession);
+
+
+    if (isTournamentFull(tournament.getId()))
+      tournament.setStatus(TournamentStatus.IN_PROGRESS);
+
+    TournamentResponseDto tournamentResponse = tournamentMapper.toResponseDto(
+        tournament, getNumberOfPlayersInTournament(tournament.getId()));
+
+    broadcastTournamentUpdate(tournamentResponse, isTournamentFull(tournament.getId()));
+
+    return tournamentResponse;
+  }
+
   @Transactional
   private void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
     log.info("Broadcasting tournament update to players.");
@@ -193,24 +200,22 @@ public class TournamentService {
         if (session.isOpen()) {
           String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
           messageDispatcher.sendMessage(session, json);
-
-          if (isFull) {
-            log.info("Tournament with id {} is full.", tournamentResponseDto.id());
-            MatchesCreatedResponse createdMatches =
-                organizeTournament(tournamentResponseDto.id(), tournamentResponseDto.numberOfPlayers());
-            startTournament(createdMatches);
-          }
-
         }
       } catch (Exception e) {
         log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
       }
     }
+
+    if (isFull) {
+      log.info("Tournament with id {} is full.", tournamentResponseDto.id());
+      MatchesCreatedResponse createdMatches =
+          organizeTournament(tournamentResponseDto.id(), tournamentResponseDto.numberOfPlayers());
+      startTournament(createdMatches);
+    }
   }
 
   private MatchesCreatedResponse organizeTournament(String tournamentId, int numberOfPlayers) {
     Tournament tournament = receiveTournament(tournamentId);
-
 
     Set<User> connectedUsers = tournamentUsers.get(tournamentId);
 
@@ -225,7 +230,27 @@ public class TournamentService {
         .build());
   }
 
-  public void startNextRound(List<ConnectedPlayer> winners,  String tournamentId) {
+  public synchronized void collectWinnersForNextPhase(String tournamentId, ConnectedPlayer winner, ConnectedPlayer loser) {
+    Set<ConnectedPlayer> winners =  tournamentPlayersWinners.get(tournamentId);
+    winners.add(winner);
+
+    if (winners.size() == tournamentIdNumberOfWinners.get(tournamentId)) {
+
+      if (winners.size() == 1) {
+        finishTournament(tournamentId, winner);
+      }
+
+      tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId));
+      winners.clear();
+      startNextRound(winners, tournamentId);
+      return;
+    }
+
+    winner.getPlayer().sendMessageToWaitForNextMatch();
+    loser.getPlayer().sentLoosingMessage();
+  }
+
+  private void startNextRound(Set<ConnectedPlayer> winners,  String tournamentId) {
     MatchesCreatedResponse matches = matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
         .tournamentId(tournamentId)
         .userIds(winners.stream().map(ConnectedPlayer::getUserId).toList())
@@ -233,16 +258,25 @@ public class TournamentService {
     startTournament(matches);
   }
 
-  public void finishTournament(ConnectedPlayer connectedPlayer) {
-  }
 
   private void startTournament(MatchesCreatedResponse matchesCreatedResponse) {
     log.info("Starting tournament with id {}.", matchesCreatedResponse.tournamentId());
     for (Match match : matchesCreatedResponse.matches()) {
-      gameRoomService.startGameForMatch(match, tournamentPlayers.get(match.getTournamentId()));
+      gameRoomService.startGameForMatch(match, getPlayersForMatch(matchesCreatedResponse.tournamentId(), match));
     }
   }
 
+  private Set<ConnectedPlayer> getPlayersForMatch(String tournamentId, Match match) {
+    List<String> userIds = match.getUsers().stream().map(User::getId).toList();
+    return  tournamentPlayers.get(tournamentId)
+        .stream()
+        .filter(player -> userIds.contains(player.getUserId()))
+        .collect(Collectors.toSet());
+  }
+
+  public void finishTournament(String tournamentId, ConnectedPlayer connectedPlayer) {
+    log.info("Finishing tournament with id {}.", tournamentId);
+  }
 
   private int getNumberOfPlayersInTournament(String tournamentId) {
     return tournamentPlayers.get(tournamentId).size();
