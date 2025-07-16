@@ -240,9 +240,10 @@ public class TournamentService {
         finishTournament(tournamentId, winner);
       }
 
-      tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId));
+      tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId) / 2);
+      Set<ConnectedPlayer> tempWinners = new HashSet<>(winners);
       winners.clear();
-      startNextRound(winners, tournamentId);
+      startNextRound(tempWinners, tournamentId);
       return;
     }
 
@@ -283,11 +284,17 @@ public class TournamentService {
   }
 
   public void removePlayerWithSession(WebSocketSession session) {
-    String changedTournamentId = tournamentPlayers.entrySet().stream()
-        .filter(entry -> entry.getValue().removeIf(p -> p.getWebSocketSession().equals(session)))
-        .map(Map.Entry::getKey)
-        .findFirst()
-        .orElse(null);
+    String changedTournamentId = null;
+    for (Map.Entry<String, Set<ConnectedPlayer>> entry : tournamentPlayers.entrySet()) {
+      Set<ConnectedPlayer> players = entry.getValue();
+      for (ConnectedPlayer connectedPlayer : players) {
+        if (connectedPlayer.getWebSocketSession().getId().equals(session.getId())) {
+          changedTournamentId = entry.getKey();
+          players.remove(connectedPlayer);
+          break;
+        }
+      }
+    }
 
     if (changedTournamentId == null) {
       return;
