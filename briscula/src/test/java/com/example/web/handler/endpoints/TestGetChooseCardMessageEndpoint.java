@@ -1,6 +1,7 @@
 package com.example.web.handler.endpoints;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static utils.EntityUtils.getPlayerId;
 
 import com.example.web.model.GameRoom;
 import jakarta.websocket.ClientEndpoint;
@@ -33,7 +34,7 @@ public class TestGetChooseCardMessageEndpoint {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "GET_INITIAL_CARDS",
           "roomId", gameRoom.getRoomId(),
-          "playerId", "1"
+          "playerId", getPlayerId()
       )));
     } catch (Exception e) {
       e.printStackTrace();

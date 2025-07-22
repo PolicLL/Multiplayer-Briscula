@@ -40,7 +40,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
 
   @BeforeEach
   void setUp() throws Exception {
-    WS_URI = new URI("ws://localhost:" + port + "/tournament");
+    WS_URI = new URI("ws://localhost:" + port + "/game");
 
     tournamentId = tournamentService.create(createTournamentCreateDto())
         .id();

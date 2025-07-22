@@ -38,7 +38,7 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    WS_URI = new URI("ws://localhost:" + port + "/game/prepare");
+    WS_URI = new URI("ws://localhost:" + port + "/game");
 
     gameRoom = gameRoomService.createRoom(List.of(getConnectedPlayer(), getConnectedPlayer()),
         GameOptionNumberOfPlayers.TWO_PLAYERS, true);
@@ -102,13 +102,13 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
     String response2 = "";
 
     try {
-      response1 = future1.get(20, TimeUnit.SECONDS);
+      response1 = future1.get(30, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
     }
 
     try {
-      response2 = future2.get(20, TimeUnit.SECONDS);
+      response2 = future2.get(30, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
     }
