@@ -25,16 +25,19 @@ function Dashboard() {
 
   const handleMessage = useCallback(
     (parsedMessage) => {
-      console.log("First handler");
       if (parsedMessage.type === "GAME_STARTED") {
         console.log("Game started message received.");
         setOnMessage(null);
         navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
       }
+
       if (parsedMessage.type === "TOURNAMENT_UPDATE") {
-        console.log("Tournament update.");
-        const updatedTournament = parsedMessage.content;
-        console.log(tournaments);
+        console.log("Tournament update received.");
+
+        // Make sure content is parsed (it's a stringified object in your logs)
+        const updatedTournament = JSON.parse(parsedMessage.content);
+
+        // Use functional update to ensure latest state is used
         setTournaments((prev) => {
           const index = prev.findIndex((t) => t.id === updatedTournament.id);
           if (index !== -1) {
@@ -45,17 +48,16 @@ function Dashboard() {
             return [...prev, updatedTournament];
           }
         });
-
-        console.log(tournaments);
       }
     },
-    [navigate, tournaments]
+    [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
   );
 
   useEffect(() => {
-    // Register the handler when component mounts or `navigate` changes
+    // Register WebSocket message handler
     setOnMessage(handleMessage);
 
+    // Fetch user info
     const token = localStorage.getItem("jwtToken");
     if (!token) return navigate("/");
 
@@ -67,15 +69,21 @@ function Dashboard() {
       .then((res) => setUserInfo(res.data))
       .catch(() => setMessage("Error fetching user info."));
 
+    // Fetch tournaments
     axios.get("http://localhost:8080/api/tournament").then((res) => {
-      console.log("Fetched tournaments:", res.data); // Print data
-      setTournaments(res.data); // Set state
+      console.log("Fetched tournaments:", res.data);
+      setTournaments(res.data);
     });
 
+    // Cleanup on unmount
     return () => {
       setOnMessage(null);
     };
-  }, [navigate, username, handleMessage, setOnMessage]);
+  }, [navigate, username, setOnMessage, handleMessage]); // ✅ `handleMessage` is memoized without `tournaments`
+
+  useEffect(() => {
+    console.log("Tournaments updated:", tournaments);
+  }, [tournaments]);
 
   const joinGame = (numberOfPlayers) => {
     sendMessage({

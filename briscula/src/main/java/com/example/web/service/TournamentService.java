@@ -1,9 +1,11 @@
 package com.example.web.service;
 
 
+import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.web.dto.Message;
 import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.MatchesCreatedResponse;
 import com.example.web.dto.tournament.JoinTournamentRequest;
@@ -20,6 +22,7 @@ import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
+import com.example.web.utils.JsonUtils;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
@@ -198,8 +201,11 @@ public class TournamentService {
     for (WebSocketSession session : webSocketSessions) {
       try {
         if (session.isOpen()) {
-          String json = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
-          messageDispatcher.sendMessage(session, json);
+          String tournamentUpdateContent = OBJECT_MAPPER.writeValueAsString(tournamentResponseDto);
+
+          Message tournamentUpdateMessage = new Message(TOURNAMENT_UPDATE, tournamentUpdateContent);
+
+          messageDispatcher.sendMessage(session, JsonUtils.toJson(tournamentUpdateMessage));
         }
       } catch (Exception e) {
         log.error("Error sending tournament update to session {}: {}", session.getId(), e.getMessage());
