@@ -5,7 +5,7 @@ export function useGameWebSocket({ onGameStart, onMessage, onStatusChange }) {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = new WebSocket("ws://localhost:8080/game/prepare");
+    const socket = new WebSocket("ws://localhost:8080/game");
     socketRef.current = socket;
 
     socket.onopen = () => {

@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
-import { useGameWebSocket } from "../hooks/useGameWebSocket";
 import EditUserForm from "./EditUserForm";
 import Menu from "./Menu";
 import axios from "axios";
-import TournamentForm from "../components/tournament/TournamentForm";
 import TournamentList from "./tournament/TournamentList";
-import { useTournamentWebSocket } from "../hooks/useTournamentWebSocket";
+
+import { useWebSocketContext } from "../context/WebSocketContext";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -17,29 +16,29 @@ function Dashboard() {
   const [shouldShowPoints, setShouldShowPoints] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
   const [showTournaments, setShowTournaments] = useState(false);
 
   const [tournaments, setTournaments] = useState([]);
 
-  const onTournamentUpdate = React.useCallback((updatedTournament) => {
-    setTournaments((prev) =>
-      prev.map((t) => (t.id === updatedTournament.id ? updatedTournament : t))
-    );
-  }, []);
+  const { sendMessage, setOnMessage } = useWebSocketContext();
 
-  const tournamentSocketRef = useTournamentWebSocket(onTournamentUpdate);
-
-  const socketRef = useGameWebSocket({
-    onGameStart: (roomId, playerId) => {
-      navigate(`/game/${roomId}/${playerId}`);
+  const handleMessage = useCallback(
+    (parsedMessage) => {
+      console.log("First handler");
+      if (parsedMessage.type === "GAME_STARTED") {
+        console.log("Game started message received.");
+        setOnMessage(null);
+        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
+      }
     },
-    onMessage: setReceivedMessage,
-    onStatusChange: setStatus,
-  });
+    [navigate]
+  );
 
   useEffect(() => {
+    // Register the handler when component mounts or `navigate` changes
+    setOnMessage(handleMessage);
+
     const token = localStorage.getItem("jwtToken");
     if (!token) return navigate("/");
 
@@ -54,23 +53,20 @@ function Dashboard() {
     axios
       .get("http://localhost:8080/api/tournament")
       .then((res) => setTournaments(res.data));
-  }, [navigate, username]);
+
+    return () => {
+      setOnMessage(null);
+    };
+  }, [handleMessage, setOnMessage]);
 
   const joinGame = (numberOfPlayers) => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      setStatus("Socket not connected.");
-      return;
-    }
-
-    socketRef.current.send(
-      JSON.stringify({
-        type: "JOIN_ROOM",
-        userId: userInfo.id,
-        playerName: username,
-        numberOfPlayers,
-        shouldShowPoints,
-      })
-    );
+    sendMessage({
+      type: "JOIN_ROOM",
+      userId: userInfo.id,
+      playerName: username,
+      numberOfPlayers,
+      shouldShowPoints,
+    });
 
     setIsDisabled(true);
   };
@@ -134,19 +130,12 @@ function Dashboard() {
               tournaments={tournaments}
               setTournaments={setTournaments}
               onJoin={async (tournament) => {
-                const joinTournament = {
-                  tournamentId: tournament.id,
-                  userId: userInfo.id,
-                };
-
                 try {
-                  tournamentSocketRef.current.send(
-                    JSON.stringify({
-                      type: "JOIN_TOURNAMENT",
-                      tournamentId: tournament.id,
-                      playerId: userInfo.id,
-                    })
-                  );
+                  sendMessage({
+                    type: "JOIN_TOURNAMENT",
+                    tournamentId: tournament.id,
+                    playerId: userInfo.id,
+                  });
                 } catch (error) {
                   console.log("Error: " + error);
                   if (error.response) {
