@@ -31,8 +31,25 @@ function Dashboard() {
         setOnMessage(null);
         navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
       }
+      if (parsedMessage.type === "TOURNAMENT_UPDATE") {
+        console.log("Tournament update.");
+        const updatedTournament = parsedMessage.content;
+        console.log(tournaments);
+        setTournaments((prev) => {
+          const index = prev.findIndex((t) => t.id === updatedTournament.id);
+          if (index !== -1) {
+            return prev.map((t) =>
+              t.id === updatedTournament.id ? updatedTournament : t
+            );
+          } else {
+            return [...prev, updatedTournament];
+          }
+        });
+
+        console.log(tournaments);
+      }
     },
-    [navigate]
+    [navigate, tournaments]
   );
 
   useEffect(() => {
@@ -50,14 +67,15 @@ function Dashboard() {
       .then((res) => setUserInfo(res.data))
       .catch(() => setMessage("Error fetching user info."));
 
-    axios
-      .get("http://localhost:8080/api/tournament")
-      .then((res) => setTournaments(res.data));
+    axios.get("http://localhost:8080/api/tournament").then((res) => {
+      console.log("Fetched tournaments:", res.data); // Print data
+      setTournaments(res.data); // Set state
+    });
 
     return () => {
       setOnMessage(null);
     };
-  }, [handleMessage, setOnMessage]);
+  }, [navigate, username, handleMessage, setOnMessage]);
 
   const joinGame = (numberOfPlayers) => {
     sendMessage({
