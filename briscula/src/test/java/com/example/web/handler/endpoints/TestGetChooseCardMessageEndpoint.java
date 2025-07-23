@@ -1,8 +1,8 @@
 package com.example.web.handler.endpoints;
 
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static utils.EntityUtils.getPlayerId;
 
-import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
@@ -21,7 +21,6 @@ public class TestGetChooseCardMessageEndpoint {
 
   private final GameRoom gameRoom;
   private final CompletableFuture<String> completableFuture;
-  private final ConnectedPlayer connectedPlayer;
   private static int playerId = 0;
   private Session session;
 
@@ -35,7 +34,7 @@ public class TestGetChooseCardMessageEndpoint {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "GET_INITIAL_CARDS",
           "roomId", gameRoom.getRoomId(),
-          "playerId", connectedPlayer.getId()
+          "playerId", getPlayerId()
       )));
     } catch (Exception e) {
       e.printStackTrace();

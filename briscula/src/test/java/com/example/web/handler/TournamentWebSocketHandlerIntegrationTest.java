@@ -53,7 +53,6 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
 
   }
 
-  // TODO Recheck why end result is sometimes 5 current players, if only 4 of them are joining
   @Test
   void testRawWebSocketJoinTournament() throws Exception {
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
@@ -74,8 +73,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
     }
 
     for (JoinTournamentResponse response : responses) {
-      assertThat(response.currentNumberOfPlayers()).isGreaterThanOrEqualTo(4);
-      System.out.println("Response captured.");
+      assertThat(response.currentNumberOfPlayers()).isEqualTo(4);
     }
 
     System.out.println("✅ Test completed successfully");

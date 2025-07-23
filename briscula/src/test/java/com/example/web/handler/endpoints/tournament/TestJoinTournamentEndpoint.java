@@ -45,7 +45,7 @@ public class TestJoinTournamentEndpoint {
 
   @OnMessage
   public void onMessage(String message) {
-    System.out.println("📥 Received message: " + message);
+    System.out.println("📥 Received message: " + message);;
 
     try {
       // Step 1: parse the outer wrapper message
