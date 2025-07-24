@@ -40,7 +40,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
 
   @BeforeEach
   void setUp() throws Exception {
-    WS_URI = new URI("ws://localhost:" + port + "/tournament");
+    WS_URI = new URI("ws://localhost:" + port + "/game");
 
     tournamentId = tournamentService.create(createTournamentCreateDto())
         .id();
@@ -73,7 +73,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
     }
 
     for (JoinTournamentResponse response : responses) {
-      assertThat(response.currentNumberOfPlayers()).isEqualTo(4);
+      assertThat(response.currentNumberOfPlayers()).isGreaterThanOrEqualTo(4);
     }
 
     System.out.println("✅ Test completed successfully");

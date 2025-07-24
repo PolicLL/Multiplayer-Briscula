@@ -8,20 +8,23 @@ import Registration from "./components/Registration";
 import Dashboard from "./components/Dashboard";
 import GameRoom from "./components/GameRoom";
 import TournamentPage from "./pages/TournamentPage";
+import { WebSocketProvider } from "./context/WebSocketContext";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />}></Route>
-        <Route path="/login" element={<Login />}></Route>
-        <Route path="/signup" element={<Registration />}></Route>
-        <Route path="/dashboard" element={<Dashboard />}></Route>
-        <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
-        <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
-        <Route path="/tournament/create" element={<TournamentPage />} />
-      </Routes>
-    </Router>
+    <WebSocketProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Home />}></Route>
+          <Route path="/login" element={<Login />}></Route>
+          <Route path="/signup" element={<Registration />}></Route>
+          <Route path="/dashboard" element={<Dashboard />}></Route>
+          <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
+          <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
+          <Route path="/tournament/create" element={<TournamentPage />} />
+        </Routes>
+      </Router>
+    </WebSocketProvider>
   );
 }
 

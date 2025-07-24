@@ -16,7 +16,6 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,21 +41,7 @@ public class GameStartService {
     GameRoom gameRoom = gameRoomService.getRoom(roomId);
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
-    List<ConnectedPlayer> players = gameRoom.getPlayers();
-
     // TODO: Update bad practice of setting new web socket session with different uri here.
-
-    ConnectedPlayer connectedPlayer = null;
-
-    try {
-       connectedPlayer = players.stream().filter(player -> player.getId() == playerId).findFirst().get();
-     }
-     catch (NoSuchElementException e) {
-       System.out.println(e);
-     }
-     if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
-       realPlayer.setWebSocketSession(session);
-     }
 
     Message sentCardsMessage = new Message(SENT_INITIAL_CARDS,
         roomId, playerId, CardFormatter.formatCards(listCards));
@@ -77,7 +62,7 @@ public class GameStartService {
         roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
 
     if (gameRoomService.areInitialCardsReceived(roomId)) {
-      log.info("Initial cards for rom {} are received.", roomId);
+      log.info("Initial cards for room {} are received.", roomId);
       GameRoom gameRoom = gameRoomService.getRoom(roomId);
       CompletableFuture
           .supplyAsync(gameRoom::startGame)

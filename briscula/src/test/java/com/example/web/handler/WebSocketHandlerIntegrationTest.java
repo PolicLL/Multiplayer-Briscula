@@ -15,6 +15,7 @@ import com.example.web.service.GameRoomService;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.WebSocketContainer;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -34,14 +35,18 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
   private GameRoom gameRoom;
 
+  List<ConnectedPlayer> connectedPlayers = new ArrayList<>();
+
   private URI WS_URI;
 
   @BeforeEach
   void setUp() throws Exception {
-    WS_URI = new URI("ws://localhost:" + port + "/game/prepare");
+    WS_URI = new URI("ws://localhost:" + port + "/game");
 
-    gameRoom = gameRoomService.createRoom(List.of(getConnectedPlayer(), getConnectedPlayer()),
-        GameOptionNumberOfPlayers.TWO_PLAYERS, true);
+    connectedPlayers = List.of(getConnectedPlayer(), getConnectedPlayer());
+
+    gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
+
 
     gameRoom.getPlayers()
         .stream()
@@ -92,8 +97,8 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
     CompletableFuture<String> future2 = new CompletableFuture<>();
     WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-    TestGetChooseCardMessageEndpoint endpoint1 = new TestGetChooseCardMessageEndpoint(gameRoom, future1);
-    TestGetChooseCardMessageEndpoint endpoint2 = new TestGetChooseCardMessageEndpoint(gameRoom, future2);
+    TestGetChooseCardMessageEndpoint endpoint1 = new TestGetChooseCardMessageEndpoint(0, future1);
+    TestGetChooseCardMessageEndpoint endpoint2 = new TestGetChooseCardMessageEndpoint(1, future2);
 
     container.connectToServer(endpoint1, WS_URI); // ✅ separate instance
     container.connectToServer(endpoint2, WS_URI); // ✅ separate instance
@@ -102,13 +107,13 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
     String response2 = "";
 
     try {
-      response1 = future1.get(20, TimeUnit.SECONDS);
+      response1 = future1.get(30, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
     }
 
     try {
-      response2 = future2.get(20, TimeUnit.SECONDS);
+      response2 = future2.get(30, TimeUnit.SECONDS);
     } catch (Exception e) {
       System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
     }

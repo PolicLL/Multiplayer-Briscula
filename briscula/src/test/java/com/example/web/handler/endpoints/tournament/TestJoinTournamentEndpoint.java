@@ -3,7 +3,9 @@ package com.example.web.handler.endpoints.tournament;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static com.example.web.utils.JsonUtils.fromJson;
 
+import com.example.web.dto.Message;
 import com.example.web.dto.tournament.JoinTournamentResponse;
+import com.example.web.model.enums.ServerToClientMessageType;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.websocket.ClientEndpoint;
 import jakarta.websocket.CloseReason;
@@ -43,20 +45,29 @@ public class TestJoinTournamentEndpoint {
 
   @OnMessage
   public void onMessage(String message) {
-    System.out.println("📥 Received message: " + message);
-    JoinTournamentResponse joinTournamentResponse;
+    System.out.println("📥 Received message: " + message);;
+
     try {
-      joinTournamentResponse = fromJson(message, JoinTournamentResponse.class);
+      // Step 1: parse the outer wrapper message
+      Message parsedMessage = OBJECT_MAPPER.readValue(message, Message.class);
+
+      // Step 2: check type and parse content accordingly
+      if (parsedMessage.type() == ServerToClientMessageType.TOURNAMENT_UPDATE) {
+        JoinTournamentResponse joinTournamentResponse = OBJECT_MAPPER.readValue(
+            parsedMessage.content(), JoinTournamentResponse.class
+        );
+
+        if (joinTournamentResponse.currentNumberOfPlayers() >= 4) {
+          System.out.println("CONTAINS");
+          completableFuture.complete(joinTournamentResponse);
+        }
+      }
+
     } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
+      throw new RuntimeException("Failed to parse WebSocket message", e);
     }
-    if (joinTournamentResponse.currentNumberOfPlayers() >= 4) {
-      System.out.println("CONTAINS");
-      completableFuture.complete(joinTournamentResponse);
-    }
-
-
   }
+
 
   @OnError
   public void onError(Session session, Throwable throwable) {

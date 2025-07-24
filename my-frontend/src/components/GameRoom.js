@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { useWebSocketContext } from "../context/WebSocketContext";
 
 function GameRoom() {
   const { roomId, playerId } = useParams();
@@ -16,22 +17,7 @@ function GameRoom() {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
 
-  const socketRef = useRef(null);
-
-  const parseWebSocketMessage = (message) => {
-    try {
-      const parsed = JSON.parse(message);
-      return {
-        type: parsed.type,
-        roomId: parsed.roomId,
-        playerId: parsed.playerId,
-        content: parsed.content,
-      };
-    } catch (error) {
-      console.error("Invalid JSON.", error);
-      return null;
-    }
-  };
+  const { sendMessage, setOnMessage } = useWebSocketContext();
 
   const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
@@ -72,246 +58,164 @@ function GameRoom() {
     setMessage("");
     setTimeLeft(0);
 
-    const socket = socketRef.current;
-
-    console.log("socket: " + socket);
-    console.log("URI: " + socket.url);
-
-    if (socket && socket.readyState === WebSocket.OPEN) {
-      console.log("Socket seems ready");
-      console.log(`STATE : ${roomId} ${playerId} ${cardIndex}`);
-
-      setTimeout(() => {
-        const message = JSON.stringify({
-          type: "CARD_CHOSEN",
-          roomId: roomId,
-          playerId: playerId,
-          card: cardIndex,
-        });
-
-        socket.send(message);
-      }, 100);
-
-      socket.onerror = (event) => {
-        console.error("WebSocket error:", event);
-      };
-
-      socket.onclose = (event) => {
-        console.log("WebSocket closed:", event.code, event.reason);
-      };
-    }
+    sendMessage({
+      type: "CARD_CHOSEN",
+      roomId,
+      playerId,
+      card: cardIndex,
+    });
   };
 
-  useEffect(() => {
-    const socket = new WebSocket(`ws://localhost:8080/game/${roomId}`);
-    socketRef.current = socket;
+  const handleGameRoomMessage = useCallback(
+    (parsedMessage) => {
+      if (parsedMessage.roomId !== roomId) return;
+      if (parsedMessage.playerId !== parseInt(playerId)) return;
 
-    socket.onopen = () => {
-      console.log("Sending get initial cards.");
-      console.log("Room id: " + roomId);
-      console.log("Player id: " + playerId);
+      console.log("Received message type:", parsedMessage.type);
 
-      socket.send(
-        JSON.stringify({
-          type: "GET_INITIAL_CARDS",
-          roomId: roomId,
-          playerId: playerId,
-        })
-      );
-    };
+      switch (parsedMessage.type) {
+        case "SENT_INITIAL_CARDS": {
+          const { cards, numberOfPoints } = parsePlayerStatus(
+            parsedMessage.content
+          );
+          setCards(cards);
+          setShouldShowPoints(numberOfPoints !== -1);
+          if (numberOfPoints !== -1) setPoints(numberOfPoints);
 
-    socket.onmessage = (event) => {
-      const message = event.data;
-      const parsedMessage = parseWebSocketMessage(message);
-
-      console.log("Received message type: " + parsedMessage.type);
-
-      if (
-        parsedMessage.type === "SENT_INITIAL_CARDS" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        const { cards, numberOfPoints } = parsePlayerStatus(
-          parsedMessage.content
-        );
-        setCards(cards);
-
-        if (numberOfPoints === -1) {
-          setShouldShowPoints(false);
-        } else {
-          setShouldShowPoints(true);
-          setPoints(numberOfPoints);
-        }
-
-        socket.send(
-          JSON.stringify({
+          sendMessage({
             type: "INITIAL_CARDS_RECEIVED",
-            roomId: roomId,
-            playerId: playerId,
-          })
-        );
-      }
-
-      if (
-        parsedMessage.type === "CARDS_STATE_UPDATE" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        const { cards, numberOfPoints } = parsePlayerStatus(
-          parsedMessage.content
-        );
-
-        setCards(cards);
-
-        if (numberOfPoints === -1) {
-          setShouldShowPoints(false);
-        } else {
-          setShouldShowPoints(true);
-          setPoints(numberOfPoints);
+            roomId,
+            playerId,
+          });
+          break;
         }
-        setThrownCards([]);
+
+        case "CARDS_STATE_UPDATE": {
+          const { cards, numberOfPoints } = parsePlayerStatus(
+            parsedMessage.content
+          );
+          setCards(cards);
+          setShouldShowPoints(numberOfPoints !== -1);
+          if (numberOfPoints !== -1) setPoints(numberOfPoints);
+          setThrownCards([]);
+          break;
+        }
+
+        case "CHOOSE_CARD": {
+          setMessage(parsedMessage.content);
+          setCardsClickable(true);
+          setTimeLeft(30);
+
+          if (timerRef.current) clearInterval(timerRef.current);
+
+          timerRef.current = setInterval(() => {
+            setTimeLeft((prev) => {
+              if (prev <= 1) {
+                clearInterval(timerRef.current);
+                setCardsClickable(false);
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+          break;
+        }
+
+        case "REMOVE_CARD":
+          setCards((prevCards) => prevCards.slice(1));
+          setCardsClickable(false);
+          break;
+
+        case "SENT_MAIN_CARD":
+          setMainCard(parseCard(parsedMessage.content));
+          setCardsClickable(false);
+          break;
+
+        case "REMOVE_MAIN_CARD":
+          setMainCard({ cardType: "", cardValue: "" });
+          setCardsClickable(false);
+          break;
+
+        case "PLAYER_LOST":
+          setMessage("Player lost.");
+          setCardsClickable(false);
+          break;
+
+        case "PLAYER_WON":
+          setMessage("Player won.");
+          setCardsClickable(false);
+          break;
+
+        case "NO_WINNER":
+          setMessage("No winner.");
+          setCardsClickable(false);
+          break;
+
+        case "RECEIVED_THROWN_CARD":
+          setThrownCards((prevCards) => [
+            ...prevCards,
+            parseCard(parsedMessage.content),
+          ]);
+          break;
+
+        case "SENT_COLLEAGUES_CARDS": {
+          const { cards } = parsePlayerStatus(parsedMessage.content);
+          setColleaguesCards(cards);
+          setTimeLeft(9);
+
+          if (timerRef.current) clearInterval(timerRef.current);
+
+          timerRef.current = setInterval(() => {
+            setTimeLeft((prev) => {
+              if (prev <= 1) {
+                clearInterval(timerRef.current);
+                setCardsClickable(false);
+                setColleaguesCards([]);
+                return 0;
+              }
+              return prev - 1;
+            });
+          }, 1000);
+          break;
+        }
+
+        default:
+          console.log("Unhandled message type:", parsedMessage.type);
       }
+    },
+    [roomId, playerId, sendMessage]
+  );
 
-      if (
-        parsedMessage.type === "CHOOSE_CARD" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMessage(parsedMessage.content);
-        setCardsClickable(true);
-        setTimeLeft(30); // start countdown
+  useEffect(() => {
+    setOnMessage(handleGameRoomMessage);
 
-        if (timerRef.current) clearInterval(timerRef.current);
+    console.log("Get initial cards sent.");
 
-        timerRef.current = setInterval(() => {
-          setTimeLeft((prevTime) => {
-            if (prevTime <= 1) {
-              clearInterval(timerRef.current);
-              setCardsClickable(false);
-              return 0;
-            }
-            return prevTime - 1;
-          });
-        }, 1000);
-      }
-
-      if (
-        parsedMessage.type === "REMOVE_CARD" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setCards((prevCards) => prevCards.slice(1));
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "SENT_MAIN_CARD" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMainCard(parseCard(parsedMessage.content));
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "REMOVE_MAIN_CARD" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMainCard({ cardType: "", cardValue: "" });
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "PLAYER_LOST" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMessage("Player lost.");
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "PLAYER_WON" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMessage("Player won.");
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "NO_WINNER" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setMessage("No winner.");
-        setCardsClickable(false);
-      }
-
-      if (
-        parsedMessage.type === "RECEIVED_THROWN_CARD" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        setThrownCards((prevCards) => [
-          ...prevCards,
-          parseCard(parsedMessage.content),
-        ]);
-      }
-
-      if (
-        parsedMessage.type === "SENT_COLLEAGUES_CARDS" &&
-        parsedMessage.playerId === parseInt(playerId)
-      ) {
-        console.log("Entered block for SENT_COLLEAGUES_CARDS.");
-
-        const { cards } = parsePlayerStatus(parsedMessage.content);
-
-        setColleaguesCards(cards); // Set the value
-
-        setTimeLeft(9);
-
-        if (timerRef.current) clearInterval(timerRef.current);
-
-        timerRef.current = setInterval(() => {
-          setTimeLeft((prevTime) => {
-            if (prevTime <= 1) {
-              clearInterval(timerRef.current);
-              setCardsClickable(false);
-              setColleaguesCards([]);
-              return 0;
-            }
-            return prevTime - 1;
-          });
-        }, 1000);
-      }
-    };
-
-    socket.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    socket.onclose = () => {
-      console.log("Websocket connection closed.");
-    };
-
-    // Handle browser/tab close or navigation
-    const handleUnload = () => {
-      if (socket && socket.readyState === WebSocket.OPEN) {
-        socket.send(
-          JSON.stringify({
-            type: "DISCONNECT_FROM_GAME",
-            roomId: roomId,
-            playerId: playerId,
-          })
-        );
-        socket.close();
-      }
-    };
-
-    window.addEventListener("beforeunload", handleUnload);
-    window.addEventListener("unload", handleUnload);
+    sendMessage({
+      type: "GET_INITIAL_CARDS",
+      roomId,
+      playerId,
+    });
 
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
 
-      handleUnload(); // ensure clean disconnect on unmount
+      setOnMessage(null);
 
-      window.removeEventListener("beforeunload", handleUnload);
-      window.removeEventListener("unload", handleUnload);
+      sendMessage({
+        type: "DISCONNECT_FROM_GAME",
+        roomId,
+        playerId,
+      });
     };
-  }, [roomId]);
+  }, [
+    roomId,
+    playerId,
+    sendMessage,
+    setOnMessage,
+    handleGameRoomMessage,
+    setOnMessage,
+  ]);
 
   return (
     <div>

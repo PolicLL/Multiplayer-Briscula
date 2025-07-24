@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
-import { useGameWebSocket } from "../hooks/useGameWebSocket";
 import EditUserForm from "./EditUserForm";
 import Menu from "./Menu";
 import axios from "axios";
-import TournamentForm from "../components/tournament/TournamentForm";
 import TournamentList from "./tournament/TournamentList";
-import { useTournamentWebSocket } from "../hooks/useTournamentWebSocket";
+
+import { useWebSocketContext } from "../context/WebSocketContext";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -17,29 +16,48 @@ function Dashboard() {
   const [shouldShowPoints, setShouldShowPoints] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
   const [showTournaments, setShowTournaments] = useState(false);
 
   const [tournaments, setTournaments] = useState([]);
 
-  const onTournamentUpdate = React.useCallback((updatedTournament) => {
-    setTournaments((prev) =>
-      prev.map((t) => (t.id === updatedTournament.id ? updatedTournament : t))
-    );
-  }, []);
+  const { sendMessage, setOnMessage } = useWebSocketContext();
 
-  const tournamentSocketRef = useTournamentWebSocket(onTournamentUpdate);
+  const handleMessage = useCallback(
+    (parsedMessage) => {
+      if (parsedMessage.type === "GAME_STARTED") {
+        console.log("Game started message received.");
+        setOnMessage(null);
+        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
+      }
 
-  const socketRef = useGameWebSocket({
-    onGameStart: (roomId, playerId) => {
-      navigate(`/game/${roomId}/${playerId}`);
+      if (parsedMessage.type === "TOURNAMENT_UPDATE") {
+        console.log("Tournament update received.");
+
+        // Make sure content is parsed (it's a stringified object in your logs)
+        const updatedTournament = JSON.parse(parsedMessage.content);
+
+        // Use functional update to ensure latest state is used
+        setTournaments((prev) => {
+          const index = prev.findIndex((t) => t.id === updatedTournament.id);
+          if (index !== -1) {
+            return prev.map((t) =>
+              t.id === updatedTournament.id ? updatedTournament : t
+            );
+          } else {
+            return [...prev, updatedTournament];
+          }
+        });
+      }
     },
-    onMessage: setReceivedMessage,
-    onStatusChange: setStatus,
-  });
+    [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
+  );
 
   useEffect(() => {
+    // Register WebSocket message handler
+    setOnMessage(handleMessage);
+
+    // Fetch user info
     const token = localStorage.getItem("jwtToken");
     if (!token) return navigate("/");
 
@@ -51,26 +69,30 @@ function Dashboard() {
       .then((res) => setUserInfo(res.data))
       .catch(() => setMessage("Error fetching user info."));
 
-    axios
-      .get("http://localhost:8080/api/tournament")
-      .then((res) => setTournaments(res.data));
-  }, [navigate, username]);
+    // Fetch tournaments
+    axios.get("http://localhost:8080/api/tournament").then((res) => {
+      console.log("Fetched tournaments:", res.data);
+      setTournaments(res.data);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      setOnMessage(null);
+    };
+  }, [navigate, username, setOnMessage, handleMessage]); // ✅ `handleMessage` is memoized without `tournaments`
+
+  useEffect(() => {
+    console.log("Tournaments updated:", tournaments);
+  }, [tournaments]);
 
   const joinGame = (numberOfPlayers) => {
-    if (!socketRef.current || socketRef.current.readyState !== WebSocket.OPEN) {
-      setStatus("Socket not connected.");
-      return;
-    }
-
-    socketRef.current.send(
-      JSON.stringify({
-        type: "JOIN_ROOM",
-        userId: userInfo.id,
-        playerName: username,
-        numberOfPlayers,
-        shouldShowPoints,
-      })
-    );
+    sendMessage({
+      type: "JOIN_ROOM",
+      userId: userInfo.id,
+      playerName: username,
+      numberOfPlayers,
+      shouldShowPoints,
+    });
 
     setIsDisabled(true);
   };
@@ -134,19 +156,12 @@ function Dashboard() {
               tournaments={tournaments}
               setTournaments={setTournaments}
               onJoin={async (tournament) => {
-                const joinTournament = {
-                  tournamentId: tournament.id,
-                  userId: userInfo.id,
-                };
-
                 try {
-                  tournamentSocketRef.current.send(
-                    JSON.stringify({
-                      type: "JOIN_TOURNAMENT",
-                      tournamentId: tournament.id,
-                      playerId: userInfo.id,
-                    })
-                  );
+                  sendMessage({
+                    type: "JOIN_TOURNAMENT",
+                    tournamentId: tournament.id,
+                    playerId: userInfo.id,
+                  });
                 } catch (error) {
                   console.log("Error: " + error);
                   if (error.response) {
