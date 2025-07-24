@@ -37,7 +37,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws IOException {
-    //log.info("Handling message type " + WebSocketMessageReader.getMessageType(message));
+    log.debug("Handling message type " + WebSocketMessageReader.getMessageType(message));
     switch (WebSocketMessageReader.getMessageType(message)) {
       case JOIN_ROOM -> gamePrepareService.handle(session, message);
       case GET_INITIAL_CARDS -> gameStartService.handleGetCards(session, message);

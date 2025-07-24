@@ -16,7 +16,6 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.io.IOException;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +62,7 @@ public class GameStartService {
         roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
 
     if (gameRoomService.areInitialCardsReceived(roomId)) {
-      log.info("Initial cards for rom {} are received.", roomId);
+      log.info("Initial cards for room {} are received.", roomId);
       GameRoom gameRoom = gameRoomService.getRoom(roomId);
       CompletableFuture
           .supplyAsync(gameRoom::startGame)

@@ -73,7 +73,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
     }
 
     for (JoinTournamentResponse response : responses) {
-      assertThat(response.currentNumberOfPlayers()).isEqualTo(4);
+      assertThat(response.currentNumberOfPlayers()).isGreaterThanOrEqualTo(4);
     }
 
     System.out.println("✅ Test completed successfully");

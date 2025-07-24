@@ -118,11 +118,18 @@ public class EntityUtils {
     );
   }
 
+  public static RealPlayer getRealPlayer(WebSocketSession webSocketSession) {
+    return new RealPlayer(getRoomPlayerId(), List.of(),
+        "Nickname" + RANDOM.nextInt(500), webSocketSession
+    );
+  }
+
   //  Connected Player
 
   public static ConnectedPlayer getConnectedPlayer() {
+    WebSocketSession webSocketSession = getWebSocketSession();
     return new ConnectedPlayer(
-       getWebSocketSession(), getRealPlayer(), true
+        webSocketSession, getRealPlayer(webSocketSession), true
     );
   }
 
