@@ -1,13 +1,12 @@
 package com.example.web.service;
 
 
-import static com.example.web.model.enums.ServerToClientMessageType.CARDS_STATE_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
+import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_WON;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.user.player.RealPlayer;
-import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
 import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.MatchesCreatedResponse;
@@ -245,20 +244,26 @@ public class TournamentService {
     Set<ConnectedPlayer> winners =  tournamentPlayersWinners.get(tournamentId);
     winners.add(winner);
 
-    winner.getPlayer().sendMessageToWaitForNextMatch();
-    loser.getPlayer().sentLoosingMessage();
+    boolean nextRoundCanStart = winners.size() == tournamentIdNumberOfWinners.get(tournamentId);
 
-    if (winners.size() == tournamentIdNumberOfWinners.get(tournamentId)) {
+    if (nextRoundCanStart) {
 
       if (winners.size() == 1) {
         finishTournament(tournamentId, winner);
         return;
       }
 
+      winner.getPlayer().sendMessageToWaitForNextMatch();
+      loser.getPlayer().sentLoosingMessage();
+
       tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId) / 2);
       Set<ConnectedPlayer> tempWinners = new HashSet<>(winners);
       winners.clear();
       startNextRound(tempWinners, tournamentId);
+    }
+    else {
+      winner.getPlayer().sendMessageToWaitForNextMatch();
+      loser.getPlayer().sentLoosingMessage();
     }
   }
 
@@ -289,9 +294,11 @@ public class TournamentService {
         .collect(Collectors.toSet());
   }
 
-  public void finishTournament(String tournamentId, ConnectedPlayer connectedPlayer) {
+  public void finishTournament(String tournamentId, ConnectedPlayer winner) {
     log.info("Finishing tournament with id {}.\n Winner is {}.",
-        tournamentId, connectedPlayer.getPlayer().getNickname());
+        tournamentId, winner.getPlayer().getNickname());
+
+    sendMessage(winner.getWebSocketSession(), TOURNAMENT_WON);
   }
 
   private int getNumberOfPlayersInTournament(String tournamentId) {

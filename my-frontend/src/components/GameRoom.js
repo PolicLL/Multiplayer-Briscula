@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
 function GameRoom() {
+  const navigate = useNavigate();
   const { roomId, playerId } = useParams();
   const [message, setMessage] = useState("");
   const [cards, setCards] = useState([]);
@@ -156,6 +158,14 @@ function GameRoom() {
             ...prevCards,
             parseCard(parsedMessage.content),
           ]);
+          break;
+
+        case "WAIT_FOR_NEXT_MATCH":
+          navigate(`/dashboard`);
+          break;
+
+        case "TOURNAMENT_WON":
+          console.log("Tournament won.");
           break;
 
         case "SENT_COLLEAGUES_CARDS": {

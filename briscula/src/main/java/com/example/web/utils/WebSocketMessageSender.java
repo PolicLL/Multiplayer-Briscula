@@ -61,6 +61,19 @@ public class WebSocketMessageSender {
     }
   }
 
+  public static void sendMessage(WebSocketSession webSocketSession,
+      ServerToClientMessageType messageType) {
+    if (isSessionOpen(webSocketSession)) {
+      try {
+        Message message = new Message(messageType);
+        webSocketSession.sendMessage(new TextMessage(JsonUtils.toJson(message)));
+      } catch (IOException e) {
+        log.error("Error sending message: " + e.getMessage(), e);
+        throw new RuntimeException(e);
+      }
+    }
+  }
+
   private static boolean isSessionOpen(WebSocketSession session) {
     return session != null && session.isOpen();
   }

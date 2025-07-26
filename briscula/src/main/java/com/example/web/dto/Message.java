@@ -11,5 +11,9 @@ public record Message (ServerToClientMessageType type, String roomId, int player
   public Message(ServerToClientMessageType type, String content) {
     this(type, null, 0, content);
   }
+
+  public Message(ServerToClientMessageType type) {
+    this(type, null, 0, null);
+  }
 }
 
