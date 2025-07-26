@@ -1,10 +1,13 @@
 package com.example.web.service;
 
 
+import static com.example.web.model.enums.ServerToClientMessageType.CARDS_STATE_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.dto.Message;
 import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.MatchesCreatedResponse;
@@ -34,6 +37,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -240,21 +245,21 @@ public class TournamentService {
     Set<ConnectedPlayer> winners =  tournamentPlayersWinners.get(tournamentId);
     winners.add(winner);
 
+    winner.getPlayer().sendMessageToWaitForNextMatch();
+    loser.getPlayer().sentLoosingMessage();
+
     if (winners.size() == tournamentIdNumberOfWinners.get(tournamentId)) {
 
       if (winners.size() == 1) {
         finishTournament(tournamentId, winner);
+        return;
       }
 
       tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId) / 2);
       Set<ConnectedPlayer> tempWinners = new HashSet<>(winners);
       winners.clear();
       startNextRound(tempWinners, tournamentId);
-      return;
     }
-
-    winner.getPlayer().sendMessageToWaitForNextMatch();
-    loser.getPlayer().sentLoosingMessage();
   }
 
   private void startNextRound(Set<ConnectedPlayer> winners,  String tournamentId) {
@@ -262,7 +267,10 @@ public class TournamentService {
         .tournamentId(tournamentId)
         .userIds(winners.stream().map(ConnectedPlayer::getUserId).toList())
         .build());
-    startTournament(matches);
+
+      CompletableFuture
+      .runAsync(() -> {}, CompletableFuture.delayedExecutor(2, TimeUnit.SECONDS))
+      .thenRun(() -> startTournament(matches));
   }
 
 
@@ -282,7 +290,8 @@ public class TournamentService {
   }
 
   public void finishTournament(String tournamentId, ConnectedPlayer connectedPlayer) {
-    log.info("Finishing tournament with id {}.", tournamentId);
+    log.info("Finishing tournament with id {}.\n Winner is {}.",
+        tournamentId, connectedPlayer.getPlayer().getNickname());
   }
 
   private int getNumberOfPlayersInTournament(String tournamentId) {

@@ -31,6 +31,13 @@ public class GameEndService {
   // TODO -> Has to be tested
   public void update(GameEndStatus gameEndStatus, String matchId) {
     log.info("Game ended with status {}, updating statistics.", gameEndStatus.status());
+
+    for (Map.Entry<ConnectedPlayer, Boolean> entry : gameEndStatus.playerResults().entrySet()) {
+      ConnectedPlayer connectedPlayer = entry.getKey();
+      connectedPlayer.getPlayer().resetPoints();
+      connectedPlayer.setInitialCardsReceived(false);
+    }
+
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       gameEndStatus.playerResults()
           .keySet()
@@ -46,6 +53,7 @@ public class GameEndService {
       if (connectedPlayer.getUserId() != null) {
         userService.updateUserRecord(connectedPlayer.getUserId(), true, entry.getValue());
 
+        // TODO Handle case when there is no winner in the tournament
         boolean hasPlayerWonTournamentMatch = entry.getValue();
         if (hasPlayerWonTournamentMatch) {
           winners.add(connectedPlayer);

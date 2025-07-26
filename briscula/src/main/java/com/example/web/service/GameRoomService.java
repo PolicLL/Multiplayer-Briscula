@@ -29,7 +29,7 @@ public class GameRoomService {
     return room;
   }
 
-  public void notifyRoomPlayerReceivedInitialCards(String roomId, String playerId) {
+  public synchronized void notifyRoomPlayerReceivedInitialCards(String roomId, String playerId) {
     int playerIdInt = Integer.parseInt(playerId);
     List<ConnectedPlayer> playerList = activeRooms.get(roomId).getPlayers();
     Optional<ConnectedPlayer> connectedPlayerOptional = playerList.stream().filter(player -> player.getId() == playerIdInt).findFirst();

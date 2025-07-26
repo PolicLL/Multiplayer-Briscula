@@ -61,9 +61,14 @@ public class GameStartService {
     gameRoomService.notifyRoomPlayerReceivedInitialCards(
         roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
 
+    log.info("Check handle initial cards for room {}. Value {}.", roomId,
+        gameRoomService.areInitialCardsReceived(roomId));
+
     if (gameRoomService.areInitialCardsReceived(roomId)) {
       log.info("Initial cards for room {} are received.", roomId);
       GameRoom gameRoom = gameRoomService.getRoom(roomId);
+      log.info("Starting the game between {} and {}.", gameRoom.getPlayers().get(0).getPlayer().getNickname(),
+          gameRoom.getPlayers().get(1).getPlayer().getNickname());
       CompletableFuture
           .supplyAsync(gameRoom::startGame)
           .thenAccept(gameEndStatus -> gameEndService.update(gameEndStatus, gameRoom.getMatchId()))
