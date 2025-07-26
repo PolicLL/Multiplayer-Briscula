@@ -42,17 +42,24 @@ class UserControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  private String userToken, adminToken;
+  private static String userToken, adminToken;
+
+  private AuthService authService;
+
+  private static boolean loggedIn = false;
 
   @BeforeEach
   void setUp() throws Exception {
-    this.userToken = new AuthService(mockMvc).getUserBearerToken();
-    this.adminToken = new AuthService(mockMvc).getAdminBearerToken();
+    if (!loggedIn) {
+      userToken = new AuthService(mockMvc).getUserBearerToken();
+      adminToken = new AuthService(mockMvc).getAdminBearerToken();
+      loggedIn = true;
+    }
   }
 
   @Test
   void loginUser() throws Exception {
-    String loginPayload = "{ \"username\": \"" + "user" + "\", \"password\": \"" + "user" + "\" }";
+    String loginPayload = "{ \"username\": \"" + "user1" + "\", \"password\": \"" + "user" + "\" }";
 
     mockMvc.perform(post("/api/users/login")
             .contentType("application/json")

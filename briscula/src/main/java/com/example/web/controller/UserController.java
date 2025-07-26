@@ -1,5 +1,7 @@
 package com.example.web.controller;
 
+import static org.springframework.http.HttpStatus.CONFLICT;
+
 import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -40,11 +43,16 @@ public class UserController {
   }
 
   @PostMapping("/login")
-  public String login(@RequestBody @Valid UserLoginDto userLoginDto) {
+  public ResponseEntity<?> login(@RequestBody @Valid UserLoginDto userLoginDto) {
     log.info("Login attempt for username: {}", userLoginDto.username());
-    String token = userService.verify(userLoginDto);
-    log.info("Login successful for username: {}", userLoginDto.username());
-    return token;
+    try {
+      String token = userService.verify(userLoginDto);
+      log.info("Login successful for username: {}", userLoginDto.username());
+      return ResponseEntity.ok(token);
+    } catch (RuntimeException e) {
+      log.warn("Login failed: {}", e.getMessage());
+      return ResponseEntity.status(CONFLICT).body(e.getMessage());
+    }
   }
 
   @GetMapping
@@ -88,5 +96,24 @@ public class UserController {
     userService.deleteUser(id);
     log.info("User with ID: {} deleted successfully", id);
     return ResponseEntity.ok("User deleted successfully!");
+  }
+
+
+  // TODO: Logout has to be tested
+  @PostMapping("/logout")
+  @PreAuthorize("hasRole('USER')")
+  public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+    if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+      return ResponseEntity.badRequest().body("Missing or invalid Authorization header.");
+    }
+
+    String token = authHeader.substring(7);
+
+    try {
+      userService.logout(token);
+      return ResponseEntity.ok("User logged out successfully.");
+    } catch (RuntimeException e) {
+      return ResponseEntity.status(CONFLICT).body(e.getMessage());
+    }
   }
 }

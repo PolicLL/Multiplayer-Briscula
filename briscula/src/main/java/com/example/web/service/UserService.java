@@ -2,6 +2,7 @@ package com.example.web.service;
 
 import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
 
+import com.example.web.component.TokenStore;
 import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
@@ -34,6 +35,7 @@ public class UserService {
 
   private final JwtService jwtService;
   private final AuthenticationManager authenticationManager;
+  private final TokenStore tokenStore;
 
   public UserDto createUser(UserDto userDto) {
     if (userRepository.existsByUsername(userDto.username())) {
@@ -113,11 +115,32 @@ public class UserService {
     if (existingUser == null)
       throw new UserNotFoundException();
 
+    if (tokenStore.isTokenActive(existingUser.getUsername())) {
+      throw new RuntimeException("User is already logged in.");
+    }
+
     Authentication authentication = authenticationManager.authenticate(
         new UsernamePasswordAuthenticationToken(existingUser.getEmail(), userLoginDto.password()));
 
-    return authentication.isAuthenticated() ? jwtService.generateToken(existingUser.getEmail()) : "Failure";
+    if (!authentication.isAuthenticated()) {
+      throw new RuntimeException("Authentication failed.");
+    }
+
+
+    String token = jwtService.generateToken(existingUser.getEmail());
+    tokenStore.storeToken(existingUser.getUsername(), token);
+    return token;
   }
+
+  public void logout(String token) {
+    String username = jwtService.extractEmail(token);
+    if (!tokenStore.isTokenActive(username)) {
+      throw new RuntimeException("User is not logged in.");
+    }
+    tokenStore.removeToken(username);
+    log.info("User {} logged out successfully", username);
+  }
+
 
   public UserDto getUserByUsername(String username) {
     User user = userRepository.findByUsername(username);

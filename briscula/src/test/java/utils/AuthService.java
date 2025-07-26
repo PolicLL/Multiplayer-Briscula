@@ -3,18 +3,15 @@ package utils;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+@RequiredArgsConstructor
 public class AuthService {
 
   private final MockMvc mockMvc;
 
-  @Autowired
-  public AuthService(MockMvc mockMvc) {
-    this.mockMvc = mockMvc;
-  }
 
   public String getUserBearerToken() throws Exception {
     return getAuthBearerToken("user", "user");
