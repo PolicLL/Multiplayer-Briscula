@@ -55,7 +55,7 @@ public class GameStartService {
     log.info("Handling cards {} {}.", roomId, playerId);
   }
 
-  public void handleGetInitialCards(WebSocketMessage<?> message)
+  public synchronized void handleGetInitialCards(WebSocketMessage<?> message)
       throws JsonProcessingException {
     String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
     gameRoomService.notifyRoomPlayerReceivedInitialCards(
