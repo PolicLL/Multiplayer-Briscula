@@ -19,6 +19,13 @@ public class WebSocketMessageReader {
 
   }
 
+  public static boolean contains(@NonNull WebSocketMessage<?> message, String key)
+      throws JsonProcessingException {
+    String payload = (String) message.getPayload();
+    JsonNode json = new ObjectMapper().readTree(payload);
+    return json.has(key);
+  }
+
   public static ClientToServerMessageType getMessageType(@NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
     String payload = (String) message.getPayload();

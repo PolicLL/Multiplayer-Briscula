@@ -46,7 +46,11 @@ public class GamePrepareService {
     int numberOfPlayersOption = Integer.parseInt(
         WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
 
-    String userId =  WebSocketMessageReader.getValueFromJsonMessage(message, "userId");
+    String userId = null;
+
+    if (WebSocketMessageReader.contains(message, "userId")) {
+      userId =  WebSocketMessageReader.getValueFromJsonMessage(message, "userId");
+    }
 
     if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
       log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
@@ -56,7 +60,9 @@ public class GamePrepareService {
     synchronized (mapPreparingPlayers) {
       ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
           null, playerName, session), shouldPointsShow);
-      connectedPlayer.setUserId(userId);
+
+      if (userId != null)
+        connectedPlayer.setUserId(userId);
 
       Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
 

@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
 import { useGameWebSocket } from "../hooks/useGameWebSocket";
+import { useWebSocketContext } from "../context/WebSocketContext";
 
 function PrepareGame() {
   const navigate = useNavigate();
@@ -11,30 +12,30 @@ function PrepareGame() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
 
-  const socketRef = useGameWebSocket({
-    onGameStart: (roomId, playerId) => {
-      navigate(`/game/${roomId}/${playerId}`);
+  const { sendMessage, setOnMessage } = useWebSocketContext();
+
+  const handleMessage = useCallback(
+    (parsedMessage) => {
+      if (parsedMessage.type === "GAME_STARTED") {
+        console.log("Game started message received.");
+        setOnMessage(null);
+        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
+      }
     },
-    onMessage: setReceivedMessage,
-    onStatusChange: setStatus,
-  });
+    [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
+  );
 
   const joinGame = (numberOfPlayers) => {
     if (!name.trim()) return alert("Enter a name.");
 
-    if (socketRef.current?.readyState !== WebSocket.OPEN) {
-      setStatus("Socket not connected.");
-      return;
-    }
+    setOnMessage(handleMessage);
 
-    socketRef.current.send(
-      JSON.stringify({
-        type: "JOIN_ROOM",
-        playerName: name,
-        numberOfPlayers: numberOfPlayers,
-        shouldShowPoints: shouldShowPoints,
-      })
-    );
+    sendMessage({
+      type: "JOIN_ROOM",
+      playerName: name,
+      numberOfPlayers: numberOfPlayers,
+      shouldShowPoints: shouldShowPoints,
+    });
 
     setIsDisabled(true);
   };
