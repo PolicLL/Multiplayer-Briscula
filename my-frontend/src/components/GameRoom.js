@@ -164,6 +164,10 @@ function GameRoom() {
           navigate(`/dashboard`);
           break;
 
+        case "RESTARTING_MATCH":
+          navigate(`/dashboard`);
+          break;
+
         case "TOURNAMENT_WON":
           console.log("Tournament won.");
           break;

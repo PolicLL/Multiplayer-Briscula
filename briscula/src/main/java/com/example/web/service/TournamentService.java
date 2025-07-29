@@ -1,12 +1,14 @@
 package com.example.web.service;
 
 
+import static com.example.web.model.enums.ServerToClientMessageType.RESTARTING_MATCH;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_WON;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 import com.example.briscula.user.player.RealPlayer;
+import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.Message;
 import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.MatchesCreatedResponse;
@@ -33,7 +35,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -60,6 +61,8 @@ public class TournamentService {
   private final MatchService matchService;
 
   private final WebSocketMessageDispatcher messageDispatcher;
+
+  private final UserService userService;
 
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
@@ -177,7 +180,6 @@ public class TournamentService {
 
     tournamentPlayers.get(request.tournamentId()).add(connectedPlayer);
     tournamentUsers.get(request.tournamentId()).add(user);
-    messageDispatcher.registerSession(webSocketSession);
 
 
     if (isTournamentFull(tournament.getId()))
@@ -194,13 +196,10 @@ public class TournamentService {
   @Transactional
   private void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
     log.info("Broadcasting tournament update to players.");
-    // TODO: All should be notified
-    List<WebSocketSession> webSocketSessions =
-        tournamentPlayers.get(tournamentResponseDto.id())
-            .stream()
-            .map(ConnectedPlayer::getWebSocketSession)
-            .filter(Objects::nonNull)
-            .collect(Collectors.toList());
+
+
+    Set<WebSocketSession> webSocketSessions = messageDispatcher.getRegisteredWebSocketSessions();
+
 
     for (WebSocketSession session : webSocketSessions) {
       try {
@@ -284,6 +283,25 @@ public class TournamentService {
     for (Match match : matchesCreatedResponse.matches()) {
       gameRoomService.startGameForMatch(match, getPlayersForMatch(matchesCreatedResponse.tournamentId(), match));
     }
+  }
+
+  public void restartMatchWithNoWinner(String matchId, String tournamentId) {
+    log.info("Starting Match with id {}.", matchId);
+    Match match = matchService.retrieveMatch(matchId);
+
+    Set<ConnectedPlayer> matchPlayers =  getPlayersForMatch(tournamentId, match);
+
+    matchPlayers.forEach(player -> {
+      if (player.getPlayer() instanceof RealPlayer realPlayer) {
+        RoomPlayerId roomPlayerId = realPlayer.getRoomPlayerId();
+
+        sendMessage(player.getWebSocketSession(), RESTARTING_MATCH, roomPlayerId.getRoomId(),
+            roomPlayerId.getPlayerId(), "Restarting match.");
+      }
+    });
+
+
+    gameRoomService.startGameForMatch(match,matchPlayers);
   }
 
   private Set<ConnectedPlayer> getPlayersForMatch(String tournamentId, Match match) {

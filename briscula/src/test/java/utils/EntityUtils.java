@@ -173,4 +173,7 @@ public class EntityUtils {
         .build();
   }
 
+  public static String getTournamentName() {
+    return "Tournament Name " + RANDOM.nextInt(1000000);
+  }
 }

@@ -42,6 +42,13 @@ public class GameEndService {
       gameEndStatus.playerResults()
           .keySet()
           .forEach(user -> userService.updateUserRecord(null, false, false));
+
+      if (matchId != null) {
+        // TODO Has to be tested
+        MatchDto match = matchService.getMatch(matchId);
+        tournamentService.restartMatchWithNoWinner(matchId, match.tournamentId());
+      }
+
       return;
     }
 
@@ -53,7 +60,6 @@ public class GameEndService {
       if (connectedPlayer.getUserId() != null) {
         userService.updateUserRecord(connectedPlayer.getUserId(), true, entry.getValue());
 
-        // TODO Handle case when there is no winner in the tournament
         boolean hasPlayerWonTournamentMatch = entry.getValue();
         if (hasPlayerWonTournamentMatch) {
           winners.add(connectedPlayer);

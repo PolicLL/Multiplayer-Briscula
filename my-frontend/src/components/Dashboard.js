@@ -75,6 +75,14 @@ function Dashboard() {
       setTournaments(res.data);
     });
 
+    console.log("Send log in.");
+
+    sendMessage({
+      type: "LOGGED_IN",
+      userId: userInfo.id,
+      playerName: username,
+    });
+
     // Cleanup on unmount
     return () => {
       setOnMessage(null);

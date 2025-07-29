@@ -5,6 +5,7 @@ import com.example.web.service.GameEndService;
 import com.example.web.service.GamePrepareService;
 import com.example.web.service.GameStartService;
 import com.example.web.service.TournamentService;
+import com.example.web.service.WebSocketMessageDispatcher;
 import com.example.web.utils.WebSocketMessageReader;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final TournamentService tournamentService;
 
+  private final WebSocketMessageDispatcher webSocketMessageDispatcher;
+
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {
     log.info("New tournament WebSocket connection: {}", session.getId());
@@ -39,6 +42,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
       throws IOException {
     log.debug("Handling message type " + WebSocketMessageReader.getMessageType(message));
     switch (WebSocketMessageReader.getMessageType(message)) {
+      case LOGGED_IN -> webSocketMessageDispatcher.registerSession(session);
       case JOIN_ROOM -> gamePrepareService.handle(session, message);
       case GET_INITIAL_CARDS -> gameStartService.handleGetCards(session, message);
       case INITIAL_CARDS_RECEIVED -> gameStartService.handleGetInitialCards(message);
@@ -57,6 +61,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     tournamentService.removePlayerWithSession(session);
+    webSocketMessageDispatcher.unregisterSession(session);
     log.info("Tournament WebSocket disconnected: {}", session.getId());
   }
 }

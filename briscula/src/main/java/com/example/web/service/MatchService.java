@@ -117,7 +117,7 @@ public class MatchService {
 
   }
 
-  private Match retrieveMatch(String matchId) {
+  public Match retrieveMatch(String matchId) {
     return matchRepository.findWithUsersById(matchId)
         .orElseThrow(() -> new MatchNotFoundException(matchId));
   }

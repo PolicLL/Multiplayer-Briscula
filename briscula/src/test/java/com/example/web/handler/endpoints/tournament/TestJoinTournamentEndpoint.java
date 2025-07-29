@@ -33,6 +33,9 @@ public class TestJoinTournamentEndpoint {
     System.out.println("✅ WebSocket connection established");
     try {
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
+          "type", "LOGGED_IN"
+      )));
+      session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "JOIN_TOURNAMENT",
           "tournamentId", tournamentId,
           "playerId", userId

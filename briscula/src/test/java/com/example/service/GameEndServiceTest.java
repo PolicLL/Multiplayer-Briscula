@@ -4,8 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static utils.EntityUtils.createTournamentCreateDto;
 import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
 import static utils.EntityUtils.getConnectedPlayer;
+import static utils.EntityUtils.getTournamentName;
+import static utils.EntityUtils.getWebSocketSession;
 
 import com.example.web.dto.match.CreateMatchDto;
+import com.example.web.dto.tournament.JoinTournamentRequest;
+import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.dto.user.UserDto;
 import com.example.web.handler.AbstractIntegrationTest;
@@ -13,6 +17,7 @@ import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Match;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
+import com.example.web.model.enums.TournamentStatus;
 import com.example.web.service.GameEndService;
 import com.example.web.service.MatchService;
 import com.example.web.service.TournamentService;
@@ -40,16 +45,40 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
   private UserDto userDto;
 
+  private Match match;
+
+  private TournamentResponseDto tournament;
   private final List<String> userIds = new ArrayList<>();
 
   @BeforeEach
   void init() {
+
     userDto = userService.createUser(generateValidUserDtoWithoutPhoto());
 
     if (userIds.isEmpty()) {
       for (int i = 0; i < 2; ++i) {
         userIds.add(userService.createUser(generateValidUserDtoWithoutPhoto()).id());
       }
+    }
+
+    tournament = tournamentService.create(TournamentCreateDto.builder()
+            .roundsToWin(1)
+            .status(TournamentStatus.INITIALIZING)
+            .name(getTournamentName())
+            .numberOfPlayers(2)
+        .build());
+
+    match = matchService.createMatch(CreateMatchDto.builder()
+            .userIds(userIds)
+            .tournamentId(tournament.id())
+            .numberOfPlayers(3)
+        .build());
+
+    for (String userId : userIds) {
+      tournamentService.joinTournament(JoinTournamentRequest.builder()
+              .tournamentId(tournament.id())
+              .userId(userId)
+          .build(), getWebSocketSession());
     }
   }
 
@@ -60,7 +89,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 
-    gameEndService.update(gameEndStatus, "");
+    gameEndService.update(gameEndStatus, match.getId());
 
     int updatedUserPoints = userService.getUserById(userDto.id()).points();
 
@@ -70,7 +99,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
   @Test
   void testHandlingOfEndGame() {
     TournamentResponseDto tournamentCreateDto =  tournamentService.create(createTournamentCreateDto());
-    Match match = matchService.createMatch(CreateMatchDto.builder()
+    Match newMatch = matchService.createMatch(CreateMatchDto.builder()
             .numberOfPlayers(2)
             .tournamentId(tournamentCreateDto.id())
             .userIds(userIds)
@@ -82,7 +111,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 
-    gameEndService.update(gameEndStatus, match.getId());
+    gameEndService.update(gameEndStatus, newMatch.getId());
 
     int updatedUserPoints = userService.getUserById(userDto.id()).points();
 

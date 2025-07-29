@@ -1,6 +1,7 @@
 package com.example.web.service;
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -41,6 +42,10 @@ public class WebSocketMessageDispatcher {
     worker.setDaemon(true);
     worker.start();
     sessionWorkers.put(session, worker);
+  }
+
+  public Set<WebSocketSession> getRegisteredWebSocketSessions() {
+    return sessionQueues.keySet();
   }
 
   public void unregisterSession(WebSocketSession session) {

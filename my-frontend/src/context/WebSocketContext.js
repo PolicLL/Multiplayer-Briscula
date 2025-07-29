@@ -30,7 +30,10 @@ export const WebSocketProvider = ({ children }) => {
     const socket = new WebSocket("ws://localhost:8080/game");
     socketRef.current = socket;
 
-    socket.onopen = () => console.log("WebSocket connected");
+    socket.onopen = () => {
+      console.log("WebSocket connected");
+      sendMessage({ type: "LOGGED_IN" });
+    };
     socket.onclose = () => console.log("WebSocket closed");
     socket.onerror = (err) => console.error("WebSocket error:", err);
 
