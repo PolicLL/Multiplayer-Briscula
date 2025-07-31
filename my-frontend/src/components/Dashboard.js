@@ -25,12 +25,6 @@ function Dashboard() {
 
   const handleMessage = useCallback(
     (parsedMessage) => {
-      if (parsedMessage.type === "GAME_STARTED") {
-        console.log("Game started message received.");
-        setOnMessage(null);
-        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
-      }
-
       if (parsedMessage.type === "TOURNAMENT_UPDATE") {
         console.log("Tournament update received.");
 

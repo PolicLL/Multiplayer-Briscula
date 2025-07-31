@@ -6,11 +6,14 @@ import React, {
   useCallback,
 } from "react";
 
+import { useNavigate } from "react-router-dom";
+
 const WebSocketContext = createContext();
 
 export const WebSocketProvider = ({ children }) => {
   const socketRef = useRef(null);
   const onMessageRef = useRef(null);
+  const navigate = useNavigate();
 
   const sendMessage = useCallback((message) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
@@ -42,6 +45,12 @@ export const WebSocketProvider = ({ children }) => {
       try {
         const parsed = JSON.parse(event.data);
         console.log("Parsed WebSocket message:", parsed); // 👈 always logs the parsed object
+
+        if (parsed.type === "GAME_STARTED") {
+          navigate(`/game/${parsed.roomId}/${parsed.playerId}`); // ✅ new
+          return;
+        }
+
         if (onMessageRef.current) {
           onMessageRef.current(parsed);
         } else {

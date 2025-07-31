@@ -78,7 +78,7 @@ public class GameRoom {
 
     if (numberOfPlayersThatLeft == players.size()) {
       this.shouldGameStop = true;
-      log.info("All players left room, game stops.");
+      log.info("All players left room with id {}, game stops.", roomId);
     }
   }
 }

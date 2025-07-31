@@ -16,11 +16,7 @@ function PrepareGame() {
 
   const handleMessage = useCallback(
     (parsedMessage) => {
-      if (parsedMessage.type === "GAME_STARTED") {
-        console.log("Game started message received.");
-        setOnMessage(null);
-        navigate(`/game/${parsedMessage.roomId}/${parsedMessage.playerId}`);
-      }
+
     },
     [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
   );

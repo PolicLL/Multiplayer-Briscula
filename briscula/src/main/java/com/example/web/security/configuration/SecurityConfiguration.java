@@ -23,7 +23,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-  // TODO: Make sure player cannot sign in if there is already someone signed in
   // Make sure anonymous cannot use name if it is already used by someone
   @Autowired
   private UserDetailsService userDetailsService;

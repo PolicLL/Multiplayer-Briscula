@@ -12,8 +12,8 @@ import { WebSocketProvider } from "./context/WebSocketContext";
 
 function App() {
   return (
-    <WebSocketProvider>
-      <Router>
+    <Router>
+      <WebSocketProvider>
         <Routes>
           <Route path="/" element={<Home />}></Route>
           <Route path="/login" element={<Login />}></Route>
@@ -23,8 +23,8 @@ function App() {
           <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
           <Route path="/tournament/create" element={<TournamentPage />} />
         </Routes>
-      </Router>
-    </WebSocketProvider>
+      </WebSocketProvider>
+    </Router>
   );
 }
 
