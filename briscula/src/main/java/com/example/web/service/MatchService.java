@@ -11,6 +11,7 @@ import com.example.web.dto.match.MatchesCreatedResponse;
 import com.example.web.exception.MatchNotFoundException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.MatchMapper;
+import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Match;
 import com.example.web.model.MatchDetails;
 import com.example.web.model.User;
@@ -22,7 +23,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,8 +54,6 @@ public class MatchService {
       matchUsers.put(userIds.get(i), userIds.get(i + 1));
     }
 
-    int group = 0;
-
     List<MatchDetailsDto> matchDetailsDtoList = new ArrayList<>();
     List<Match> matches = new ArrayList<>();
 
@@ -64,13 +66,13 @@ public class MatchService {
 
       MatchDetailsDto firstMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
               .userId(entry.getKey())
-              .group(group)
+              .group(0)
               .match(newMatch)
               .build());
 
       MatchDetailsDto secondMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
           .userId(entry.getValue())
-          .group(group)
+          .group(1)
           .match(newMatch)
           .build());
 
@@ -122,4 +124,21 @@ public class MatchService {
         .orElseThrow(() -> new MatchNotFoundException(matchId));
   }
 
+  public boolean isMatchOver(String tournamentId, Match match) {
+    return false;
+  }
+
+  public void updateResult(String matchId, ConnectedPlayer winner, ConnectedPlayer loser) {
+    Map<String, MatchDetails> detailsByUserId = matchDetailsRepository.findAllByMatchId(matchId).stream()
+        .collect(Collectors.toMap(value -> value.getUser().getId(), Function.identity()));
+
+    MatchDetails matchDetailsWinner = detailsByUserId.get(winner.getUserId());
+    MatchDetails matchDetailsLoser = detailsByUserId.get(loser.getUserId());
+
+    matchDetailsWinner.setWinner(true);
+    matchDetailsLoser.setWinner(false);
+
+    matchDetailsRepository.saveAll(List.of(matchDetailsWinner, matchDetailsLoser));
+
+  }
 }

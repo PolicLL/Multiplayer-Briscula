@@ -33,6 +33,11 @@ public class ConnectedPlayer {
     this.player = player;
   }
 
+  public void resetValues() {
+    this.getPlayer().resetPoints();
+    this.setInitialCardsReceived(false);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) {

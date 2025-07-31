@@ -28,15 +28,10 @@ public class GameEndService {
   private final TournamentService tournamentService;
   private final MatchService matchService;
 
-  // TODO -> Has to be tested
   public void update(GameEndStatus gameEndStatus, String matchId) {
     log.info("Game ended with status {}, updating statistics.", gameEndStatus.status());
 
-    for (Map.Entry<ConnectedPlayer, Boolean> entry : gameEndStatus.playerResults().entrySet()) {
-      ConnectedPlayer connectedPlayer = entry.getKey();
-      connectedPlayer.getPlayer().resetPoints();
-      connectedPlayer.setInitialCardsReceived(false);
-    }
+    gameEndStatus.playerResults().forEach((key, value) -> key.resetValues());
 
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       gameEndStatus.playerResults()
@@ -44,7 +39,6 @@ public class GameEndService {
           .forEach(user -> userService.updateUserRecord(null, false, false));
 
       if (matchId != null) {
-        // TODO Has to be tested
         MatchDto match = matchService.getMatch(matchId);
         tournamentService.restartMatchWithNoWinner(matchId, match.tournamentId());
       }
@@ -75,7 +69,7 @@ public class GameEndService {
     MatchDto match = matchService.getMatch(matchId);
 
     log.info("Continuing to next round with {} winner.", winners.get(0));
-    tournamentService.collectWinnersForNextPhase(match.tournamentId(), winners.get(0), losers.get(0));
+    tournamentService.collectWinnersForNextPhase(match.tournamentId(), match.id(), winners.get(0), losers.get(0));
   }
 
   public void handleDisconnectionFromGame(WebSocketMessage<?> message)

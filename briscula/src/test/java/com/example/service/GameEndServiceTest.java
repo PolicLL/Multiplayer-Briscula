@@ -7,7 +7,9 @@ import static utils.EntityUtils.getConnectedPlayer;
 import static utils.EntityUtils.getTournamentName;
 import static utils.EntityUtils.getWebSocketSession;
 
+import com.example.web.dto.match.CreateAllStartingMatchesInTournamentDto;
 import com.example.web.dto.match.CreateMatchDto;
+import com.example.web.dto.match.MatchesCreatedResponse;
 import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
@@ -99,21 +101,25 @@ class GameEndServiceTest extends AbstractIntegrationTest {
   @Test
   void testHandlingOfEndGame() {
     TournamentResponseDto tournamentCreateDto =  tournamentService.create(createTournamentCreateDto());
-    Match newMatch = matchService.createMatch(CreateMatchDto.builder()
+
+    MatchesCreatedResponse matchesCreatedResponse = matchService.createMatches(
+        CreateAllStartingMatchesInTournamentDto.builder()
             .numberOfPlayers(2)
             .tournamentId(tournamentCreateDto.id())
             .userIds(userIds)
-        .build());
+            .build());
 
-    ConnectedPlayer connectedPlayer = getConnectedPlayer(userDto.id());
-    ConnectedPlayer connectedPlayerLoser = getConnectedPlayer(userDto.id());
+    Match newMatch = matchesCreatedResponse.matches().get(0);
+
+    ConnectedPlayer connectedPlayer = getConnectedPlayer(userIds.get(0));
+    ConnectedPlayer connectedPlayerLoser = getConnectedPlayer(userIds.get(1));
     GameEndStatus gameEndStatus = new GameEndStatus(Map.of(connectedPlayer, true, connectedPlayerLoser, false), Status.WINNER_FOUND);
 
     int beforeUserPoints = userService.getUserById(userDto.id()).points();
 
     gameEndService.update(gameEndStatus, newMatch.getId());
 
-    int updatedUserPoints = userService.getUserById(userDto.id()).points();
+    int updatedUserPoints = userService.getUserById(userIds.get(0)).points();
 
     assertThat(beforeUserPoints + 10).isEqualTo(updatedUserPoints);
   }

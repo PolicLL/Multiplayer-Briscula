@@ -21,9 +21,11 @@ import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Match;
+import com.example.web.model.MatchDetails;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
 import com.example.web.model.enums.TournamentStatus;
+import com.example.web.repository.MatchDetailsRepository;
 import com.example.web.repository.TournamentRepository;
 import com.example.web.repository.UserRepository;
 import com.example.web.utils.JsonUtils;
@@ -33,6 +35,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,8 +64,7 @@ public class TournamentService {
   private final MatchService matchService;
 
   private final WebSocketMessageDispatcher messageDispatcher;
-
-  private final UserService userService;
+  private final MatchDetailsRepository matchDetailsRepository;
 
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
@@ -239,7 +241,15 @@ public class TournamentService {
         .build());
   }
 
-  public synchronized void collectWinnersForNextPhase(String tournamentId, ConnectedPlayer winner, ConnectedPlayer loser) {
+  public synchronized void collectWinnersForNextPhase(String tournamentId, String matchId,
+      ConnectedPlayer winner, ConnectedPlayer loser) {
+
+    matchService.updateResult(matchId, winner, loser);
+
+    if (!isMatchOver(tournamentId, matchService.retrieveMatch(matchId))) {
+      restartMatchWithNoWinner(matchId, tournamentId);
+    }
+
     Set<ConnectedPlayer> winners =  tournamentPlayersWinners.get(tournamentId);
     winners.add(winner);
 
@@ -264,6 +274,28 @@ public class TournamentService {
       winner.getPlayer().sendMessageToWaitForNextMatch();
       loser.getPlayer().sentLoosingMessage();
     }
+  }
+
+  // TODO: Change logic for MatchDetails
+  private boolean isMatchOver(String tournamentId, Match match) {
+    List<MatchDetails> matchDetailsWinners = matchDetailsRepository.findAllByMatchIdAndWinnerTrue(match.getId());
+
+    Iterator<User> iterator = match.getUsers().iterator();
+
+    User first = iterator.next();
+    User second = iterator.next();
+
+    long firstWins = matchDetailsWinners.stream().filter(
+        details -> details.getUser().equals(first)
+    ).count();
+
+    long secondWins = matchDetailsWinners.stream().filter(
+        details -> details.getUser().equals(second)
+    ).count();
+
+    int neededRoundsToWin = receiveTournament(tournamentId).getRoundsToWin();
+
+    return firstWins == neededRoundsToWin || secondWins == neededRoundsToWin;
   }
 
   private void startNextRound(Set<ConnectedPlayer> winners,  String tournamentId) {
