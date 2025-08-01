@@ -55,4 +55,12 @@ public class ConnectedPlayer {
   public int hashCode() {
     return 0;
   }
+
+  @Override
+  public String toString() {
+    return "ConnectedPlayer{" +
+        "id=" + id +
+        ", player=" + player.getNickname() +
+        '}';
+  }
 }

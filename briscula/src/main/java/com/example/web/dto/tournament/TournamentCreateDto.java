@@ -13,7 +13,7 @@ public record TournamentCreateDto(
     @NotBlank(message = "Name is mandatory")
     String name,
 
-    @Min(value = 4, message = "Number of players must be one of 4, 8, 16, 32")
+    @Min(value = 2, message = "Number of players must be one of 2, 4, 8, 16, 32")
     @Max(value = 32, message = "Number of players must be one of 4, 8, 16, 32")
     int numberOfPlayers,
 

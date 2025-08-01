@@ -16,16 +16,13 @@ public interface UserRepository extends JpaRepository<User, String> {
   User findByEmail(String email);
   Set<User> findAllByIdIn(List<String> ids);
 
-
-  List<User> findAllByOrderByPointsDesc();
-
   @Query(value = """
     SELECT\s
         u.username,
         u.points,
         u.level,
         COUNT(um.id) AS totalMatchesPlayed,
-        SUM(CASE WHEN um.winner THEN 1 ELSE 0 END) AS totalWins
+        SUM(um.number_of_wins) AS totalWins
     FROM users u
     LEFT JOIN match_details um ON u.id = um.user_id
     GROUP BY u.id, u.username, u.points, u.level

@@ -74,7 +74,7 @@ public class Tournament {
     if (numberOfPlayers != 2 && numberOfPlayers != 4 && numberOfPlayers != 8 &&
         numberOfPlayers != 16 && numberOfPlayers != 32) {
       throw new IllegalArgumentException(
-          "Number of players must be one of 4, 8, 16, 32.");
+          "Number of players must be one of 2, 4, 8, 16, 32.");
     }
     this.numberOfPlayers = numberOfPlayers;
   }

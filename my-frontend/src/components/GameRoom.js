@@ -70,6 +70,12 @@ function GameRoom() {
 
   const handleGameRoomMessage = useCallback(
     (parsedMessage) => {
+      switch (parsedMessage.type) {
+        case "TOURNAMENT_WON":
+          setMessage("Won tournament.");
+          break;
+      }
+
       if (parsedMessage.roomId !== roomId) return;
       if (parsedMessage.playerId !== parseInt(playerId)) return;
 
@@ -169,7 +175,7 @@ function GameRoom() {
           break;
 
         case "TOURNAMENT_WON":
-          console.log("Tournament won.");
+          setMessage("Won tournament.");
           break;
 
         case "SENT_COLLEAGUES_CARDS": {

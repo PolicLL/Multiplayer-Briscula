@@ -23,7 +23,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -108,7 +107,7 @@ public class MatchService {
         .group(createMatchDto.group())
         .id(UUID.randomUUID().toString())
         .points(0)
-        .winner(false)
+        .numberOfWins(0)
         .build()));
   }
 
@@ -124,10 +123,6 @@ public class MatchService {
         .orElseThrow(() -> new MatchNotFoundException(matchId));
   }
 
-  public boolean isMatchOver(String tournamentId, Match match) {
-    return false;
-  }
-
   public void updateResult(String matchId, ConnectedPlayer winner, ConnectedPlayer loser) {
     Map<String, MatchDetails> detailsByUserId = matchDetailsRepository.findAllByMatchId(matchId).stream()
         .collect(Collectors.toMap(value -> value.getUser().getId(), Function.identity()));
@@ -135,8 +130,7 @@ public class MatchService {
     MatchDetails matchDetailsWinner = detailsByUserId.get(winner.getUserId());
     MatchDetails matchDetailsLoser = detailsByUserId.get(loser.getUserId());
 
-    matchDetailsWinner.setWinner(true);
-    matchDetailsLoser.setWinner(false);
+    matchDetailsWinner.setNumberOfWins(matchDetailsWinner.getNumberOfWins() + 1);
 
     matchDetailsRepository.saveAll(List.of(matchDetailsWinner, matchDetailsLoser));
 

@@ -41,10 +41,9 @@ export const WebSocketProvider = ({ children }) => {
     socket.onerror = (err) => console.error("WebSocket error:", err);
 
     socket.onmessage = (event) => {
-      console.log("Raw WebSocket message:", event.data); // 👈 always shows incoming data
       try {
         const parsed = JSON.parse(event.data);
-        console.log("Parsed WebSocket message:", parsed); // 👈 always logs the parsed object
+        console.log("Parsed WebSocket message:", parsed);
 
         if (parsed.type === "GAME_STARTED") {
           navigate(`/game/${parsed.roomId}/${parsed.playerId}`); // ✅ new

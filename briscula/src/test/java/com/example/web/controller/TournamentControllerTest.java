@@ -22,6 +22,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
+// TODO: Update to use testcontainer
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

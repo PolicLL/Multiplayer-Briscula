@@ -46,7 +46,7 @@ class TournamentValidationTest {
   void shouldFailWhenNumberOfPlayersIsTooLow() throws Exception {
     TournamentCreateDto dto = TournamentCreateDto.builder()
         .name("Tournament")
-        .numberOfPlayers(2)
+        .numberOfPlayers(1)
         .status(TournamentStatus.INITIALIZING)
         .roundsToWin(2)
         .build();
@@ -58,7 +58,7 @@ class TournamentValidationTest {
         .andReturn().getResponse().getContentAsString();
 
     ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message()).contains("Number of players must be one of 4, 8, 16, 32");
+    assertThat(error.message()).contains("Number of players must be one of 2, 4, 8, 16, 32");
   }
 
   @Test

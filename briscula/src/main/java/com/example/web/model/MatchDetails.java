@@ -32,7 +32,8 @@ public class MatchDetails {
 
   private int points;
 
-  private boolean winner;
+  // TODO Actually number of wins will have to be tracked
+  private int numberOfWins;
 
   @Column(name = "group_number")
   private int group;

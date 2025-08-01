@@ -37,6 +37,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
+  // TODO: Check scenario when player enters Tournament and
+  //  Match in same time, it has to be removed from the one that was before
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws IOException {

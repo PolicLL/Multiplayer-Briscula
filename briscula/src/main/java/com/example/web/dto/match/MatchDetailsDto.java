@@ -8,7 +8,7 @@ public record MatchDetailsDto(
     String userId,
     String matchId,
     int points,
-    boolean winner,
+    int numberOfWins,
     int group
 ) {
 

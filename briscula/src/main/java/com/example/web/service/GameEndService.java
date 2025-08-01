@@ -40,7 +40,7 @@ public class GameEndService {
 
       if (matchId != null) {
         MatchDto match = matchService.getMatch(matchId);
-        tournamentService.restartMatchWithNoWinner(matchId, match.tournamentId());
+        tournamentService.startRoundForMatch(matchId, match.tournamentId());
       }
 
       return;
