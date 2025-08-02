@@ -6,6 +6,7 @@ import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
 import com.example.web.dto.user.UserStatsDto;
+import com.example.web.exception.BadRequestException;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -72,7 +73,7 @@ public class UserController {
       return ResponseEntity.ok(userService.getUserByUsername(username));
     } else {
       log.warn("Bad request: both id and username are null");
-      return ResponseEntity.badRequest().build();
+      throw new BadRequestException();
     }
   }
 

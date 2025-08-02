@@ -232,6 +232,48 @@ class UserControllerTest {
   }
 
   @Test
+  void getUserByUsername() throws Exception {
+    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+        .andExpect(status().isOk())
+        .andReturn().getResponse().getContentAsString();
+
+    UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
+
+    String userJson = mockMvc.perform(get("/api/users/by")
+            .param("username", createdUser.username())
+            .header("Authorization", userToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn().getResponse().getContentAsString();
+
+    UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
+    assertThat(createdUser).isEqualTo(finalUserObject);
+  }
+
+  @Test
+  void getUserByIdUsernameAndIdNotProvided() throws Exception {
+    mockMvc.perform(get("/api/users/by")
+            .header("Authorization", adminToken)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isBadRequest())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(result -> {
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.registerModule(new JavaTimeModule());
+          ErrorResponse errorResponse = objectMapper.readValue(
+              result.getResponse().getContentAsString(),
+              ErrorResponse.class
+          );
+
+          assertThat(errorResponse.status()).isEqualTo(400);
+          assertThat(errorResponse.error()).isEqualTo("Bad request: both id and username are null");
+          assertThat(errorResponse.message()).isEqualTo("Either 'id' or 'username' must be provided.");
+          assertThat(errorResponse.timestamp()).isNotNull();
+        });
+  }
+
+  @Test
   void getUserByIdThrowsUserNotFoundException() throws Exception {
     mockMvc.perform(get("/api/users/by?id={id}", "NON-EXISTING-ID")
             .header("Authorization", adminToken)
