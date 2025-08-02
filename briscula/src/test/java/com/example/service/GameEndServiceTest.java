@@ -1,6 +1,8 @@
 package com.example.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static utils.EntityUtils.createTournamentCreateDto;
 import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
 import static utils.EntityUtils.getConnectedPlayer;
@@ -29,8 +31,12 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
+@ExtendWith(MockitoExtension.class)
 class GameEndServiceTest extends AbstractIntegrationTest {
 
   @Autowired
@@ -39,7 +45,7 @@ class GameEndServiceTest extends AbstractIntegrationTest {
   @Autowired
   private UserService userService;
 
-  @Autowired
+  @MockitoSpyBean
   private TournamentService tournamentService;
 
   @Autowired
@@ -115,13 +121,67 @@ class GameEndServiceTest extends AbstractIntegrationTest {
     ConnectedPlayer connectedPlayerLoser = getConnectedPlayer(userIds.get(1));
     GameEndStatus gameEndStatus = new GameEndStatus(Map.of(connectedPlayer, true, connectedPlayerLoser, false), Status.WINNER_FOUND);
 
-    int beforeUserPoints = userService.getUserById(userDto.id()).points();
-
     gameEndService.update(gameEndStatus, newMatch.getId());
 
-    int updatedUserPoints = userService.getUserById(userIds.get(0)).points();
+    validateUserPoints(userIds.get(0), 10);
+  }
 
-    assertThat(beforeUserPoints + 10).isEqualTo(updatedUserPoints);
+
+  // TODO I would like to test functionality related to GameEndService and make sure that is handled correctly
+  // I mean logic related to case when there are multiple rounds
+
+  @Test
+  void testMultipleRounds() {
+    // given
+    List<String> newUsersIds = new ArrayList<>();
+    for (int i = 0; i < 2; ++i) {
+      newUsersIds.add(userService.createUser(generateValidUserDtoWithoutPhoto()).id());
+    }
+
+    TournamentResponseDto newTournament = tournamentService.create(TournamentCreateDto.builder()
+        .roundsToWin(2)
+        .status(TournamentStatus.INITIALIZING)
+        .name(getTournamentName())
+        .numberOfPlayers(2)
+        .build());
+
+    MatchesCreatedResponse matchesCreatedResponse = matchService.createMatches(CreateAllStartingMatchesInTournamentDto
+        .builder()
+            .tournamentId(newTournament.id())
+            .numberOfPlayers(2)
+            .userIds(newUsersIds)
+        .build());
+
+    for (String userId : newUsersIds) {
+      tournamentService.joinTournament(JoinTournamentRequest.builder()
+          .tournamentId(newTournament.id())
+          .userId(userId)
+          .build(), getWebSocketSession());
+    }
+
+    ConnectedPlayer connectedPlayerWinner = getConnectedPlayer(newUsersIds.get(0));
+    ConnectedPlayer connectedPlayerLoser = getConnectedPlayer(newUsersIds.get(1));
+
+    GameEndStatus gameEndStatusWinnerFirst = new GameEndStatus(Map.of(connectedPlayerWinner, true, connectedPlayerLoser, false), Status.WINNER_FOUND);
+    GameEndStatus gameEndStatusWinnerSecond = new GameEndStatus(Map.of(connectedPlayerLoser, true, connectedPlayerWinner, false), Status.WINNER_FOUND);
+
+    // Verify finish tournament is called when enough rounds is won
+    gameEndService.update(gameEndStatusWinnerFirst, matchesCreatedResponse.matches().get(0).getId());
+    verify(tournamentService, never()).finishTournament(newTournament.id(), connectedPlayerWinner, connectedPlayerLoser);
+
+    gameEndService.update(gameEndStatusWinnerSecond, matchesCreatedResponse.matches().get(0).getId());
+    verify(tournamentService, never()).finishTournament(newTournament.id(), connectedPlayerWinner, connectedPlayerLoser);
+
+    gameEndService.update(gameEndStatusWinnerFirst, matchesCreatedResponse.matches().get(0).getId());
+    verify(tournamentService).finishTournament(newTournament.id(), connectedPlayerWinner, connectedPlayerLoser);
+
+    validateUserPoints(connectedPlayerWinner.getUserId(), 20);
+    validateUserPoints(connectedPlayerLoser.getUserId(), 10);
+  }
+
+  private void validateUserPoints(String userId, int expectedPoints) {
+    int updatedUserPoints = userService.getUserById(userId).points();
+    assertThat(updatedUserPoints).isEqualTo(expectedPoints);
   }
 
 }
