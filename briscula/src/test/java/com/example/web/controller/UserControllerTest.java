@@ -68,6 +68,35 @@ class UserControllerTest {
   }
 
   @Test
+  void testLoginTwiceException() throws Exception {
+    String loginPayloadUser2 = "{ \"username\": \"" + "user2" + "\", \"password\": \"" + "user" + "\" }";
+
+    mockMvc.perform(post("/api/users/login")
+            .contentType("application/json")
+            .content(loginPayloadUser2))
+        .andExpect(status().isOk());
+
+    mockMvc.perform(post("/api/users/login")
+          .contentType("application/json")
+          .content(loginPayloadUser2))
+        .andExpect(status().isConflict())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andDo(result -> {
+          ObjectMapper objectMapper = new ObjectMapper();
+          objectMapper.registerModule(new JavaTimeModule());
+          ErrorResponse errorResponse = objectMapper.readValue(
+              result.getResponse().getContentAsString(),
+              ErrorResponse.class
+          );
+
+          assertThat(errorResponse.status()).isEqualTo(409);
+          assertThat(errorResponse.error()).isEqualTo("User is already logged in");
+          assertThat(errorResponse.message()).isEqualTo("User with name user2 is already logged in.");
+          assertThat(errorResponse.timestamp()).isNotNull();
+        });
+  }
+
+  @Test
   void createUserSuccess() throws Exception {
     mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
         .andExpect(status().isOk());

@@ -8,6 +8,7 @@ import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
 import com.example.web.dto.user.UserStatsDto;
 import com.example.web.exception.UserAlreadyExistsException;
+import com.example.web.exception.UserAlreadyLoggedInException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
@@ -116,7 +117,7 @@ public class UserService {
       throw new UserNotFoundException();
 
     if (tokenStore.isTokenActive(existingUser.getUsername())) {
-      throw new RuntimeException("User is already logged in.");
+      throw new UserAlreadyLoggedInException(existingUser.getUsername());
     }
 
     Authentication authentication = authenticationManager.authenticate(

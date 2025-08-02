@@ -45,14 +45,9 @@ public class UserController {
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody @Valid UserLoginDto userLoginDto) {
     log.info("Login attempt for username: {}", userLoginDto.username());
-    try {
-      String token = userService.verify(userLoginDto);
-      log.info("Login successful for username: {}", userLoginDto.username());
-      return ResponseEntity.ok(token);
-    } catch (RuntimeException e) {
-      log.warn("Login failed: {}", e.getMessage());
-      return ResponseEntity.status(CONFLICT).body(e.getMessage());
-    }
+    String token = userService.verify(userLoginDto);
+    log.info("Login successful for username: {}", userLoginDto.username());
+    return ResponseEntity.ok(token);
   }
 
   @GetMapping

@@ -3,6 +3,7 @@ package com.example.web.controller;
 import com.example.web.dto.ErrorResponse;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserAlreadyExistsException;
+import com.example.web.exception.UserAlreadyLoggedInException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -84,6 +85,20 @@ public class GlobalExceptionHandler {
             LocalDateTime.now(),
             HttpStatus.BAD_REQUEST.value(),
             "User Already Exists",
+            e.getMessage(),
+            request.getRequestURI()
+        )
+    );
+  }
+
+  @ExceptionHandler(UserAlreadyLoggedInException.class)
+  public ResponseEntity<ErrorResponse> handleUserAlreadyLoggedInException(UserAlreadyLoggedInException e, HttpServletRequest request) {
+    log.error("User is already logged in: {}", e.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(
+        new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.CONFLICT.value(),
+            "User is already logged in",
             e.getMessage(),
             request.getRequestURI()
         )
