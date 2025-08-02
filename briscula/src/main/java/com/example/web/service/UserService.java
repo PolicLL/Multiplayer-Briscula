@@ -116,7 +116,7 @@ public class UserService {
     if (existingUser == null)
       throw new UserNotFoundException();
 
-    if (tokenStore.isTokenActive(existingUser.getUsername())) {
+    if (tokenStore.isTokenActive(existingUser.getEmail())) {
       throw new UserAlreadyLoggedInException(existingUser.getUsername());
     }
 
@@ -129,7 +129,7 @@ public class UserService {
 
 
     String token = jwtService.generateToken(existingUser.getEmail());
-    tokenStore.storeToken(existingUser.getUsername(), token);
+    tokenStore.storeToken(existingUser.getEmail(), token);
     return token;
   }
 

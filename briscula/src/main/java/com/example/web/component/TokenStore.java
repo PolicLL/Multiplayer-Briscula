@@ -17,10 +17,6 @@ public class TokenStore {
     return activeTokens.containsKey(username);
   }
 
-  public String getToken(String username) {
-    return activeTokens.get(username);
-  }
-
   public void removeToken(String username) {
     activeTokens.remove(username);
   }

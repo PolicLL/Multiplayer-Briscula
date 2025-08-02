@@ -76,6 +76,7 @@ public class UserController {
     }
   }
 
+  // TODO Check logic related to generation of token when username is changed
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<UserDto> updateUser(@PathVariable String id, @RequestBody @Valid UpdateUserRequest userDto) {

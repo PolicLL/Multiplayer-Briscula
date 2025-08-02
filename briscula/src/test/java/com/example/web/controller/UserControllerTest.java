@@ -16,6 +16,7 @@ import static utils.EntityUtils.randomCountry;
 import static utils.EntityUtils.randomPassword;
 import static utils.EntityUtils.randomUsername;
 
+import com.example.web.component.TokenStore;
 import com.example.web.dto.ErrorResponse;
 import com.example.web.dto.user.UserDto;
 import com.example.web.utils.JsonUtils;
@@ -41,6 +42,9 @@ class UserControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Autowired
+  private TokenStore tokenStore;
 
   private static String userToken, adminToken;
 
@@ -94,6 +98,30 @@ class UserControllerTest {
           assertThat(errorResponse.message()).isEqualTo("User with name user2 is already logged in.");
           assertThat(errorResponse.timestamp()).isNotNull();
         });
+  }
+
+  @Test
+  void testLogout() throws Exception {
+    String user = "user3";
+    String userEmail = "user3@example.com";
+    String loginPayloadUser3 = "{ \"username\": \"" + user + "\", \"password\": \"" + "user" + "\" }";
+
+    String loginToken = mockMvc.perform(post("/api/users/login")
+            .contentType("application/json")
+            .content(loginPayloadUser3))
+        .andExpect(status().isOk())
+        .andReturn()
+        .getResponse()
+        .getContentAsString();
+
+    assertThat(tokenStore.isTokenActive(userEmail)).isTrue();
+
+    mockMvc.perform(post("/api/users/logout")
+            .contentType("application/json")
+            .header("Authorization", "Bearer " + loginToken))
+        .andExpect(status().isOk());
+
+    assertThat(tokenStore.isTokenActive(userEmail)).isFalse();
   }
 
   @Test
