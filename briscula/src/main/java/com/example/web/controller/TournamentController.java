@@ -2,6 +2,7 @@ package com.example.web.controller;
 
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
+import com.example.web.dto.tournament.TournamentUpdateDto;
 import com.example.web.service.TournamentService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -47,7 +48,7 @@ public class TournamentController {
   @PutMapping("/{id}")
   public ResponseEntity<TournamentResponseDto> update(
       @PathVariable String id,
-      @Valid @RequestBody TournamentCreateDto dto
+      @Valid @RequestBody TournamentUpdateDto dto
   ) {
     log.info("Received request to update tournament with ID: {}", id);
     return ResponseEntity.ok(tournamentService.update(id, dto));

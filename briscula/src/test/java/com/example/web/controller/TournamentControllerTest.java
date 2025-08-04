@@ -11,6 +11,8 @@ import static utils.EntityUtils.createTournamentCreateDto;
 
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
+import com.example.web.dto.tournament.TournamentUpdateDto;
+import com.example.web.dto.user.UserDto;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.utils.JsonUtils;
 import org.junit.jupiter.api.Test;
@@ -38,11 +40,19 @@ class TournamentControllerTest {
 
     String requestBody = JsonUtils.toJson(createDto);
 
-    mockMvc.perform(post("/api/tournament")
+    String response = mockMvc.perform(post("/api/tournament")
             .contentType(MediaType.APPLICATION_JSON)
             .content(requestBody))
         .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andReturn().getResponse().getContentAsString();
+
+    TournamentResponseDto tournamentResponseDto = JsonUtils.fromJson(response, TournamentResponseDto.class);
+
+    assertThat(tournamentResponseDto.status()).isEqualTo(TournamentStatus.INITIALIZING);
+    assertThat(tournamentResponseDto.name()).isEqualTo(createDto.name());
+    assertThat(tournamentResponseDto.numberOfPlayers()).isEqualTo(createDto.numberOfPlayers());
+    assertThat(tournamentResponseDto.roundsToWin()).isEqualTo(createDto.roundsToWin());
   }
 
   @Test
@@ -107,7 +117,7 @@ class TournamentControllerTest {
 
     TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
 
-    TournamentCreateDto updatedDto = TournamentCreateDto.builder()
+    TournamentUpdateDto updatedDto = TournamentUpdateDto.builder()
         .name("Updated Tournament")
         .numberOfPlayers(created.numberOfPlayers())
         .status(TournamentStatus.IN_PROGRESS)

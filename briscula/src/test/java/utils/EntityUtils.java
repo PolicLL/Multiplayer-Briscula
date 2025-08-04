@@ -10,7 +10,6 @@ import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.user.UserDto;
 import com.example.web.model.ConnectedPlayer;
-import com.example.web.model.enums.TournamentStatus;
 import java.util.List;
 import java.util.Random;
 import org.springframework.mock.web.MockMultipartFile;
@@ -168,7 +167,6 @@ public class EntityUtils {
     return TournamentCreateDto.builder()
         .name("Tournament." + counter++)
         .numberOfPlayers(4)
-        .status(TournamentStatus.INITIALIZING)
         .roundsToWin(1)
         .build();
   }

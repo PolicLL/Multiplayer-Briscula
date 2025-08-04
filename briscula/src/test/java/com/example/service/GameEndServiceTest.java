@@ -18,7 +18,6 @@ import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.Match;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
-import com.example.web.model.enums.TournamentStatus;
 import com.example.web.service.GameEndService;
 import com.example.web.service.MatchService;
 import com.example.web.service.TournamentService;
@@ -64,7 +63,6 @@ class GameEndServiceTest extends AbstractIntegrationTest {
 
     tournament = tournamentService.create(TournamentCreateDto.builder()
             .roundsToWin(2)
-            .status(TournamentStatus.INITIALIZING)
             .name(getTournamentName())
             .numberOfPlayers(2)
         .build());

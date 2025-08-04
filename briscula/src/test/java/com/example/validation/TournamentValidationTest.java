@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.example.web.dto.ErrorResponse;
 import com.example.web.dto.tournament.TournamentCreateDto;
-import com.example.web.model.enums.TournamentStatus;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,7 +27,6 @@ class TournamentValidationTest {
     TournamentCreateDto dto = TournamentCreateDto.builder()
         .name("  ")
         .numberOfPlayers(8)
-        .status(TournamentStatus.INITIALIZING)
         .roundsToWin(2)
         .build();
 
@@ -47,7 +45,6 @@ class TournamentValidationTest {
     TournamentCreateDto dto = TournamentCreateDto.builder()
         .name("Tournament")
         .numberOfPlayers(1)
-        .status(TournamentStatus.INITIALIZING)
         .roundsToWin(2)
         .build();
 
@@ -66,7 +63,6 @@ class TournamentValidationTest {
     TournamentCreateDto dto = TournamentCreateDto.builder()
         .name("Tournament")
         .numberOfPlayers(8)
-        .status(TournamentStatus.INITIALIZING)
         .roundsToWin(5)
         .build();
 
@@ -81,33 +77,11 @@ class TournamentValidationTest {
   }
 
   @Test
-  void shouldFailWhenStatusIsNull() throws Exception {
-    // send raw JSON without "status" field
-    String json = """
-        {
-          "name": "Tournament",
-          "numberOfPlayers": 8,
-          "roundsToWin": 2
-        }
-        """;
-
-    String responseJson = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(json))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
-
-    ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message()).contains("Status is mandatory");
-  }
-
-  @Test
   void shouldReturnMultipleErrorsWhenAllFieldsInvalid() throws Exception {
     TournamentCreateDto dto = TournamentCreateDto.builder()
         .name("")
         .numberOfPlayers(99)
         .roundsToWin(0)
-        .status(null)
         .build();
 
     String responseJson = mockMvc.perform(post("/api/tournament")
@@ -120,7 +94,6 @@ class TournamentValidationTest {
     assertThat(error.message())
         .contains("Name is mandatory")
         .contains("Number of players must be one of 4, 8, 16, 32")
-        .contains("Rounds to win must be between 1 and 4")
-        .contains("Status is mandatory");
+        .contains("Rounds to win must be between 1 and 4");
   }
 }

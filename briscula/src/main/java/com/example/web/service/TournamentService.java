@@ -16,6 +16,7 @@ import com.example.web.dto.match.MatchesCreatedResponse;
 import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
+import com.example.web.dto.tournament.TournamentUpdateDto;
 import com.example.web.exception.TournamentIsFullException;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
@@ -111,7 +112,7 @@ public class TournamentService {
         .toList();
   }
 
-  public TournamentResponseDto update(String id, TournamentCreateDto dto) {
+  public TournamentResponseDto update(String id, TournamentUpdateDto dto) {
     log.info("Updating tournament with ID: {}", id);
     if (!tournamentRepository.existsById(id)) {
       log.warn("Cannot update, tournament not found: {}", id);

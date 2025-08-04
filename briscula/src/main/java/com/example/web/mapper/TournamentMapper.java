@@ -3,6 +3,7 @@ package com.example.web.mapper;
 import com.example.web.dto.tournament.JoinTournamentResponse;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
+import com.example.web.dto.tournament.TournamentUpdateDto;
 import com.example.web.model.Tournament;
 import com.example.web.model.User;
 import java.util.Set;
@@ -14,7 +15,10 @@ import org.mapstruct.Named;
 @Mapper(componentModel = "spring")
 public interface TournamentMapper {
 
+  @Mapping(target = "status", expression = "java(TournamentStatus.INITIALIZING)")
   Tournament toEntity(TournamentCreateDto dto);
+
+  Tournament toEntity(TournamentUpdateDto dto);
 
 
   @Mapping(target = "currentNumberOfPlayers", source = "currentPlayersCount")

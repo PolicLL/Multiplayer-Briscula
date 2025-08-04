@@ -167,6 +167,7 @@ function GameRoom() {
           break;
 
         case "WAIT_FOR_NEXT_MATCH":
+          // TODO: Also when moving to /dashboard make sure there is some animation or message that will indicate that player is waiting
           navigate(`/dashboard`);
           break;
 

@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 const initialForm = {
   name: "",
   numberOfPlayers: 4,
-  status: "INITIALIZING",
   roundsToWin: 1,
 };
 
