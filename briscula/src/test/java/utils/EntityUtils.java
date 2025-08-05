@@ -10,6 +10,7 @@ import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.user.UserDto;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.utils.SimpleWebSocketSession;
 import java.util.List;
 import java.util.Random;
 import org.springframework.mock.web.MockMultipartFile;

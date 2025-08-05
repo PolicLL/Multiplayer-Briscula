@@ -12,6 +12,10 @@ public class Bot extends Player {
     super(playerCards, nickname);
   }
 
+  public Bot(String nickname) {
+    this.nickname = nickname;
+  }
+
   public Card playRound(){
     Card tempCard = playerCards.get(RANDOM.nextInt(playerCards.size()));
     playerCards.remove(tempCard);

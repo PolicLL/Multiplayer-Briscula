@@ -1,4 +1,6 @@
-package utils;
+package com.example.web.utils;
+
+import static com.example.web.utils.Constants.RANDOM;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -20,6 +22,10 @@ public class SimpleWebSocketSession implements WebSocketSession {
   public SimpleWebSocketSession(String id) {
     this.id = id;
     this.attributes = new HashMap<>();
+  }
+
+  public static WebSocketSession getWebSocketSession() {
+    return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
   }
 
   @Override

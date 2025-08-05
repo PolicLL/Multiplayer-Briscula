@@ -17,5 +17,7 @@ public record TournamentCreateDto(
 
     @Min(value = 1, message = "Rounds to win must be between 1 and 4")
     @Max(value = 4, message = "Rounds to win must be between 1 and 4")
-    int roundsToWin
+    int roundsToWin,
+
+    int numberOfBots
 ) {}

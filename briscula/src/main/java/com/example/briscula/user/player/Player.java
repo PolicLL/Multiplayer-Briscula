@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
 @ToString
 @SuperBuilder
+@NoArgsConstructor
 public abstract class Player {
 
   protected List<Card> playerCards;

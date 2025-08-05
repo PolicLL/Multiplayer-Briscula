@@ -57,17 +57,10 @@ public class Tournament {
   @Column(name = "rounds_to_win", nullable = false)
   private int roundsToWin;
 
+  private int numberOfBots;
+
   public void addUser(User user) {
     users.add(user);
-  }
-
-  public void removeUser(User user) {
-    users.remove(user);
-  }
-
-
-  public boolean isFull() {
-    return users.size() >= numberOfPlayers;
   }
 
   public void setNumberOfPlayers(int numberOfPlayers) {

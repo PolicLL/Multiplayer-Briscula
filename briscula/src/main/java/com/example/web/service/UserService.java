@@ -148,4 +148,10 @@ public class UserService {
     if (user == null) throw new UserNotFoundException();
     return userMapper.toDto(user);
   }
+
+  public User retrieveUserByUsername(String username) {
+    User user = userRepository.findByUsername(username);
+    if (user == null) throw new UserNotFoundException();
+    return user;
+  }
 }

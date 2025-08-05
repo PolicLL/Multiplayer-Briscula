@@ -64,10 +64,10 @@ public class MatchService {
           .build());
 
       MatchDetailsDto firstMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
-              .userId(entry.getKey())
-              .group(0)
-              .match(newMatch)
-              .build());
+          .userId(entry.getKey())
+          .group(0)
+          .match(newMatch)
+          .build());
 
       MatchDetailsDto secondMatchDetails = createMatchDetails(CreateMatchDetailsDto.builder()
           .userId(entry.getValue())

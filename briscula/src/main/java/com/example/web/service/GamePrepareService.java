@@ -77,8 +77,14 @@ public class GamePrepareService {
             GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption), firstPlayer.isDoesWantPointsToShow());
 
         waitingPlayers.forEach(tempUser -> {
-          log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-          sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+
+          if (tempUser.getPlayer() instanceof RealPlayer) {
+            log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+            sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+          }
+          else {
+            tempUser.setInitialCardsReceived(true);
+          }
         });
 
         waitingPlayers.clear();

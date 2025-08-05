@@ -40,8 +40,10 @@ public class GameRoom {
 
       if (player.getPlayer() instanceof RealPlayer tempRealPlayer) {
         tempRealPlayer.getRoomPlayerId().setRoomId(roomId);
-        tempRealPlayer.getRoomPlayerId().setPlayerId(playerIndex++);
+        tempRealPlayer.getRoomPlayerId().setPlayerId(playerIndex);
       }
+
+      ++playerIndex;
 
     });
 

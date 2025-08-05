@@ -7,6 +7,7 @@ import lombok.Builder;
 public record CreateAllStartingMatchesInTournamentDto(
     int numberOfPlayers,
     String tournamentId,
+    int numberOfBots,
     List<String> userIds
 ) {
 

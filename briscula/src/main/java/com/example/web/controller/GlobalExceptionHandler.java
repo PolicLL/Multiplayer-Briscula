@@ -2,6 +2,7 @@ package com.example.web.controller;
 
 import com.example.web.dto.ErrorResponse;
 import com.example.web.exception.BadRequestException;
+import com.example.web.exception.TooBigNumberOfBotsException;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserAlreadyLoggedInException;
@@ -113,6 +114,20 @@ public class GlobalExceptionHandler {
             LocalDateTime.now(),
             HttpStatus.BAD_REQUEST.value(),
             "Bad request: both id and username are null",
+            e.getMessage(),
+            request.getRequestURI()
+        )
+    );
+  }
+
+  @ExceptionHandler(TooBigNumberOfBotsException.class)
+  public ResponseEntity<ErrorResponse> handleTooBigNumberOfBotsException(
+      TooBigNumberOfBotsException e, HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+        new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            "Bad request: Too big number of bots.",
             e.getMessage(),
             request.getRequestURI()
         )

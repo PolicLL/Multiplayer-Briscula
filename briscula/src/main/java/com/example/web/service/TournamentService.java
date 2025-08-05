@@ -6,8 +6,11 @@ import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_L
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_WON;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static com.example.web.utils.Constants.RANDOM;
+import static com.example.web.utils.SimpleWebSocketSession.getWebSocketSession;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
+import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
 import com.example.web.dto.Message;
@@ -17,6 +20,7 @@ import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.dto.tournament.TournamentUpdateDto;
+import com.example.web.exception.TooBigNumberOfBotsException;
 import com.example.web.exception.TournamentIsFullException;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserNotFoundException;
@@ -64,6 +68,8 @@ public class TournamentService {
 
   private final MatchService matchService;
 
+  private final UserService userService;
+
   private final WebSocketMessageDispatcher messageDispatcher;
   private final MatchDetailsRepository matchDetailsRepository;
 
@@ -81,11 +87,16 @@ public class TournamentService {
         tournamentUsers.put(tournament.getId(), new HashSet<>());
         tournamentPlayersWinners.put(tournament.getId(), new HashSet<>());
         tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
+
+        initializeTournamentWithBots(tournament, tournament.getNumberOfBots());
       }
     }
   }
 
   public TournamentResponseDto create(TournamentCreateDto dto) {
+    if (dto.numberOfBots() >= dto.numberOfPlayers())
+      throw new TooBigNumberOfBotsException(dto.numberOfBots(), dto.numberOfPlayers());
+
     Tournament tournament = tournamentMapper.toEntity(dto);
     tournament.setId(UUID.randomUUID().toString());
     tournamentRepository.save(tournament);
@@ -96,8 +107,31 @@ public class TournamentService {
     tournamentPlayersWinners.put(tournament.getId(), new HashSet<>());
     tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
 
-    return tournamentMapper.toResponseDto(tournament, 0);
+    initializeTournamentWithBots(tournament, dto.numberOfBots());
+
+    return tournamentMapper.toResponseDto(tournament, dto.numberOfBots());
   }
+
+  private void initializeTournamentWithBots(Tournament tournament, int numberOfBots) {
+    if (numberOfBots > 0) {
+      for (int i = 0; i < numberOfBots; ++i) {
+        String botName = "bot" + (RANDOM.nextInt(20) + 1);
+
+        User userBot = userService.retrieveUserByUsername(botName);
+
+        Bot bot = new Bot(botName);
+
+        tournamentPlayers.get(tournament.getId()).add(ConnectedPlayer.builder()
+            .webSocketSession(getWebSocketSession()) // TODO: Update bad practice, this is used in test
+            .userId(userBot.getId())
+            .player(bot)
+            .build());
+
+        tournamentUsers.get(tournament.getId()).add(userBot);
+      }
+    }
+  }
+
 
   public TournamentResponseDto getById(String id) {
     log.info("Fetching tournament with ID: {}", id);
@@ -203,7 +237,6 @@ public class TournamentService {
 
     Set<WebSocketSession> webSocketSessions = messageDispatcher.getRegisteredWebSocketSessions();
 
-
     for (WebSocketSession session : webSocketSessions) {
       try {
         if (session.isOpen()) {
@@ -231,13 +264,17 @@ public class TournamentService {
 
     Set<User> connectedUsers = tournamentUsers.get(tournamentId);
 
-    connectedUsers.forEach(tournament::addUser);
+    connectedUsers.forEach(user -> {
+      if (!user.isBot)
+        tournament.addUser(user);
+    });
 
     tournamentRepository.save(tournament);
 
     return matchService.createMatches(CreateAllStartingMatchesInTournamentDto.builder()
             .tournamentId(tournamentId)
             .numberOfPlayers(numberOfPlayers)
+            .numberOfBots(tournament.getNumberOfBots())
             .userIds(tournamentUsers.get(tournamentId).stream().map(User::getId).toList())
         .build());
   }

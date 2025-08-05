@@ -3,6 +3,7 @@ package com.example.web.service;
 import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
+import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
@@ -53,8 +54,13 @@ public class GameRoomService {
     gameRoom.setMatchId(match.getId());
 
     connectedPlayers.forEach(tempUser -> {
-      log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-      sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+      if (tempUser.getPlayer() instanceof RealPlayer) {
+        log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+        sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+      }
+      else {
+        tempUser.setInitialCardsReceived(true);
+      }
     });
   }
 }

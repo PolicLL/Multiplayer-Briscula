@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 const initialForm = {
   name: "",
   numberOfPlayers: 4,
+  numberOfBots: 0,
   roundsToWin: 1,
 };
 
@@ -70,6 +71,17 @@ const TournamentForm = ({ onSuccess, onError }) => {
             </option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label>Number of Bots:</label>
+        <input
+          name="numberOfBots"
+          value={form.numberOfBots}
+          onChange={handleChange}
+          required
+          className="border p-1 w-full"
+        />
       </div>
 
       <div>
