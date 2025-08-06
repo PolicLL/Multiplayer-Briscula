@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class Game {
   private final GameOptionNumberOfPlayers gameOptions;
   private final Admin admin;
+
+  @Getter
   private boolean showPoints;
 
   public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players, boolean showPoints) {

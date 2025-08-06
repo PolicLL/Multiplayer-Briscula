@@ -83,4 +83,8 @@ public class GameRoom {
       log.info("All players left room with id {}, game stops.", roomId);
     }
   }
+
+  public boolean isShowingPoints()  {
+    return game.isShowPoints();
+  }
 }

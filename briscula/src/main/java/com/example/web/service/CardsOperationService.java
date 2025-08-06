@@ -40,7 +40,7 @@ public class CardsOperationService {
     List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
     Message sentCardsMessage = new Message(SENT_INITIAL_CARDS,
-        roomId, playerId, CardFormatter.formatCards(listCards));
+        roomId, playerId, CardFormatter.formatSentInitialCardsState(listCards, gameRoom.isShowingPoints()));
 
     Message sentMainCardMessage = new Message(SENT_MAIN_CARD,
         roomId, playerId, CardFormatter.formatCard(gameRoom.getMainCard()));

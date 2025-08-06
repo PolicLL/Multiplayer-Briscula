@@ -43,6 +43,26 @@ function GameRoom() {
     };
   };
 
+  const parseInitialCards = (initialCardsMessage) => {
+    const parsed = JSON.parse(initialCardsMessage);
+    const cardString = parsed.cards;
+    if (!cardString) return [];
+
+    const cardArray = cardString.trim().split(" ");
+
+    const cards = cardArray.map((cardCode) => ({
+      code: cardCode,
+      imageUrl: `/cards/${cardCode}.png`,
+    }));
+
+    const showingPoints = parsed.showPoints;
+
+    return {
+      cards,
+      showingPoints,
+    };
+  };
+
   const parseCard = (cardCode) => {
     return {
       code: cardCode,
@@ -83,12 +103,11 @@ function GameRoom() {
 
       switch (parsedMessage.type) {
         case "SENT_INITIAL_CARDS": {
-          const { cards, numberOfPoints } = parsePlayerStatus(
+          const { cards, showingPoints } = parseInitialCards(
             parsedMessage.content
           );
           setCards(cards);
-          setShouldShowPoints(numberOfPoints !== -1);
-          if (numberOfPoints !== -1) setPoints(numberOfPoints);
+          setShouldShowPoints(showingPoints);
 
           sendMessage({
             type: "INITIAL_CARDS_RECEIVED",
@@ -103,8 +122,7 @@ function GameRoom() {
             parsedMessage.content
           );
           setCards(cards);
-          setShouldShowPoints(numberOfPoints !== -1);
-          if (numberOfPoints !== -1) setPoints(numberOfPoints);
+          setPoints(numberOfPoints);
           setThrownCards([]);
           break;
         }
