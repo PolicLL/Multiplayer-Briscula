@@ -1,9 +1,9 @@
 package com.example.web.handler;
 
 import com.example.web.exception.WebSocketException;
+import com.example.web.service.CardsOperationService;
 import com.example.web.service.GameEndService;
 import com.example.web.service.GamePrepareService;
-import com.example.web.service.GameStartService;
 import com.example.web.service.TournamentService;
 import com.example.web.service.WebSocketMessageDispatcher;
 import com.example.web.utils.WebSocketMessageReader;
@@ -24,7 +24,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final GamePrepareService gamePrepareService;
 
-  private final GameStartService gameStartService;
+  private final CardsOperationService cardsOperationService;
 
   private final GameEndService gameEndService;
 
@@ -46,9 +46,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
     switch (WebSocketMessageReader.getMessageType(message)) {
       case LOGGED_IN -> webSocketMessageDispatcher.registerSession(session);
       case JOIN_ROOM -> gamePrepareService.handle(session, message);
-      case GET_INITIAL_CARDS -> gameStartService.handleGetCards(session, message);
-      case INITIAL_CARDS_RECEIVED -> gameStartService.handleGetInitialCards(message);
-      case CARD_CHOSEN -> gameStartService.handleChosenCard(message);
+      case GET_INITIAL_CARDS -> cardsOperationService.handleGetCards(session, message);
+      case INITIAL_CARDS_RECEIVED -> cardsOperationService.handleGetInitialCards(message);
+      case CARD_CHOSEN -> cardsOperationService.handleChosenCard(message);
       case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message);
       case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
       default -> throw new WebSocketException();

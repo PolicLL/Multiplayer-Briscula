@@ -60,19 +60,17 @@ import org.springframework.web.socket.WebSocketSession;
 @Slf4j
 public class TournamentService {
 
+  private final MatchDetailsRepository matchDetailsRepository;
   private final TournamentRepository tournamentRepository;
   private final UserRepository userRepository;
+
   private final TournamentMapper tournamentMapper;
 
-  private final GameRoomService gameRoomService;
-
+  private final GamePrepareService gamePrepareService;
   private final MatchService matchService;
-
   private final UserService userService;
 
   private final WebSocketMessageDispatcher messageDispatcher;
-  private final MatchDetailsRepository matchDetailsRepository;
-
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
   private final Map<String, Set<User>> tournamentUsers = new HashMap<>();
@@ -264,10 +262,7 @@ public class TournamentService {
 
     Set<User> connectedUsers = tournamentUsers.get(tournamentId);
 
-    connectedUsers.forEach(user -> {
-      if (!user.isBot)
-        tournament.addUser(user);
-    });
+    connectedUsers.forEach(tournament::addUser);
 
     tournamentRepository.save(tournament);
 
@@ -347,7 +342,8 @@ public class TournamentService {
   private void startTournament(MatchesCreatedResponse matchesCreatedResponse) {
     log.info("Starting tournament with id {}.", matchesCreatedResponse.tournamentId());
     for (Match match : matchesCreatedResponse.matches()) {
-      gameRoomService.startGameForMatch(match, getPlayersForMatch(matchesCreatedResponse.tournamentId(), match));
+      log.info("Start match with id {}.", match.getId());
+      gamePrepareService.startProcessForGameStartForMatch(match, getPlayersForMatch(matchesCreatedResponse.tournamentId(), match));
     }
   }
 
@@ -367,7 +363,7 @@ public class TournamentService {
     });
 
 
-    gameRoomService.startGameForMatch(match,matchPlayers);
+    gamePrepareService.startProcessForGameStartForMatch(match,matchPlayers);
   }
 
   private Set<ConnectedPlayer> getPlayersForMatch(String tournamentId, Match match) {

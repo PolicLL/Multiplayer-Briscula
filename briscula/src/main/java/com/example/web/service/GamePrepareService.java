@@ -3,18 +3,20 @@ package com.example.web.service;
 import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
+import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
+import com.example.web.model.Match;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketMessage;
@@ -22,8 +24,15 @@ import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class GamePrepareService {
+
+  private final GameRoomService gameRoomService;
+  private final GameStartService gameStartService;
+
+  public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService) {
+    this.gameStartService = gameStartService;
+    this.gameRoomService = gameRoomService;
+  }
 
   private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();
 
@@ -32,8 +41,6 @@ public class GamePrepareService {
     mapPreparingPlayers.put(3, new LinkedHashSet<>());
     mapPreparingPlayers.put(4, new LinkedHashSet<>());
   }
-
-  private final GameRoomService gameRoomService;
 
   // TODO: Check -> When I clicked join from the anonymous user twice, it started the game.
 
@@ -87,8 +94,43 @@ public class GamePrepareService {
           }
         });
 
+        if (areAllPlayersBots(waitingPlayers)) {
+          gameStartService.startGame(gameRoom.getRoomId());
+        }
+
         waitingPlayers.clear();
       }
     }
+  }
+
+  public void startProcessForGameStartForMatch(Match match, Set<ConnectedPlayer> connectedPlayers) {
+    GameRoom gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
+
+    log.info("Created game room with id {}.", gameRoom.getRoomId());
+
+    gameRoom.setMatchId(match.getId());
+
+    connectedPlayers.forEach(tempUser -> {
+      if (tempUser.getPlayer() instanceof RealPlayer) {
+        log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+        sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+      }
+      else {
+        tempUser.setInitialCardsReceived(true);
+      }
+    });
+
+    if (areAllPlayersBots(connectedPlayers)) {
+      gameStartService.startGame(gameRoom.getRoomId());
+    }
+  }
+
+  public static boolean areAllPlayersBots(Set<ConnectedPlayer> waitingPlayers) {
+    for (ConnectedPlayer tempConnectedPlayer : waitingPlayers) {
+      if (!(tempConnectedPlayer.getPlayer() instanceof Bot)) {
+        return false;
+      }
+    }
+    return true;
   }
 }
