@@ -36,8 +36,8 @@ function Login() {
 
       const token = response.data;
 
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("username", formData.username);
+      sessionStorage.setItem("jwtToken", token);
+      sessionStorage.setItem("username", formData.username);
       setMessage("Login successful!");
 
       window.location.href = "/dashboard";

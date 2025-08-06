@@ -19,7 +19,6 @@ public class ConnectedPlayer {
   private Player player;
   private boolean initialCardsReceived = false;
 
-  // TODO: Points should not be shown even in the first round if they are not enabled.
   @Getter
   private boolean doesWantPointsToShow = true;
 

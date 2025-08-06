@@ -6,6 +6,7 @@ import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.model.Match;
@@ -28,10 +29,13 @@ public class GamePrepareService {
 
   private final GameRoomService gameRoomService;
   private final GameStartService gameStartService;
+  private final WebSocketMessageDispatcher messageDispatcher;
 
-  public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService) {
+  public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService,
+      WebSocketMessageDispatcher messageDispatcher) {
     this.gameStartService = gameStartService;
     this.gameRoomService = gameRoomService;
+    this.messageDispatcher = messageDispatcher;
   }
 
   private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();
@@ -72,6 +76,12 @@ public class GamePrepareService {
         connectedPlayer.setUserId(userId);
 
       Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
+
+      if (messageDispatcher.isSessionInGameOrTournament(session)) {
+        throw new UserIsAlreadyInTournamentOrGame(session);
+      }
+
+      messageDispatcher.joinGameOrTournament(session);
 
       if (!waitingPlayers.add(connectedPlayer)) {
         throw new RuntimeException("User already entered this game.");

@@ -143,8 +143,8 @@ function UserForm() {
 
       const token = loginResponse.data;
 
-      localStorage.setItem("jwtToken", token);
-      localStorage.setItem("username", formData.username);
+      sessionStorage.setItem("jwtToken", token);
+      sessionStorage.setItem("username", formData.username);
       setMessage("Login successful!");
 
       navigate("/dashboard");

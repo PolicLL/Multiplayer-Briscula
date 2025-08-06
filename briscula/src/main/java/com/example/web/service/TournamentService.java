@@ -1,6 +1,5 @@
 package com.example.web.service;
 
-
 import static com.example.web.model.enums.ServerToClientMessageType.RESTARTING_MATCH;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_LOST;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
@@ -23,6 +22,7 @@ import com.example.web.dto.tournament.TournamentUpdateDto;
 import com.example.web.exception.TooBigNumberOfBotsException;
 import com.example.web.exception.TournamentIsFullException;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
+import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.mapper.TournamentMapper;
 import com.example.web.model.ConnectedPlayer;
@@ -177,18 +177,22 @@ public class TournamentService {
         });
   }
 
-  public void handle(WebSocketSession session, WebSocketMessage<?> message)
-      throws JsonProcessingException {
-    String tournamentId = WebSocketMessageReader.getValueFromJsonMessage(message, "tournamentId");
-    String playerId = WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
+  public void handle(WebSocketSession session, WebSocketMessage<?> message) throws JsonProcessingException {
+    try {
+      String tournamentId = WebSocketMessageReader.getValueFromJsonMessage(message, "tournamentId");
+      String playerId = WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
 
-    joinTournament(JoinTournamentRequest.builder()
-        .tournamentId(tournamentId)
-        .userId(playerId)
-        .build(), session);
+      joinTournament(JoinTournamentRequest.builder()
+          .tournamentId(tournamentId)
+          .userId(playerId)
+          .build(), session);
+    } catch (UserIsAlreadyInTournamentOrGame e) {
+      //sendErrorMessage(session, "USER_ALREADY_IN_GAME_OR_TOURNAMENT", e.getMessage());
+    }
   }
 
-  public TournamentResponseDto joinTournament(JoinTournamentRequest request, WebSocketSession webSocketSession) {
+
+  public void joinTournament(JoinTournamentRequest request, WebSocketSession session) {
     log.info("Received join tournament request: userId={}, tournamentId={}", request.userId(), request.tournamentId());
 
     Tournament tournament = receiveTournament(request.tournamentId());
@@ -198,14 +202,20 @@ public class TournamentService {
       throw new TournamentIsFullException(request.tournamentId());
     }
 
+    if (messageDispatcher.isSessionInGameOrTournament(session)) {
+      throw new UserIsAlreadyInTournamentOrGame(session);
+    }
+
+    messageDispatcher.joinGameOrTournament(session);
+
     User user = userRepository.findById(request.userId())
         .orElseThrow(() -> {
           log.warn("User with id {} not found", request.userId());
           return new UserNotFoundException(request.userId());
         });
 
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(webSocketSession, new RealPlayer(
-        null, user.getUsername(), webSocketSession), true);
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
+        null, user.getUsername(), session), true);
 
     connectedPlayer.setUserId(user.getId());
 
@@ -225,7 +235,6 @@ public class TournamentService {
 
     broadcastTournamentUpdate(tournamentResponse, isTournamentFull(tournament.getId()));
 
-    return tournamentResponse;
   }
 
   @Transactional
@@ -296,8 +305,7 @@ public class TournamentService {
         return;
       }
 
-      winner.getPlayer().sendMessageToWaitForNextMatch();
-      loser.getPlayer().sentLoosingMessage();
+      notifyPlayersAfterFinishedMatch(winner, loser, matchId);
 
       tournamentIdNumberOfWinners.put(tournamentId, tournamentIdNumberOfWinners.get(tournamentId) / 2);
       Set<ConnectedPlayer> tempWinners = new HashSet<>(winners);
@@ -305,9 +313,15 @@ public class TournamentService {
       startNextRound(tempWinners, tournamentId);
     }
     else {
-      winner.getPlayer().sendMessageToWaitForNextMatch();
-      loser.getPlayer().sentLoosingMessage();
+      notifyPlayersAfterFinishedMatch(winner, loser, matchId);
     }
+  }
+
+  private void notifyPlayersAfterFinishedMatch(ConnectedPlayer winner, ConnectedPlayer loser, String matchId) {
+    winner.getPlayer().sendMessageToWaitForNextMatch();
+    loser.getPlayer().sentLoosingMessage();
+    log.info("Winner for match with id {} is {}, and loser is {}.", matchId, winner.getId(), loser.getId());
+    messageDispatcher.leftGameOrTournament(loser.getWebSocketSession());
   }
 
   // TODO: Change logic for MatchDetails
@@ -378,6 +392,8 @@ public class TournamentService {
     log.info("Finishing tournament with id {}.\n Winner is {}.",
         tournamentId, winner.getPlayer().getNickname());
 
+    messageDispatcher.leftGameOrTournament(winner.getWebSocketSession());
+    messageDispatcher.leftGameOrTournament(loser.getWebSocketSession());
     sendMessage(winner.getWebSocketSession(), TOURNAMENT_WON);
     sendMessage(loser.getWebSocketSession(), TOURNAMENT_LOST);
   }

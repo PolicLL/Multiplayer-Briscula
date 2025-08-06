@@ -6,6 +6,7 @@ import com.example.web.exception.TooBigNumberOfBotsException;
 import com.example.web.exception.UserAlreadyAssignedToTournament;
 import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserAlreadyLoggedInException;
+import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -128,6 +129,20 @@ public class GlobalExceptionHandler {
             LocalDateTime.now(),
             HttpStatus.BAD_REQUEST.value(),
             "Bad request: Too big number of bots.",
+            e.getMessage(),
+            request.getRequestURI()
+        )
+    );
+  }
+
+  @ExceptionHandler(UserIsAlreadyInTournamentOrGame.class)
+  public ResponseEntity<ErrorResponse> handleUserIsAlreadyInTournamentOrGame(
+      TooBigNumberOfBotsException e, HttpServletRequest request) {
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+        new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.BAD_REQUEST.value(),
+            "User is already in tournament or game.",
             e.getMessage(),
             request.getRequestURI()
         )

@@ -12,10 +12,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 @Slf4j
 @Service
@@ -27,25 +29,48 @@ public class GameEndService {
 
   private final TournamentService tournamentService;
   private final MatchService matchService;
+  private final WebSocketMessageDispatcher messageDispatcher;
 
   public void update(GameEndStatus gameEndStatus, String matchId) {
-    log.info("Game ended with status {}, updating statistics.", gameEndStatus.status());
+    log.info("Game ended with status {} for match with id {}, updating statistics.", gameEndStatus.status(), matchId);
 
     gameEndStatus.playerResults().forEach((key, value) -> key.resetValues());
 
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
-      gameEndStatus.playerResults()
-          .keySet()
-          .forEach(user -> userService.updateUserRecord(null, false, false));
-
-      if (matchId != null) {
-        MatchDto match = matchService.getMatch(matchId);
-        tournamentService.startRoundForMatch(matchId, match.tournamentId());
-      }
-
+      handleNoWinnerCase(gameEndStatus, matchId);
       return;
     }
 
+    List<List<ConnectedPlayer>> resultLists = handleWinnerCase(gameEndStatus);
+    List<ConnectedPlayer> winners = resultLists.get(0);
+    List<ConnectedPlayer> losers = resultLists.get(1);
+
+    // matchId is null if this is not tournament match
+    if (matchId == null) {
+      Stream.concat(winners.stream(), losers.stream())
+          .forEach(player ->
+              messageDispatcher.leftGameOrTournament(player.getWebSocketSession()));
+      return;
+    }
+
+    MatchDto match = matchService.getMatch(matchId);
+
+    log.info("Continuing to next round with {} winner.", winners.get(0));
+    tournamentService.collectWinnersForNextPhase(match.tournamentId(), match.id(), winners.get(0), losers.get(0));
+  }
+
+  private void handleNoWinnerCase(GameEndStatus gameEndStatus, String matchId) {
+    gameEndStatus.playerResults()
+        .keySet()
+        .forEach(user -> userService.updateUserRecord(null, false, false));
+
+    if (matchId != null) {
+      MatchDto match = matchService.getMatch(matchId);
+      tournamentService.startRoundForMatch(matchId, match.tournamentId());
+    }
+  }
+
+  private List<List<ConnectedPlayer>> handleWinnerCase(GameEndStatus gameEndStatus) {
     List<ConnectedPlayer> winners = new ArrayList<>();
     List<ConnectedPlayer> losers = new ArrayList<>();
 
@@ -63,16 +88,10 @@ public class GameEndService {
       }
     }
 
-    // matchId is null if this is not tournament match
-    if (matchId == null) return;
-
-    MatchDto match = matchService.getMatch(matchId);
-
-    log.info("Continuing to next round with {} winner.", winners.get(0));
-    tournamentService.collectWinnersForNextPhase(match.tournamentId(), match.id(), winners.get(0), losers.get(0));
+    return List.of(winners, losers);
   }
 
-  public void handleDisconnectionFromGame(WebSocketMessage<?> message)
+  public void handleDisconnectionFromGame(WebSocketMessage<?> message, WebSocketSession session)
       throws JsonProcessingException {
     String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
     int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, PLAYER_ID));

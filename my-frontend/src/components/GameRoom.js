@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useWebSocketContext } from "../context/WebSocketContext";
+import Menu from "./Menu";
 
 function GameRoom() {
   const navigate = useNavigate();
@@ -258,6 +259,7 @@ function GameRoom() {
 
   return (
     <div>
+      <Menu />
       {mainCard && mainCard.code && mainCard.imageUrl && (
         <>
           <h2>Main Card</h2>

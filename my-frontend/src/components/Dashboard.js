@@ -11,7 +11,7 @@ import { useWebSocketContext } from "../context/WebSocketContext";
 function Dashboard() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({});
-  const [username] = useState(() => localStorage.getItem("username"));
+  const [username] = useState(() => sessionStorage.getItem("username"));
   const [message, setMessage] = useState("");
   const [shouldShowPoints, setShouldShowPoints] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
@@ -52,7 +52,7 @@ function Dashboard() {
     setOnMessage(handleMessage);
 
     // Fetch user info
-    const token = localStorage.getItem("jwtToken");
+    const token = sessionStorage.getItem("jwtToken");
     if (!token) return navigate("/");
 
     axios

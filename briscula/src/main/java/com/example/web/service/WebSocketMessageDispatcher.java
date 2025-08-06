@@ -16,12 +16,14 @@ public class WebSocketMessageDispatcher {
 
   private final Map<WebSocketSession, BlockingQueue<String>> sessionQueues = new ConcurrentHashMap<>();
   private final Map<WebSocketSession, Thread> sessionWorkers = new ConcurrentHashMap<>();
+  private final Map<WebSocketSession, Boolean> sessionJoinedGame = new ConcurrentHashMap<>();
 
   public void registerSession(WebSocketSession session) {
     if (sessionQueues.containsKey(session)) return;
 
     BlockingQueue<String> queue = new LinkedBlockingQueue<>();
     sessionQueues.put(session, queue);
+    sessionJoinedGame.put(session, false);
 
     Thread worker = new Thread(() -> {
       try {
@@ -36,6 +38,7 @@ public class WebSocketMessageDispatcher {
       } finally {
         sessionQueues.remove(session);
         sessionWorkers.remove(session);
+        sessionJoinedGame.remove(session);
       }
     });
 
@@ -44,12 +47,28 @@ public class WebSocketMessageDispatcher {
     sessionWorkers.put(session, worker);
   }
 
+  public void joinGameOrTournament(WebSocketSession session) {
+    sessionJoinedGame.put(session, true);
+  }
+
+  public boolean isSessionInGameOrTournament(WebSocketSession session) {
+    if (!sessionJoinedGame.containsKey(session)) return false;
+    return sessionJoinedGame.get(session) == true;
+  }
+
+  public void leftGameOrTournament(WebSocketSession session) {
+    sessionJoinedGame.put(session, false);
+  }
+
   public Set<WebSocketSession> getRegisteredWebSocketSessions() {
     return sessionQueues.keySet();
   }
 
   public void unregisterSession(WebSocketSession session) {
     Thread thread = sessionWorkers.remove(session);
+    sessionQueues.remove(session);
+    sessionJoinedGame.remove(session);
+
     if (thread != null) thread.interrupt();
     log.info("Unregistered session {}", session.getId());
   }

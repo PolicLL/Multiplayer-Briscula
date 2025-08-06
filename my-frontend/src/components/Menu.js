@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 
 function Menu({ onLogout }) {
   const navigate = useNavigate();
-  const isLoggedIn = !!localStorage.getItem("jwtToken");
+  const isLoggedIn = !!sessionStorage.getItem("jwtToken");
 
   const handleLogout = () => {
-    localStorage.clear(); // or remove specific items
+    sessionStorage.clear();
     onLogout();
-    navigate("/"); // make sure `useNavigate` is used here
+    navigate("/");
   };
 
   return (

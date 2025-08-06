@@ -30,26 +30,26 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final TournamentService tournamentService;
 
-  private final WebSocketMessageDispatcher webSocketMessageDispatcher;
+  private final WebSocketMessageDispatcher messageDispatcher;
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
-  // TODO: Check scenario when player enters Tournament and
+  //   TODO: Check scenario when player enters Tournament and
   //  Match in same time, it has to be removed from the one that was before
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws IOException {
     log.debug("Handling message type " + WebSocketMessageReader.getMessageType(message));
     switch (WebSocketMessageReader.getMessageType(message)) {
-      case LOGGED_IN -> webSocketMessageDispatcher.registerSession(session);
+      case LOGGED_IN -> messageDispatcher.registerSession(session);
       case JOIN_ROOM -> gamePrepareService.handle(session, message);
       case GET_INITIAL_CARDS -> cardsOperationService.handleGetCards(session, message);
       case INITIAL_CARDS_RECEIVED -> cardsOperationService.handleGetInitialCards(message);
       case CARD_CHOSEN -> cardsOperationService.handleChosenCard(message);
-      case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message);
+      case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message, session);
       case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
       default -> throw new WebSocketException();
     }
@@ -63,7 +63,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
   @Override
   public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
     tournamentService.removePlayerWithSession(session);
-    webSocketMessageDispatcher.unregisterSession(session);
+    messageDispatcher.unregisterSession(session);
     log.info("Tournament WebSocket disconnected: {}", session.getId());
   }
 }
