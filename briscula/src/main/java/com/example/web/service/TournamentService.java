@@ -4,6 +4,7 @@ import static com.example.web.model.enums.ServerToClientMessageType.RESTARTING_M
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_LOST;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
 import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_WON;
+import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY_IN_GAME_OR_TOURNAMENT;
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static com.example.web.utils.Constants.RANDOM;
 import static com.example.web.utils.SimpleWebSocketSession.getWebSocketSession;
@@ -187,7 +188,10 @@ public class TournamentService {
           .userId(playerId)
           .build(), session);
     } catch (UserIsAlreadyInTournamentOrGame e) {
-      //sendErrorMessage(session, "USER_ALREADY_IN_GAME_OR_TOURNAMENT", e.getMessage());
+      messageDispatcher.sendMessage(session, JsonUtils.toJson(Message.builder()
+          .content(e.getMessage())
+          .type(USER_ALREADY_IN_GAME_OR_TOURNAMENT)
+          .build()));
     }
   }
 

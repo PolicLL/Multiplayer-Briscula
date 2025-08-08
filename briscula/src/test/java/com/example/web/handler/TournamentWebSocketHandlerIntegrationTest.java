@@ -6,7 +6,9 @@ import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
 
 import com.example.web.dto.tournament.JoinTournamentResponse;
 import com.example.web.dto.user.UserDto;
+import com.example.web.handler.endpoints.tournament.TestJoinRoomThenJoinTournamentEndpoint;
 import com.example.web.handler.endpoints.tournament.TestJoinTournamentEndpoint;
+import com.example.web.handler.endpoints.tournament.TestJoinTournamentThenJoinRoomEndpoint;
 import com.example.web.service.TournamentService;
 import com.example.web.service.UserService;
 import jakarta.websocket.ContainerProvider;
@@ -45,7 +47,7 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
     tournamentId = tournamentService.create(createTournamentCreateDto())
         .id();
 
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 5; ++i) {
       UserDto created = userService.createUser(generateValidUserDtoWithoutPhoto());
       userIds.add(created.id());
       System.out.println("CREATED : " + created);
@@ -75,6 +77,40 @@ class TournamentWebSocketHandlerIntegrationTest extends AbstractIntegrationTest 
     for (JoinTournamentResponse response : responses) {
       assertThat(response.currentNumberOfPlayers()).isGreaterThanOrEqualTo(4);
     }
+
+    System.out.println("✅ Test completed successfully");
+  }
+
+  @Test
+  void testRawWebSocketJoinTournamentThenJoinGame() throws Exception {
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+    CompletableFuture<String> future = new CompletableFuture<>();
+    TestJoinTournamentThenJoinRoomEndpoint endpoint = new TestJoinTournamentThenJoinRoomEndpoint(
+        future, tournamentId, userIds.get(userIds.size() - 1)
+    );
+
+    container.connectToServer(endpoint, WS_URI);
+
+    String response = future.get(60, TimeUnit.SECONDS);
+
+    assertThat(response).contains("USER_ALREADY_IN_GAME_OR_TOURNAMENT");
+
+    System.out.println("✅ Test completed successfully");
+  }
+
+  @Test
+  void testRawWebSocketJoinGameThenJoinTournament() throws Exception {
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+    CompletableFuture<String> future = new CompletableFuture<>();
+    TestJoinRoomThenJoinTournamentEndpoint endpoint = new TestJoinRoomThenJoinTournamentEndpoint(
+        future, tournamentId, userIds.get(userIds.size() - 1)
+    );
+
+    container.connectToServer(endpoint, WS_URI);
+
+    String response = future.get(60, TimeUnit.SECONDS);
+
+    assertThat(response).contains("USER_ALREADY_IN_GAME_OR_TOURNAMENT");
 
     System.out.println("✅ Test completed successfully");
   }
