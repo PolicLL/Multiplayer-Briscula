@@ -1,12 +1,13 @@
 package com.example.briscula.model.card;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static utils.EntityUtils.getWebSocketSession;
 
-import com.example.briscula.game.RoundJudge;
 import com.example.briscula.game.Move;
+import com.example.briscula.game.RoundJudge;
 import com.example.briscula.game.RoundWinner;
-import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.Bot;
+import com.example.briscula.user.player.Player;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,8 +22,8 @@ class GameTest {
   private RoundWinner roundWinner;
 
   private final List<Bot> playerList = new ArrayList<>(Arrays.asList(
-      new Bot(new ArrayList<>(), "Bot 0"), new Bot(new ArrayList<>(), "Bot 1"),
-      new Bot(new ArrayList<>(), "Bot 2"), new Bot(new ArrayList<>(), "Bot 3")
+      new Bot( "Bot 0", getWebSocketSession()), new Bot("Bot 1", getWebSocketSession()),
+      new Bot("Bot 2", getWebSocketSession()), new Bot("Bot 3", getWebSocketSession())
   ));
 
 

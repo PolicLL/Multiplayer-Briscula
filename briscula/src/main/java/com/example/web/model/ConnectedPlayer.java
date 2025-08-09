@@ -15,21 +15,23 @@ public class ConnectedPlayer {
   private int id;
   private String userId;
   private String roomId;
-  private WebSocketSession webSocketSession;
   private Player player;
   private boolean initialCardsReceived = false;
 
   @Getter
   private boolean doesWantPointsToShow = true;
 
-  public ConnectedPlayer(WebSocketSession webSocketSession, Player player, boolean doesWantPointsToShow) {
-    this.webSocketSession = webSocketSession;
+  public ConnectedPlayer(Player player, boolean doesWantPointsToShow) {
     this.player = player;
     this.doesWantPointsToShow = doesWantPointsToShow;
   }
 
   public ConnectedPlayer(Player player) {
     this.player = player;
+  }
+
+  public WebSocketSession getWebSocketSession() {
+    return player.getWebSocketSession();
   }
 
   public void resetValues() {
@@ -46,7 +48,7 @@ public class ConnectedPlayer {
       return false;
     }
     ConnectedPlayer that = (ConnectedPlayer) o;
-    return Objects.equals(webSocketSession.getId(), that.webSocketSession.getId())
+    return Objects.equals(getWebSocketSession().getId(), that.getWebSocketSession().getId())
         || Objects.equals(player.getNickname(), that.player.getNickname());
   }
 

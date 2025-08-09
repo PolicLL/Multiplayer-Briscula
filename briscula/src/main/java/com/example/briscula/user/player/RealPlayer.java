@@ -31,8 +31,6 @@ import org.springframework.web.socket.WebSocketSession;
 @SuperBuilder
 public class RealPlayer extends Player {
 
-  @Setter
-  private WebSocketSession webSocketSession;
   private final RoomPlayerId roomPlayerId;
 
   @Setter
@@ -44,16 +42,19 @@ public class RealPlayer extends Player {
 
   public RealPlayer(List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
-    super(playerCards, nickname);
-    this.webSocketSession = webSocketSession;
+    super(playerCards, nickname, webSocketSession);
     this.roomPlayerId = new RoomPlayerId();
   }
 
   public RealPlayer(RoomPlayerId roomPlayerId, List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
-    super(playerCards, nickname);
-    this.webSocketSession = webSocketSession;
+    super(playerCards, nickname, webSocketSession);
     this.roomPlayerId = roomPlayerId;
+  }
+
+  public RealPlayer(String nickname, WebSocketSession webSocketSession) {
+    super(nickname, webSocketSession);
+    this.roomPlayerId = new RoomPlayerId();
   }
 
   @Override

@@ -118,10 +118,15 @@ public class TournamentService {
 
         User userBot = userService.retrieveUserByUsername(botName);
 
-        Bot bot = new Bot(botName);
+
+        /*
+        This session is created and added for Bot player to not break equals function that uses
+        id of websocket session, but this session is not used.
+         */
+        WebSocketSession dummyWebSocketSession = getWebSocketSession();
+        Bot bot = new Bot(botName, dummyWebSocketSession);
 
         tournamentPlayers.get(tournament.getId()).add(ConnectedPlayer.builder()
-            .webSocketSession(getWebSocketSession()) // TODO: Update bad practice, this is used in test
             .userId(userBot.getId())
             .player(bot)
             .build());
@@ -218,8 +223,7 @@ public class TournamentService {
           return new UserNotFoundException(request.userId());
         });
 
-    ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
-        null, user.getUsername(), session), true);
+    ConnectedPlayer connectedPlayer = new ConnectedPlayer(new RealPlayer(user.getUsername(), session), true);
 
     connectedPlayer.setUserId(user.getId());
 

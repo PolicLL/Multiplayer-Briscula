@@ -5,15 +5,13 @@ import static com.example.web.utils.Constants.RANDOM;
 import com.example.briscula.model.card.Card;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import org.springframework.web.socket.WebSocketSession;
 
 public class Bot extends Player {
 
-  public Bot(List<Card> playerCards, String nickname) {
-    super(playerCards, nickname);
-  }
+  public Bot(String nickname, WebSocketSession webSocketSession) {
+    super(nickname, webSocketSession);
 
-  public Bot(String nickname) {
-    this.nickname = nickname;
   }
 
   public Card playRound(){

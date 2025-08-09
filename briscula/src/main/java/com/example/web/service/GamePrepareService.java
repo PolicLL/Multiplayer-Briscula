@@ -69,8 +69,7 @@ public class GamePrepareService {
     }
 
     synchronized (mapPreparingPlayers) {
-      ConnectedPlayer connectedPlayer = new ConnectedPlayer(session, new RealPlayer(
-          null, playerName, session), shouldPointsShow);
+      ConnectedPlayer connectedPlayer = new ConnectedPlayer(new RealPlayer(playerName, session), shouldPointsShow);
 
       if (userId != null)
         connectedPlayer.setUserId(userId);

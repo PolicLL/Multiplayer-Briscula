@@ -6,13 +6,12 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+import org.springframework.web.socket.WebSocketSession;
 
 @ToString
 @SuperBuilder
-@NoArgsConstructor
 public abstract class Player {
 
   protected List<Card> playerCards;
@@ -21,9 +20,18 @@ public abstract class Player {
   @Getter
   protected int points;
 
-  protected Player(List<Card> playerCards, String nickname) {
+  @Getter
+  protected final WebSocketSession webSocketSession;
+
+  protected Player(List<Card> playerCards, String nickname, WebSocketSession webSocketSession) {
     this.playerCards = playerCards;
     this.nickname = nickname;
+    this.webSocketSession = webSocketSession;
+  }
+
+  protected Player(String nickname, WebSocketSession webSocketSession) {
+    this.nickname = nickname;
+    this.webSocketSession = webSocketSession;
   }
 
   public abstract Card playRound();

@@ -99,15 +99,6 @@ public class EntityUtils {
     return "UserId " + RANDOM.nextInt(100000);
   }
 
-  public static String getPlayerId() {
-    return String.valueOf(RANDOM.nextInt(100000));
-  }
-
-  public static String getTournamentId() {
-    return String.valueOf(RANDOM.nextInt(100000));
-  }
-
-
   public static String getPlayerName() {
     return "Player + " + RANDOM.nextInt(100000);
   }
@@ -128,14 +119,12 @@ public class EntityUtils {
 
   public static ConnectedPlayer getConnectedPlayer() {
     WebSocketSession webSocketSession = getWebSocketSession();
-    return new ConnectedPlayer(
-        webSocketSession, getRealPlayer(webSocketSession), true
+    return new ConnectedPlayer(getRealPlayer(webSocketSession), true
     );
   }
 
   public static ConnectedPlayer getConnectedPlayer(Player player) {
-    return new ConnectedPlayer(
-       getWebSocketSession(), player, true
+    return new ConnectedPlayer(player, true
     );
   }
 
@@ -145,14 +134,13 @@ public class EntityUtils {
 
   public static ConnectedPlayer getConnectedPlayer(String userId) {
     return ConnectedPlayer.builder()
-        .webSocketSession(getWebSocketSession())
         .player(getRealPlayer())
         .userId(userId)
         .build();
   }
 
   public static ConnectedPlayer getConnectedPlayersBots() {
-    return new ConnectedPlayer(getWebSocketSession(), new Bot(null, "Bot " + getRandomNumber(100000)),
+    return new ConnectedPlayer(new Bot( "Bot " + getRandomNumber(100000), getWebSocketSession()),
         true);
   }
 

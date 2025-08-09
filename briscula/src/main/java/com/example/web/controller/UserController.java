@@ -94,8 +94,6 @@ public class UserController {
     return ResponseEntity.ok("User deleted successfully!");
   }
 
-
-  // TODO: Logout has to be tested
   @PostMapping("/logout")
   @PreAuthorize("hasRole('USER')")
   public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {

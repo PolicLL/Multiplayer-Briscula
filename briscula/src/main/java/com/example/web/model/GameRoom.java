@@ -3,7 +3,6 @@ package com.example.web.model;
 import com.example.briscula.game.Game;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.user.player.RealPlayer;
-import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.enums.GameEndStatus;
 import java.util.Collection;
@@ -49,7 +48,7 @@ public class GameRoom {
 
     this.players.addAll(playerList);
 
-    this.game = new Game(gameOptionNumberOfPlayers, GameMode.ALL_HUMANS, players, showPoints);
+    this.game = new Game(gameOptionNumberOfPlayers, players, showPoints);
 
   }
 

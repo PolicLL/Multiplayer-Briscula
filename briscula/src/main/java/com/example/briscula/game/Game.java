@@ -6,7 +6,6 @@ import com.example.briscula.model.card.Card;
 import com.example.briscula.user.admin.Admin;
 import com.example.briscula.user.player.Player;
 import com.example.briscula.user.player.RealPlayer;
-import com.example.briscula.utilities.constants.GameMode;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
@@ -26,12 +25,12 @@ public class Game {
   @Getter
   private boolean showPoints;
 
-  public Game(GameOptionNumberOfPlayers gameOptions, GameMode gameMode, List<ConnectedPlayer> players, boolean showPoints) {
+  public Game(GameOptionNumberOfPlayers gameOptions, List<ConnectedPlayer> players, boolean showPoints) {
     this.gameOptions = gameOptions;
     this.admin = new Admin();
     this.showPoints = showPoints;
 
-    admin.prepareDeckAndPlayers(gameOptions, gameMode, players);
+    admin.prepareDeckAndPlayers(gameOptions, players);
 
     log.info("Main card type : " + admin.getMainCard().cardType());
   }
