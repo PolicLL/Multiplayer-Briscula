@@ -12,7 +12,6 @@ import static utils.EntityUtils.createTournamentCreateDto;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.dto.tournament.TournamentUpdateDto;
-import com.example.web.dto.user.UserDto;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.utils.JsonUtils;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-// TODO: Update to use testcontainer
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")

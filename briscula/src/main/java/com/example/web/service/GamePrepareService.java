@@ -46,7 +46,7 @@ public class GamePrepareService {
     mapPreparingPlayers.put(4, new LinkedHashSet<>());
   }
 
-  // TODO: Check -> When I clicked join from the anonymous user twice, it started the game.
+  // TODO: Make sure that user can leave the tournament/game before it starts.
 
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {

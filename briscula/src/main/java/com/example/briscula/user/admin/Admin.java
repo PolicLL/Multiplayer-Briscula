@@ -66,7 +66,6 @@ public class Admin {
     return listOfCardsForAllPlayers.get(playerId);
   }
 
-  // TODO: Does this check correctly for 3 players ?
   public boolean isLastRound() {
     int cardsInPlayerHand;
     if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.THREE_PLAYERS) {

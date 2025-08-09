@@ -6,7 +6,31 @@ function Menu({ onLogout }) {
   const navigate = useNavigate();
   const isLoggedIn = !!sessionStorage.getItem("jwtToken");
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    const token = sessionStorage.getItem("jwtToken");
+
+    if (token) {
+      try {
+        const response = await fetch("http://localhost:8080/api/users/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Logout failed:", errorText);
+        } else {
+          console.log("Logout successful");
+        }
+      } catch (error) {
+        console.error("Error logging out:", error);
+      }
+    }
+
+    // Always clear session and update UI regardless of server response
     sessionStorage.clear();
     onLogout();
     navigate("/");

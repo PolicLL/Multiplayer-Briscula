@@ -8,6 +8,8 @@ import TournamentList from "./tournament/TournamentList";
 
 import { useWebSocketContext } from "../context/WebSocketContext";
 
+// TODO If I am logged in and go to the dashboard, I should not see log in options
+
 function Dashboard() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState({});
@@ -123,10 +125,10 @@ function Dashboard() {
               onError={(e) => (e.target.src = "/images/anonymous.png")}
             />
           )}
-          <h3>Welcome, {userInfo.username}!</h3>
-          <p>Age: {userInfo.age}</p>
-          <p>Country: {userInfo.country}</p>
-          <p>Email: {userInfo.email}</p>
+          <h3>Welcome, {userInfo?.username}!</h3>
+          <p>Age: {userInfo?.age}</p>
+          <p>Country: {userInfo?.country}</p>
+          <p>Email: {userInfo?.email}</p>
           <button onClick={() => setIsEditing(true)}>Edit Profile</button>
 
           <div style={{ marginTop: "1rem" }}>

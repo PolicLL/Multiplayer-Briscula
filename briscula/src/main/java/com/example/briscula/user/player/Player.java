@@ -26,7 +26,6 @@ public abstract class Player {
     this.nickname = nickname;
   }
 
-  // TODO: I would like to when creating the players, use the same ID that is used in ConnectedPlayer task.
   public abstract Card playRound();
   public abstract void sentLoosingMessage();
   public abstract void sentWinningMessage();

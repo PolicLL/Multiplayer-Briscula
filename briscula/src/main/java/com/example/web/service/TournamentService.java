@@ -328,7 +328,6 @@ public class TournamentService {
     messageDispatcher.leftGameOrTournament(loser.getWebSocketSession());
   }
 
-  // TODO: Change logic for MatchDetails
   private boolean isMatchOver(String tournamentId, Match match) {
     List<MatchDetails> winners = matchDetailsRepository
         .findAllByMatchId_IdAndNumberOfWinsGreaterThanEqual(match.getId(), 1);

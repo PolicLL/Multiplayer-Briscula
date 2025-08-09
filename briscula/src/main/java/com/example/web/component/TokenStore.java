@@ -9,15 +9,15 @@ public class TokenStore {
 
   private final Map<String, String> activeTokens = new ConcurrentHashMap<>();
 
-  public void storeToken(String username, String token) {
-    activeTokens.put(username, token);
+  public void storeToken(String email, String token) {
+    activeTokens.put(email, token);
   }
 
-  public boolean isTokenActive(String username) {
-    return activeTokens.containsKey(username);
+  public boolean isTokenActive(String email) {
+    return activeTokens.containsKey(email);
   }
 
-  public void removeToken(String username) {
-    activeTokens.remove(username);
+  public void removeToken(String email) {
+    activeTokens.remove(email);
   }
 }

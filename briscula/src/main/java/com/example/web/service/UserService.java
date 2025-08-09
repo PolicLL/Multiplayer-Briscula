@@ -134,12 +134,12 @@ public class UserService {
   }
 
   public void logout(String token) {
-    String username = jwtService.extractEmail(token);
-    if (!tokenStore.isTokenActive(username)) {
+    String email = jwtService.extractEmail(token);
+    if (!tokenStore.isTokenActive(email)) {
       throw new RuntimeException("User is not logged in.");
     }
-    tokenStore.removeToken(username);
-    log.info("User {} logged out successfully", username);
+    tokenStore.removeToken(email);
+    log.info("User {} logged out successfully", email);
   }
 
 
