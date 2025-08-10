@@ -47,7 +47,8 @@ public class GamePrepareService {
   }
 
   // TODO: Make sure that user can leave the tournament/game before it starts.
-
+  // TODO: Checking name of anonymous user, make sure it is not name used by registered user
+  // TODO: While waiting for another player to join room/tournament, make some animation on front
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
 

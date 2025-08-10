@@ -43,6 +43,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
+  // TODO When game is finished redirect user to the dashboard, anonymous to the home
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
     try {

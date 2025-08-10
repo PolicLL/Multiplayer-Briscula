@@ -15,7 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 public class WebSocketMessageDispatcher {
 
   private final Map<WebSocketSession, BlockingQueue<String>> sessionQueues = new ConcurrentHashMap<>();
-  private final Map<WebSocketSession, Thread> sessionWorkers = new ConcurrentHashMap<>();
+  private static final Map<WebSocketSession, Thread> sessionWorkers = new ConcurrentHashMap<>();
   private final Map<WebSocketSession, Boolean> sessionJoinedGame = new ConcurrentHashMap<>();
 
   public void registerSession(WebSocketSession session) {
@@ -62,6 +62,10 @@ public class WebSocketMessageDispatcher {
 
   public Set<WebSocketSession> getRegisteredWebSocketSessions() {
     return sessionQueues.keySet();
+  }
+
+  public static boolean isSessionRegistered(WebSocketSession session) {
+    return sessionWorkers.containsKey(session);
   }
 
   public void unregisterSession(WebSocketSession session) {

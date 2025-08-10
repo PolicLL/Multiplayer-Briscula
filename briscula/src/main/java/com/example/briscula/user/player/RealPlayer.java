@@ -16,6 +16,7 @@ import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 import com.example.briscula.configuration.BrisculaConfig;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.utilities.constants.CardFormatter;
+import com.example.web.service.WebSocketMessageDispatcher;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
@@ -38,7 +39,7 @@ public class RealPlayer extends Player {
 
   @Setter
   private int waitingTimeForChoosingCardInSeconds = BrisculaConfig.getWaitingTimeStatic();
-  private int waitingTimeAfterRoundInSeconds = 0;
+  private int waitingTimeAfterRoundInSeconds = 2; // TODO: Make this configurable also
 
   public RealPlayer(List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {
@@ -87,6 +88,9 @@ public class RealPlayer extends Player {
   public int enterNumber() {
     selectedCardFuture = new CompletableFuture<>();
     try {
+      if (!WebSocketMessageDispatcher.isSessionRegistered(webSocketSession)) {
+        return 0;
+      }
       return selectedCardFuture.get(waitingTimeForChoosingCardInSeconds, TimeUnit.SECONDS);
     } catch (TimeoutException e) {
       log.warn("Player did not respond in time. Proceeding with default choice.");
