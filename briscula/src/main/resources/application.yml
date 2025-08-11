@@ -20,7 +20,8 @@ spring:
       max-request-size: 10MB
 
 briscula:
-  waiting-time-in-seconds-for-choosing-card: 30
+  waiting-time-in-seconds-for-choosing-card: 0
+  waiting-time-after-round-finishes: 0
 #logging:
 #  level:
 #    org.springframework.security: DEBUG
@@ -33,3 +34,5 @@ logging:
     org.springframework.web.socket.messaging: DEBUG
     org.springframework.messaging: DEBUG
     org.springframework.web.socket.server.support: DEBUG
+    com.example.web.handler.WebSocketHandler: DEBUG
+

@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
-import { useGameWebSocket } from "../hooks/useGameWebSocket";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
 function PrepareGame() {
@@ -15,9 +14,7 @@ function PrepareGame() {
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
   const handleMessage = useCallback(
-    (parsedMessage) => {
-
-    },
+    (parsedMessage) => {},
     [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
   );
 
@@ -25,6 +22,9 @@ function PrepareGame() {
     if (!name.trim()) return alert("Enter a name.");
 
     setOnMessage(handleMessage);
+    sessionStorage.setItem("isRegistered", false);
+
+    console.log("Sending message to join room.");
 
     sendMessage({
       type: "JOIN_ROOM",

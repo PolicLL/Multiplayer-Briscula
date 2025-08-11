@@ -50,6 +50,7 @@ function Dashboard() {
   );
 
   useEffect(() => {
+    sessionStorage.setItem("isRegistered", true);
     // Register WebSocket message handler
     setOnMessage(handleMessage);
 

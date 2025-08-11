@@ -229,6 +229,8 @@ function GameRoom() {
   useEffect(() => {
     setOnMessage(handleGameRoomMessage);
 
+    console.log("Registration: " + sessionStorage.getItem("isRegistered"));
+
     console.log("Get initial cards sent.");
 
     sendMessage({

@@ -46,7 +46,7 @@ export const WebSocketProvider = ({ children }) => {
         console.log("Parsed WebSocket message:", parsed);
 
         if (parsed.type === "GAME_STARTED") {
-          navigate(`/game/${parsed.roomId}/${parsed.playerId}`); // ✅ new
+          navigate(`/game/${parsed.roomId}/${parsed.playerId}`);
           return;
         }
 
