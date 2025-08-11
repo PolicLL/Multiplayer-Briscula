@@ -38,8 +38,8 @@ public class RealPlayer extends Player {
   private CompletableFuture<Integer> selectedCardFuture;
 
   @Setter
-  private int waitingTimeForChoosingCardInSeconds = BrisculaConfig.getWaitingTimeStatic();
-  private int waitingTimeAfterRoundInSeconds = 2; // TODO: Make this configurable also
+  private int waitingTimeForChoosingCardInSeconds = BrisculaConfig.getWaitingTimeForChoosingCard();
+  private int waitingTimeAfterRoundInSeconds = BrisculaConfig.getWaitingTimeAfterRoundFinishes();
 
   public RealPlayer(List<Card> playerCards,
       String nickname, WebSocketSession webSocketSession) {

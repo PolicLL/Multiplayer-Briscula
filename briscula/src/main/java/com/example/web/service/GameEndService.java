@@ -78,14 +78,15 @@ public class GameEndService {
       ConnectedPlayer connectedPlayer = entry.getKey();
       if (connectedPlayer.getUserId() != null) {
         userService.updateUserRecord(connectedPlayer.getUserId(), true, entry.getValue());
-
-        boolean hasPlayerWonTournamentMatch = entry.getValue();
-        if (hasPlayerWonTournamentMatch) {
-          winners.add(connectedPlayer);
-        }
-        else
-          losers.add(connectedPlayer);
       }
+
+      boolean hasPlayerWonMatch = entry.getValue();
+      if (hasPlayerWonMatch) {
+        winners.add(connectedPlayer);
+      }
+      else
+        losers.add(connectedPlayer);
+
     }
 
     return List.of(winners, losers);

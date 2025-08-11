@@ -14,11 +14,17 @@ public class BrisculaConfig {
 
   private int waitingTimeInSecondsForChoosingCard;
 
+  private int waitingTimeAfterRoundInSeconds;
+
   @Getter
-  private static int waitingTimeStatic;
+  private static int waitingTimeForChoosingCard;
+
+  @Getter
+  private static int waitingTimeAfterRoundFinishes;
 
   @PostConstruct
   public void init() {
-    waitingTimeStatic = waitingTimeInSecondsForChoosingCard;
+    waitingTimeForChoosingCard = waitingTimeInSecondsForChoosingCard;
+    waitingTimeAfterRoundFinishes = waitingTimeAfterRoundInSeconds;
   }
 }

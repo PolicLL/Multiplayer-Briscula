@@ -43,11 +43,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
+  // TODO If we logged in the game, we should be able to enter as anonymous then
   // TODO When game is finished redirect user to the dashboard, anonymous to the home
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
     try {
-      log.debug("Handling message type " + WebSocketMessageReader.getMessageType(message));
+      log.debug("Handling message type {} for {}. ", WebSocketMessageReader.getMessageType(message),
+          WebSocketMessageReader.getName(message));
       switch (WebSocketMessageReader.getMessageType(message)) {
         case LOGGED_IN -> messageDispatcher.registerSession(session);
         case JOIN_ROOM -> gamePrepareService.handle(session, message);
