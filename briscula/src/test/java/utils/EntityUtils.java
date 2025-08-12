@@ -66,6 +66,16 @@ public class EntityUtils {
         .build();
   }
 
+  public static UserDto generateValidUserDtoWithoutPhoto(String username) {
+    return UserDto.builder()
+        .username(username)
+        .age( randomAge())
+        .country(randomCountry())
+        .email(randomEmail())
+        .password(randomPassword())
+        .build();
+  }
+
   public static MockMultipartHttpServletRequestBuilder buildValidUserDtoMultipartRequest(String url) {
     return buildUserDtoMultipartRequest(url, generateValidUserDto())
         .file(new MockMultipartFile("photo", "photo.jpg", "image/jpeg", "fake-image-content".getBytes()));

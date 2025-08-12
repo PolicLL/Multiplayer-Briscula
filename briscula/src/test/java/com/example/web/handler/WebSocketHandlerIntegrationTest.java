@@ -1,6 +1,8 @@
 package com.example.web.handler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
 import static utils.EntityUtils.getConnectedPlayer;
 
 import com.example.briscula.user.player.RealPlayer;
@@ -8,16 +10,19 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.handler.endpoints.TestCardChosenEndpoint;
 import com.example.web.handler.endpoints.TestGetChooseCardMessageEndpoint;
 import com.example.web.handler.endpoints.TestGetInitialCardsEndpoint;
+import com.example.web.handler.endpoints.TestJoinRoomAnonymouslyEndpoint;
 import com.example.web.handler.endpoints.TestJoinRoomEndpoint;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.service.GameRoomService;
+import com.example.web.service.UserService;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.WebSocketContainer;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
@@ -32,6 +37,9 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
   @Autowired
   private GameRoomService gameRoomService;
+
+  @Autowired
+  private UserService userService;
 
   private GameRoom gameRoom;
 
@@ -70,6 +78,27 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
     assertThat(response).contains("GAME_STARTED");
 
     System.out.println("✅ Test completed successfully: " + response);
+  }
+
+  @Test
+  void testRawWebSocketJoinRoomExceptionUsernameIsAlreadyUsed() throws Exception {
+    userService.createUser(generateValidUserDtoWithoutPhoto("User1950"));
+
+    CompletableFuture<String> future = new CompletableFuture<>();
+
+    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+    TestJoinRoomAnonymouslyEndpoint endpoint = new TestJoinRoomAnonymouslyEndpoint(future);
+
+    container.connectToServer(endpoint, WS_URI);
+
+    ExecutionException ex = assertThrows(
+        ExecutionException.class,
+        () -> future.get(10, TimeUnit.SECONDS)
+    );
+
+    assertThat(ex.getCause())
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("WebSocket closed with code");
   }
 
   @Test
@@ -142,5 +171,4 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
     System.out.println("✅ Test completed successfully!");
   }
-
 }

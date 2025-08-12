@@ -7,6 +7,7 @@ import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
+import com.example.web.exception.UserWithUsernameAlreadyExistsException;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.GameRoom;
 import com.example.web.model.Match;
@@ -30,12 +31,14 @@ public class GamePrepareService {
 
   private final GameRoomService gameRoomService;
   private final GameStartService gameStartService;
+  private final UserService userService;
   private final WebSocketMessageDispatcher messageDispatcher;
 
   public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService,
-      WebSocketMessageDispatcher messageDispatcher) {
+      UserService userService, WebSocketMessageDispatcher messageDispatcher) {
     this.gameStartService = gameStartService;
     this.gameRoomService = gameRoomService;
+    this.userService = userService;
     this.messageDispatcher = messageDispatcher;
   }
 
@@ -67,6 +70,8 @@ public class GamePrepareService {
     }
     else {
       // TODO Check for the name used by anonymous, make sure it is not used by registered player
+      if (userService.existsByUsername(playerName))
+        throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
     }
 
 

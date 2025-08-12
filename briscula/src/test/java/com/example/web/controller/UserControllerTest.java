@@ -149,7 +149,7 @@ class UserControllerTest {
           );
 
           assertThat(errorResponse.status()).isEqualTo(400);
-          assertThat(errorResponse.error()).isEqualTo("User Already Exists");
+          assertThat(errorResponse.error()).isEqualTo("User Already Exists With Username");
           assertThat(errorResponse.message()).isEqualTo("Username is already taken!");
           assertThat(errorResponse.timestamp()).isNotNull();
         });
@@ -194,7 +194,7 @@ class UserControllerTest {
           );
 
           assertThat(errorResponse.status()).isEqualTo(400);
-          assertThat(errorResponse.error()).isEqualTo("User Already Exists");
+          assertThat(errorResponse.error()).isEqualTo("User Already Exists With Email");
           assertThat(errorResponse.message()).isEqualTo("Email is already taken!");
           assertThat(errorResponse.timestamp()).isNotNull();
         });

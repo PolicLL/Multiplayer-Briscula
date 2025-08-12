@@ -7,9 +7,10 @@ import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
 import com.example.web.dto.user.UserStatsDto;
-import com.example.web.exception.UserAlreadyExistsException;
 import com.example.web.exception.UserAlreadyLoggedInException;
 import com.example.web.exception.UserNotFoundException;
+import com.example.web.exception.UserWithEmailAlreadyExistsException;
+import com.example.web.exception.UserWithUsernameAlreadyExistsException;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
@@ -39,12 +40,12 @@ public class UserService {
   private final TokenStore tokenStore;
 
   public UserDto createUser(UserDto userDto) {
-    if (userRepository.existsByUsername(userDto.username())) {
-      throw new UserAlreadyExistsException("Username is already taken!");
+    if (existsByUsername(userDto.username())) {
+      throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
     }
 
     if (userRepository.existsByEmail(userDto.email())) {
-      throw new UserAlreadyExistsException("Email is already taken!");
+      throw new UserWithEmailAlreadyExistsException("Email is already taken!");
     }
 
     if (userDto.photoId() != null && !photoService.existsById(userDto.photoId())) {
@@ -81,6 +82,11 @@ public class UserService {
       throw new UserNotFoundException(id);
 
     User existingUser = existingUserOptional.get();
+
+    if (!existingUser.getUsername().equals(userDto.username())) {
+      if (existsByUsername(userDto.username()))
+        throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
+    }
 
     User updatedUser = userMapper.toEntity(userDto);
     updatedUser.setId(id);
@@ -148,6 +154,10 @@ public class UserService {
     User user = userRepository.findByUsername(username);
     if (user == null) throw new UserNotFoundException();
     return userMapper.toDto(user);
+  }
+
+  public boolean existsByUsername(String username) {
+    return userRepository.existsByUsername(username);
   }
 
   public User retrieveUserByUsername(String username) {
