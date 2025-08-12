@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
 import { useWebSocketContext } from "../context/WebSocketContext";
@@ -23,6 +23,7 @@ function PrepareGame() {
 
     setOnMessage(handleMessage);
     sessionStorage.setItem("isRegistered", false);
+    sessionStorage.setItem("username", name);
 
     console.log("Sending message to join room.");
 
@@ -35,6 +36,19 @@ function PrepareGame() {
 
     setIsDisabled(true);
   };
+
+  useEffect(() => {
+    if (sessionStorage.getItem("isRegistered") === true) {
+      return navigate("/");
+    }
+
+    const storedName = sessionStorage.getItem("username");
+    if (storedName) {
+      setName(storedName);
+    }
+
+    return () => {};
+  }, []);
 
   return (
     <div>

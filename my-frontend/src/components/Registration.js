@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getNames } from "country-list";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
@@ -158,6 +158,13 @@ function UserForm() {
       setMessage(readableError);
     }
   };
+
+  useEffect(() => {
+    if (sessionStorage.getItem("isRegistered")) {
+      return navigate("/");
+    }
+    return () => {};
+  }, []);
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>

@@ -178,7 +178,6 @@ function Dashboard() {
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
             isDisabled={isDisabled}
-            isStartEnabled={false}
           />
         </>
       )}

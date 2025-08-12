@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 function Menu({ onLogout }) {
   const navigate = useNavigate();
   const isLoggedIn = !!sessionStorage.getItem("jwtToken");
+  const isRegistered = sessionStorage.getItem("isRegistered");
 
   const handleLogout = async () => {
     const token = sessionStorage.getItem("jwtToken");
@@ -39,7 +40,7 @@ function Menu({ onLogout }) {
   return (
     <div style={{ position: "absolute", top: 10, right: 10 }}>
       <button onClick={() => navigate("/")}>Home</button>
-      {isLoggedIn && (
+      {isLoggedIn && isRegistered && (
         <button onClick={() => navigate("/dashboard")}>Dashboard</button>
       )}
       {isLoggedIn && <button onClick={handleLogout}>Logout</button>}

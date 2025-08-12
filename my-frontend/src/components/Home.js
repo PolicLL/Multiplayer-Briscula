@@ -7,6 +7,8 @@ function Home() {
   const navigate = useNavigate();
   const [userInfo, setUserInfo] = useState([]);
 
+  const isRegistered = sessionStorage.getItem("isRegistered") === "true";
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -25,13 +27,18 @@ function Home() {
       <Menu />
       <div style={{ textAlign: "center", marginTop: "50px" }}>
         <h1>Welcome to the game</h1>
-        <p>Please choose option to proceed: </p>
 
-        <button onClick={() => navigate("/login")}>Log In</button>
-        <button onClick={() => navigate("/signup")}>Sign Up</button>
-        <button onClick={() => navigate("/anonymous")}>
-          Continue Anonymously
-        </button>
+        {!isRegistered && (
+          <>
+            <p>Please choose option to proceed: </p>
+
+            <button onClick={() => navigate("/login")}>Log In</button>
+            <button onClick={() => navigate("/signup")}>Sign Up</button>
+            <button onClick={() => navigate("/anonymous")}>
+              Continue Anonymously
+            </button>
+          </>
+        )}
 
         <h2 style={{ marginTop: "40px" }}>Top 15 players</h2>
         <table

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Login() {
@@ -9,6 +10,7 @@ function Login() {
 
   const [errors, setErrors] = useState({});
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   const validateForm = () => {
     let tempErrors = {};
@@ -47,6 +49,13 @@ function Login() {
       setErrors(error.response?.data || "Invalid credidentials");
     }
   };
+
+  useEffect(() => {
+    if (sessionStorage.getItem("isRegistered")) {
+      return navigate("/");
+    }
+    return () => {};
+  }, []);
 
   return (
     <div style={{ textAlign: "center", marginTop: "50px" }}>

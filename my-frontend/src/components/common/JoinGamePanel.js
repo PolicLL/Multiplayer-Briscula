@@ -8,7 +8,6 @@ function JoinGamePanel({
   handleCheckboxChange,
   joinGame,
   isDisabled,
-  isStartEnabled,
 }) {
   return (
     <div>
@@ -39,8 +38,6 @@ function JoinGamePanel({
         />
         Show Points
       </label>
-
-      <button disabled={!isStartEnabled}>Start Game</button>
     </div>
   );
 }
