@@ -8,4 +8,6 @@ public enum ClientToServerMessageType {
   CARD_CHOSEN,
   DISCONNECT_FROM_GAME,
   JOIN_TOURNAMENT,
+  LEAVE_ROOM,
+  LEAVE_TOURNAMENT
 }

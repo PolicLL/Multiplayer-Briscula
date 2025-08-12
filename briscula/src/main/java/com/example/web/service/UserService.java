@@ -74,6 +74,7 @@ public class UserService {
     return userMapper.toDto(user);
   }
 
+  // TODO Make sure when updating that name that is already used is not entered
   public UserDto updateUser(String id, UpdateUserRequest userDto) {
     Optional<User> existingUserOptional = userRepository.findById(id);
     if (existingUserOptional.isEmpty())

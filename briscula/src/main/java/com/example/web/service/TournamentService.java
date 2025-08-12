@@ -449,4 +449,7 @@ public class TournamentService {
   private boolean isTournamentFull(String tournamentId) {
     return receiveTournament(tournamentId).getNumberOfPlayers() == tournamentPlayers.get(tournamentId).size();
   }
+
+  public void handleLeaving(WebSocketSession session, WebSocketMessage<?> message) {
+  }
 }

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
@@ -47,7 +48,6 @@ public class GamePrepareService {
   }
 
   // TODO: Make sure that user can leave the tournament/game before it starts.
-  // TODO: Checking name of anonymous user, make sure it is not name used by registered user
   // TODO: While waiting for another player to join room/tournament, make some animation on front
   public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
       throws JsonProcessingException {
@@ -60,9 +60,15 @@ public class GamePrepareService {
 
     String userId = null;
 
-    if (WebSocketMessageReader.contains(message, "userId")) {
+    boolean isRegisteredUser = WebSocketMessageReader.contains(message, "userId");
+
+    if (isRegisteredUser) {
       userId =  WebSocketMessageReader.getValueFromJsonMessage(message, "userId");
     }
+    else {
+      // TODO Check for the name used by anonymous, make sure it is not used by registered player
+    }
+
 
     if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
       log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
@@ -93,20 +99,7 @@ public class GamePrepareService {
         GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
             GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption), firstPlayer.isDoesWantPointsToShow());
 
-        waitingPlayers.forEach(tempUser -> {
-
-          if (tempUser.getPlayer() instanceof RealPlayer) {
-            log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-            sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
-          }
-          else {
-            tempUser.setInitialCardsReceived(true);
-          }
-        });
-
-        if (areAllPlayersBots(waitingPlayers)) {
-          gameStartService.startGame(gameRoom.getRoomId());
-        }
+        notifyPlayersGameIsStarting(waitingPlayers, gameRoom);
 
         waitingPlayers.clear();
       }
@@ -120,6 +113,10 @@ public class GamePrepareService {
 
     gameRoom.setMatchId(match.getId());
 
+    notifyPlayersGameIsStarting(connectedPlayers, gameRoom);
+  }
+
+  private void notifyPlayersGameIsStarting(Set<ConnectedPlayer> connectedPlayers, GameRoom gameRoom) {
     connectedPlayers.forEach(tempUser -> {
       if (tempUser.getPlayer() instanceof RealPlayer) {
         log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
@@ -142,5 +139,19 @@ public class GamePrepareService {
       }
     }
     return true;
+  }
+
+  public void handleLeavingRoom(WebSocketSession session, WebSocketMessage<?> message)
+      throws JsonProcessingException {
+    String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
+    Integer numberOfPlayers = Integer.valueOf(WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
+
+    synchronized (mapPreparingPlayers) {
+      Set<ConnectedPlayer> players = mapPreparingPlayers.get(numberOfPlayers);
+      Optional<ConnectedPlayer> player = players.stream().filter(
+          tempPlayer -> tempPlayer.getPlayer().getNickname().equals(playerName) &&
+              tempPlayer.getWebSocketSession().equals(session)).findFirst();
+      player.ifPresent(players::remove);
+    }
   }
 }

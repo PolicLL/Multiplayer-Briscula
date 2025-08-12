@@ -43,7 +43,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
-  // TODO If we logged in the game, we should not be able to enter as anonymous then
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
     try {
@@ -57,6 +56,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
         case CARD_CHOSEN -> cardsOperationService.handleChosenCard(message);
         case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message, session);
         case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
+        case LEAVE_ROOM -> gamePrepareService.handleLeavingRoom(session, message);
+        case LEAVE_TOURNAMENT -> tournamentService.handleLeaving(session, message);
         default -> throw new WebSocketException();
       }
     } catch (UserIsAlreadyInTournamentOrGame e) {

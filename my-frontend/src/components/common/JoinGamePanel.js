@@ -8,6 +8,7 @@ function JoinGamePanel({
   handleCheckboxChange,
   joinGame,
   isDisabled,
+  leaveGame,
 }) {
   return (
     <div>
@@ -28,6 +29,10 @@ function JoinGamePanel({
       </button>
       <button onClick={() => joinGame(4)} disabled={isDisabled}>
         Join Game (2v2)
+      </button>
+
+      <button onClick={() => leaveGame()} disabled={!isDisabled}>
+        Leave game
       </button>
 
       <label>

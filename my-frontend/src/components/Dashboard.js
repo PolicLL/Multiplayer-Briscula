@@ -20,6 +20,7 @@ function Dashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState("");
   const [showTournaments, setShowTournaments] = useState(false);
+  const [numberOfPlayers, setNumberOfPlayers] = useState(-1);
 
   const [tournaments, setTournaments] = useState([]);
 
@@ -92,6 +93,16 @@ function Dashboard() {
     });
 
     setIsDisabled(true);
+    setNumberOfPlayers(numberOfPlayers);
+  };
+
+  const leaveGame = () => {
+    sendMessage({
+      type: "LEAVE_ROOM",
+      playerName: username,
+      numberOfPlayers: numberOfPlayers,
+    });
+    setIsDisabled(false);
   };
 
   const getPhotoUrl = (id) => `http://localhost:8080/api/photo/${id}`;
@@ -178,6 +189,7 @@ function Dashboard() {
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
             isDisabled={isDisabled}
+            leaveGame={leaveGame}
           />
         </>
       )}

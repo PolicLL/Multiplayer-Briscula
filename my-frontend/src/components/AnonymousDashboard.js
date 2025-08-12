@@ -38,8 +38,8 @@ function PrepareGame() {
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("isRegistered") === true) {
-      return navigate("/");
+    if (sessionStorage.getItem("isRegistered") === "true") {
+      return navigate("/dashboard");
     }
 
     const storedName = sessionStorage.getItem("username");
