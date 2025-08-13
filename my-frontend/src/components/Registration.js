@@ -91,7 +91,7 @@ function UserForm() {
       return response.data;
     } catch (error) {
       console.error("Error uploading photo:", error);
-      throw new Error(error.response?.data || "Error uploading photo.");
+      handleAxiosError(error, setMessage);
     }
   };
 
