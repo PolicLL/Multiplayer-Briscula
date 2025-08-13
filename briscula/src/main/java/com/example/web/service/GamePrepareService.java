@@ -71,7 +71,7 @@ public class GamePrepareService {
     else {
       // TODO Check for the name used by anonymous, make sure it is not used by registered player
       if (userService.existsByUsername(playerName))
-        throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
+        throw new UserWithUsernameAlreadyExistsException();
     }
 
 

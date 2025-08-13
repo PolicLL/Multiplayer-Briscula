@@ -5,7 +5,9 @@ import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
 
 import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
+import com.example.web.dto.user.UserLoginDto;
 import com.example.web.exception.UserWithUsernameAlreadyExistsException;
+import com.example.web.exception.WrongUsernameOrPassword;
 import com.example.web.handler.AbstractIntegrationTest;
 import com.example.web.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -31,5 +33,12 @@ class UserServiceTest extends AbstractIntegrationTest {
     assertThrows(UserWithUsernameAlreadyExistsException.class, () -> {
       userService.updateUser(createdUser.id(), updateUserRequest);
     });
+  }
+
+   @Test
+  void testLogin() {
+     UserLoginDto userLoginDto = new UserLoginDto("user", "WRONG_PASSWORD");
+
+     assertThrows(WrongUsernameOrPassword.class, () -> userService.verify(userLoginDto));
   }
 }

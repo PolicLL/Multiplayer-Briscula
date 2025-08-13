@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { handleAxiosError } from "../utils/handleAxiosError";
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -45,8 +46,7 @@ function Login() {
       window.location.href = "/dashboard";
     } catch (error) {
       console.log("Error : " + error);
-      setMessage("Invalid credidentials");
-      setErrors(error.response?.data || "Invalid credidentials");
+      handleAxiosError(error, setMessage);
     }
   };
 

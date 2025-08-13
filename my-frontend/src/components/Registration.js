@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getNames } from "country-list";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { handleAxiosError } from "../utils/handleAxiosError";
 
 const countries = getNames();
 
@@ -149,13 +150,7 @@ function UserForm() {
 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error creating user:", error);
-      const errorData = error.response?.data;
-      const readableError =
-        typeof errorData === "string"
-          ? errorData
-          : errorData?.error || "Something went wrong.";
-      setMessage(readableError);
+      handleAxiosError(error, setMessage);
     }
   };
 

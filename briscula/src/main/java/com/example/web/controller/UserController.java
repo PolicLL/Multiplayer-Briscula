@@ -35,6 +35,8 @@ public class UserController {
 
   private final UserService userService;
 
+  // TODO: Make sure to check size of photo when uploading it
+
   @PostMapping(value = "/create", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<UserDto> createUser(@Valid @ModelAttribute UserDto userDto) {
     log.info("Creating user with username: {}", userDto.username());

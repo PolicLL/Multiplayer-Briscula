@@ -8,6 +8,7 @@ import com.example.web.exception.UserAlreadyLoggedInException;
 import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
 import com.example.web.exception.UserWithEmailAlreadyExistsException;
 import com.example.web.exception.UserWithUsernameAlreadyExistsException;
+import com.example.web.exception.WrongUsernameOrPassword;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -119,6 +120,20 @@ public class GlobalExceptionHandler {
             LocalDateTime.now(),
             HttpStatus.CONFLICT.value(),
             "User is already logged in",
+            e.getMessage(),
+            request.getRequestURI()
+        )
+    );
+  }
+
+  @ExceptionHandler(WrongUsernameOrPassword.class)
+  public ResponseEntity<ErrorResponse> handleWrongUsernameOrPassword(WrongUsernameOrPassword e, HttpServletRequest request) {
+    log.error("Wrong username or password.");
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+        new ErrorResponse(
+            LocalDateTime.now(),
+            HttpStatus.UNAUTHORIZED.value(),
+            "Incorrect username or password.",
             e.getMessage(),
             request.getRequestURI()
         )

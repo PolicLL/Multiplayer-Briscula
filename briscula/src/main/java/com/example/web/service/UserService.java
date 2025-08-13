@@ -11,6 +11,7 @@ import com.example.web.exception.UserAlreadyLoggedInException;
 import com.example.web.exception.UserNotFoundException;
 import com.example.web.exception.UserWithEmailAlreadyExistsException;
 import com.example.web.exception.UserWithUsernameAlreadyExistsException;
+import com.example.web.exception.WrongUsernameOrPassword;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
 import com.example.web.repository.UserRepository;
@@ -21,8 +22,8 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -41,11 +42,11 @@ public class UserService {
 
   public UserDto createUser(UserDto userDto) {
     if (existsByUsername(userDto.username())) {
-      throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
+      throw new UserWithUsernameAlreadyExistsException();
     }
 
     if (userRepository.existsByEmail(userDto.email())) {
-      throw new UserWithEmailAlreadyExistsException("Email is already taken!");
+      throw new UserWithEmailAlreadyExistsException();
     }
 
     if (userDto.photoId() != null && !photoService.existsById(userDto.photoId())) {
@@ -85,7 +86,12 @@ public class UserService {
 
     if (!existingUser.getUsername().equals(userDto.username())) {
       if (existsByUsername(userDto.username()))
-        throw new UserWithUsernameAlreadyExistsException("Username is already taken!");
+        throw new UserWithUsernameAlreadyExistsException();
+    }
+
+    if (!existingUser.getEmail().equals(userDto.email())) {
+      if (existsByEmail(userDto.email()))
+        throw new UserWithEmailAlreadyExistsException();
     }
 
     User updatedUser = userMapper.toEntity(userDto);
@@ -127,11 +133,12 @@ public class UserService {
       throw new UserAlreadyLoggedInException(existingUser.getUsername());
     }
 
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(existingUser.getEmail(), userLoginDto.password()));
-
-    if (!authentication.isAuthenticated()) {
-      throw new RuntimeException("Authentication failed.");
+    try {
+     authenticationManager.authenticate(
+          new UsernamePasswordAuthenticationToken(existingUser.getEmail(), userLoginDto.password()));
+    }
+    catch (BadCredentialsException badCredentialsException) {
+      throw new WrongUsernameOrPassword();
     }
 
 
@@ -158,6 +165,10 @@ public class UserService {
 
   public boolean existsByUsername(String username) {
     return userRepository.existsByUsername(username);
+  }
+
+  public boolean existsByEmail(String email) {
+    return userRepository.existsByEmail(email);
   }
 
   public User retrieveUserByUsername(String username) {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { getNames } from "country-list";
+import { handleAxiosError } from "../utils/handleAxiosError";
 
 const countries = getNames();
 
@@ -58,14 +59,10 @@ function EditUserForm({ user, onCancel, onUpdate }) {
         }
       );
 
-      console.log(response);
-      console.log(response.token);
-
       setMessage("User updated successfully.");
       onUpdate(response.data);
     } catch (error) {
-      console.error("Error updating user:", error);
-      setMessage("Error updating user.");
+      handleAxiosError(error, setMessage);
     }
   };
 
