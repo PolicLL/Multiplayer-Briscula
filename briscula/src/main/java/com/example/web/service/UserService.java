@@ -1,30 +1,28 @@
 package com.example.web.service;
 
-import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
-
 import com.example.web.component.TokenStore;
 import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
 import com.example.web.dto.user.UserStatsDto;
-import com.example.web.exception.UserAlreadyLoggedInException;
-import com.example.web.exception.UserNotFoundException;
-import com.example.web.exception.UserWithEmailAlreadyExistsException;
-import com.example.web.exception.UserWithUsernameAlreadyExistsException;
-import com.example.web.exception.WrongUsernameOrPassword;
+import com.example.web.exception.*;
 import com.example.web.mapper.UserMapper;
 import com.example.web.model.User;
+import com.example.web.model.entity.UserStatsProjection;
 import com.example.web.repository.UserRepository;
 import com.example.web.security.service.JwtService;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+import static com.example.web.utils.SecurityUtils.B_CRYPT_PASSWORD_ENCODER;
 
 @Service
 @Slf4j
@@ -64,10 +62,16 @@ public class UserService {
     return userMapper.toDto(savedUser);
   }
 
-  public List<UserStatsDto> getAllUsers() {
-    return userRepository.fetchUserStats().stream()
-        .map(userMapper::toUserStats)
-        .collect(Collectors.toList());
+
+  public List<UserStatsDto> getAllUsers(String numberOfElements) {
+    List<UserStatsProjection> list =
+            StringUtils.isNotBlank(numberOfElements)
+                    ? userRepository.fetchUserStats(Integer.parseInt(numberOfElements))
+                    : userRepository.fetchUserStats();
+
+    return list.stream()
+            .map(userMapper::toUserStats)
+            .toList();
   }
 
   public UserDto getUserById(String id) {

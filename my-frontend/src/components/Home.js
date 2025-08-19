@@ -12,7 +12,8 @@ function Home() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axios.get("http://localhost:8080/api/users");
+        const response = await axios.get("http://localhost:8080/api/users?numberOfElements=15");
+
         setUserInfo(response.data); // Fix: use correct variable
       } catch (error) {
         console.error(error);

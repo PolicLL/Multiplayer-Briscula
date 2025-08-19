@@ -54,9 +54,9 @@ public class UserController {
   }
 
   @GetMapping
-  public ResponseEntity<List<UserStatsDto>> getAllUsers() {
+  public ResponseEntity<List<UserStatsDto>> getAllUsers(@RequestParam(required = false) String numberOfElements) {
     log.info("Fetching all users");
-    List<UserStatsDto> users = userService.getAllUsers();
+    List<UserStatsDto> users = userService.getAllUsers(numberOfElements);
     log.info("Total users fetched: {}", users.size());
     return ResponseEntity.ok(users);
   }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -29,4 +30,19 @@ public interface UserRepository extends JpaRepository<User, String> {
     ORDER BY u.points DESC
     """, nativeQuery = true)
   List<UserStatsProjection> fetchUserStats();
+
+  @Query(value = """
+        SELECT
+            u.username,
+            u.points,
+            u.level,
+            COUNT(um.id) AS totalMatchesPlayed,
+            SUM(um.number_of_wins) AS totalWins
+        FROM users u
+        LEFT JOIN match_details um ON u.id = um.user_id
+        GROUP BY u.id, u.username, u.points, u.level
+        ORDER BY u.points DESC
+        LIMIT :limit
+        """, nativeQuery = true)
+  List<UserStatsProjection> fetchUserStats(@Param("limit") int limit);
 }

@@ -14,15 +14,20 @@ function App() {
   return (
     <Router>
       <WebSocketProvider>
-        <Routes>
-          <Route path="/" element={<Home />}></Route>
-          <Route path="/login" element={<Login />}></Route>
-          <Route path="/signup" element={<Registration />}></Route>
-          <Route path="/dashboard" element={<Dashboard />}></Route>
-          <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
-          <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
-          <Route path="/tournament/create" element={<TournamentPage />} />
-        </Routes>
+         <div className="app-background">
+          <div className="overlay"></div>
+          <div className="content">
+            <Routes>
+              <Route path="/" element={<Home />}></Route>
+              <Route path="/login" element={<Login />}></Route>
+              <Route path="/signup" element={<Registration />}></Route>
+              <Route path="/dashboard" element={<Dashboard />}></Route>
+              <Route path="/anonymous" element={<AnonymousDashboard />}></Route>
+              <Route path="/game/:roomId/:playerId" element={<GameRoom />} />
+              <Route path="/tournament/create" element={<TournamentPage />} />
+            </Routes>
+          </div>
+         </div>
       </WebSocketProvider>
     </Router>
   );
