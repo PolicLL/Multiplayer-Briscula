@@ -12,6 +12,8 @@ code {
     monospace;
 }
 
+/* Applies to all pages */
+
 .app-background {
   position: relative;
   min-height: 100vh;
@@ -51,7 +53,7 @@ h1, h2, h4 {
 }
 
 .button-primary {
-  background: #2E7D32; /* green */
+  background: #2E7D32;
   color: #fff;
 }
 
@@ -64,17 +66,17 @@ h1, h2, h4 {
 }
 
 .button-secondary {
-  background: #6B4226; /* muted brown */
+  background: #6B4226; 
   color: #fff;
 }
 
-/* Home table */
+/* Home table with top 10 players */
 
 .leaderboard-table {
   margin: 0 auto;
   border-collapse: collapse;
   width: 80%;
-  background: #FAF8F2; /* cream */
+  background: #FAF8F2;
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
@@ -84,29 +86,29 @@ h1, h2, h4 {
 .leaderboard-table td {
   padding: 12px 16px;
   text-align: center;
-  border-bottom: 1px solid #D6CBBE; /* beige border */
+  border-bottom: 1px solid #D6CBBE; 
 }
 
 .leaderboard-table th {
-  background: #6B4226; /* chocolate brown */
-  color: #FFFFFF; /* white text */
+  background: #6B4226; 
+  color: #FFFFFF; 
   font-weight: bold;
 }
 
 .leaderboard-table tr:nth-child(even) {
-  background: #FAF8F2; /* cream */
+  background: #FAF8F2; 
 }
 
 .leaderboard-table tr:nth-child(odd) {
-  background: #F1E7D8; /* warm beige */
+  background: #F1E7D8; 
 }
 
 .leaderboard-table tr:hover {
-  background: #E6D9C7; /* soft highlight */
+  background: #E6D9C7;
   cursor: pointer;
 }
 
-/* Login */
+/* Login form */
 
 .login-container {
   text-align: center;
@@ -114,7 +116,7 @@ h1, h2, h4 {
 }
 
 .login-card {
-  background: #FAF8F2; /* cream, card-like */
+  background: #FAF8F2;
   display: inline-block;
   padding: 30px 40px;
   border-radius: 12px;
@@ -123,7 +125,7 @@ h1, h2, h4 {
 }
 
 .login-card h2 {
-  color: #4A3222; /* deep warm brown */
+  color: #4A3222;
   margin-bottom: 20px;
 }
 
@@ -131,7 +133,7 @@ h1, h2, h4 {
   width: 100%;
   padding: 12px;
   margin: 10px 0;
-  border: 1px solid #D6CBBE; /* beige border */
+  border: 1px solid #D6CBBE;
   border-radius: 8px;
   background: #fff;
   font-size: 14px;
@@ -139,7 +141,7 @@ h1, h2, h4 {
 }
 
 .login-card input:focus {
-  border-color: #6B4226; /* chocolate brown */
+  border-color: #6B4226; 
   outline: none;
   box-shadow: 0 0 5px rgba(107, 66, 38, 0.5);
 }
@@ -151,27 +153,27 @@ h1, h2, h4 {
 
 /* Success and error messages */
 .login-message {
-  color: #2E7D32; /* green */
+  color: #2E7D32;
   margin-bottom: 10px;
   font-weight: bold;
 }
 
 .login-error {
-  color: #B22222; /* firebrick red */
+  color: #B22222; 
   font-size: 13px;
   margin: -5px 0 10px;
   text-align: left;
 }
 
-/* Registration */
+/* Registration form */
 
-.register-container {
+.form-input-container {
   text-align: center;
   margin-top: 80px;
 }
 
 .register-card {
-  background: #FAF8F2; /* cream, card-like */
+  background: #FAF8F2; 
   display: inline-block;
   padding: 30px 40px;
   border-radius: 12px;
@@ -181,7 +183,7 @@ h1, h2, h4 {
 }
 
 .register-card h2 {
-  color: #4A3222; /* deep warm brown */
+  color: #4A3222; 
   margin-bottom: 20px;
 }
 
@@ -200,7 +202,7 @@ h1, h2, h4 {
 
 .register-card input:focus,
 .register-card select:focus {
-  border-color: #6B4226; /* chocolate brown */
+  border-color: #6B4226; 
   outline: none;
   box-shadow: 0 0 5px rgba(107, 66, 38, 0.5);
 }
@@ -244,7 +246,7 @@ h1, h2, h4 {
 }
 
 .file-upload input[type="file"] {
-  display: none; /* hide the ugly default */
+  display: none; 
 }
 
 .file-upload-label {
@@ -286,7 +288,7 @@ h1, h2, h4 {
   align-items: flex-start; /* Align everything to the left */
   padding: 20px;
   min-height: 100vh;
-  background-image: url("../public/images/light-wooden-background.jpg"); /* Replace with your image path */
+  background-image: url("../public/images/light-wooden-background.jpg");
   background-size: cover; /* Cover the entire container */
   background-repeat: no-repeat;
   background-position: top left;
@@ -387,7 +389,7 @@ h1, h2, h4 {
   background: #1565C0;
 }
 
-/* Game controls button */
+/* Game controls button (Join Game buttons) */
 
 .game-controls {
   display: flex;
@@ -444,4 +446,5 @@ h1, h2, h4 {
 }
 
 
-/* Edit user form */
+/* Create tournament form */
+

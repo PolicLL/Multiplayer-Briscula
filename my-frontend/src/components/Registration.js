@@ -162,7 +162,7 @@ function UserForm() {
   }, []);
 
   return (
-    <div className="register-container">
+    <div className="form-input-container">
       <div className="register-card">
         <h2>Create User</h2>
 

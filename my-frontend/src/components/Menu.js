@@ -7,6 +7,12 @@ function Menu({ onLogout }) {
   const isLoggedIn = !!sessionStorage.getItem("jwtToken");
   const isRegistered = sessionStorage.getItem("isRegistered");
 
+  const callLogoutMethod = () => {
+    onLogout?.(); // will only call if onLogout exists and is a function
+    navigate("/"); // optional, still navigate after logout
+  }
+
+
   const handleLogout = async () => {
     const token = sessionStorage.getItem("jwtToken");
 
@@ -32,7 +38,9 @@ function Menu({ onLogout }) {
     }
 
     // Always clear session and update UI regardless of server response
+    callLogoutMethod();
     sessionStorage.clear();
+    
     onLogout();
     navigate("/");
   };

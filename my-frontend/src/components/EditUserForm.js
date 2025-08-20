@@ -67,7 +67,7 @@ function EditUserForm({ user, onCancel, onUpdate }) {
   };
 
   return (
-    <div className="register-container">
+    <div className="form-input-container">
       <div className="register-card">
         <h2>Edit Profile</h2>
 

@@ -46,73 +46,70 @@ const TournamentForm = ({ onSuccess, onError }) => {
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label>Name:</label>
-          <input
-            name="name"
-            value={form.name}
-            onChange={handleChange}
-            required
-            className="border p-1 w-full"
-          />
-        </div>
+    <div className="form-input-container">
+      <div className="register-card">
+        <h2>Create Tournament</h2>
 
-        <div>
-          <label>Number of Players:</label>
-          <select
-            name="numberOfPlayers"
-            value={form.numberOfPlayers}
-            onChange={handleChange}
-            className="border p-1 w-full"
-          >
-            {[2, 4, 8, 16, 32].map((n) => (
-              <option key={n} value={n}>
-                {n}
-              </option>
-            ))}
-          </select>
-        </div>
+        <form onSubmit={handleSubmit}>
+          <div>
+            <label>Name:</label>
+            <input
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <div>
-          <label>Number of Bots:</label>
-          <input
-            name="numberOfBots"
-            value={form.numberOfBots}
-            onChange={handleChange}
-            required
-            className="border p-1 w-full"
-          />
-        </div>
+          <div>
+            <label>Number of Players:</label>
+            <select
+              name="numberOfPlayers"
+              value={form.numberOfPlayers}
+              onChange={handleChange}
+            >
+              {[2, 4, 8, 16, 32].map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <div>
-          <label>Rounds to Win:</label>
-          <select
-            name="roundsToWin"
-            value={form.roundsToWin}
-            onChange={handleChange}
-            className="border p-1 w-full"
-          >
-            {[1, 2, 3, 4].map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-        </div>
+          <div>
+            <label>Number of Bots:</label>
+            <input
+              name="numberOfBots"
+              value={form.numberOfBots}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          {loading ? "Creating..." : "Create Tournament"}
-        </button>
-      </form>
+          <div>
+            <label>Rounds to Win:</label>
+            <select
+              name="roundsToWin"
+              value={form.roundsToWin}
+              onChange={handleChange}
+            >
+              {[1, 2, 3, 4].map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
+            </select>
+          </div>
 
-      {message && <p>{message}</p>}
+          <button className="button button-primary" type="submit" disabled={loading}>
+            {loading ? "Creating..." : "Create Tournament"}
+          </button>
+        </form>
+
+        {message && <p className="register-message">{message}</p>}
+      </div>
     </div>
+
   );
 };
 

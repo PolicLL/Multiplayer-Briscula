@@ -27,7 +27,7 @@ function Home() {
     <>
       <Menu />
       <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <h1>Welcome to the game</h1>
+        <h1>Briscula</h1>
 
         {!isRegistered && (
           <>
