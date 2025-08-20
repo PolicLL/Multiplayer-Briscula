@@ -108,10 +108,13 @@ function Dashboard() {
   const getPhotoUrl = (id) => `http://localhost:8080/api/photo/${id}`;
 
   return (
-    <div>
+    <div className="dashboard-container">
       <Menu onLogout={() => setUserInfo(null)} />
-      <h2>Hello!</h2>
-      {message && <p>{message}</p>}
+
+      <div className="dashboard-header">
+        <h2>Hello!</h2>
+        {message && <p>{message}</p>}
+      </div>
 
       {isEditing ? (
         <EditUserForm
@@ -124,40 +127,38 @@ function Dashboard() {
         />
       ) : (
         <>
-          {userInfo?.photoId && (
-            <img
-              src={getPhotoUrl(userInfo.photoId)}
-              alt="User"
-              style={{
-                width: "150px",
-                height: "150px",
-                borderRadius: "50%",
-                objectFit: "cover",
-              }}
-              onError={(e) => (e.target.src = "/images/anonymous.png")}
-            />
-          )}
-          <h3>Welcome, {userInfo?.username}!</h3>
-          <p>Age: {userInfo?.age}</p>
-          <p>Country: {userInfo?.country}</p>
-          <p>Email: {userInfo?.email}</p>
-          <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+          <div className="user-info">
+            {userInfo?.photoId && (
+              <img
+                src={getPhotoUrl(userInfo.photoId)}
+                alt="User"
+                className="user-photo"
+                onError={(e) => (e.target.src = "/images/anonymous.png")}
+              />
+            )}
+            <h3>Welcome, {userInfo?.username}!</h3>
+            <p>Age: {userInfo?.age}</p>
+            <p>Country: {userInfo?.country}</p>
+            <p>Email: {userInfo?.email}</p>
+          </div>
 
-          <div style={{ marginTop: "1rem" }}>
+          <div className="dashboard-buttons">
+            <button className="edit-btn" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </button>
             <button
-              onClick={() => navigate("/tournament/create")} // ✅ navigate to creation page
-              className="bg-green-600 text-white px-4 py-2 rounded"
+              onClick={() => navigate("/tournament/create")}
+              className="create-btn"
             >
               Create Tournament
             </button>
+            <button
+              onClick={() => setShowTournaments((prev) => !prev)}
+              className="view-btn"
+            >
+              {showTournaments ? "Hide Tournaments" : "View Tournaments"}
+            </button>
           </div>
-
-          <button
-            onClick={() => setShowTournaments((prev) => !prev)}
-            className="bg-blue-500 text-white px-4 py-2 rounded mt-4 ml-2"
-          >
-            {showTournaments ? "Hide Tournaments" : "View Tournaments"}
-          </button>
 
           {showTournaments && (
             <TournamentList
@@ -194,6 +195,7 @@ function Dashboard() {
         </>
       )}
     </div>
+
   );
 }
 

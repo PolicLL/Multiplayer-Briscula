@@ -58,35 +58,37 @@ function Login() {
   }, []);
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h2>Login</h2>
+      <div className="login-container">
+        <div className="login-card">
+          <h2>Login</h2>
 
-      {message && <p style={{ color: "green" }}>{message}</p>}
+          {message && <p className="login-message">{message}</p>}
 
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={formData.username}
-          onChange={(e) =>
-            setFormData({ ...formData, username: e.target.value })
-          }
-        />
-        <p style={{ color: "red" }}>{errors.username}</p>
+          <form onSubmit={handleSubmit}>
+            <input
+              type="text"
+              placeholder="Username"
+              value={formData.username}
+              onChange={(e) =>
+                setFormData({ ...formData, username: e.target.value })
+              }
+            />
+            {errors.username && <p className="login-error">{errors.username}</p>}
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={formData.password}
-          onChange={(e) =>
-            setFormData({ ...formData, password: e.target.value })
-          }
-        />
-        <p style={{ color: "red" }}>{errors.password}</p>
+            <input
+              type="password"
+              placeholder="Password"
+              value={formData.password}
+              onChange={(e) =>
+                setFormData({ ...formData, password: e.target.value })
+              }
+            />
+            {errors.password && <p className="login-error">{errors.password}</p>}
 
-        <button type="submit">LogIn</button>
-      </form>
-    </div>
+            <button className="button button-primary" type="submit">Log In</button>
+          </form>
+        </div>
+      </div>
   );
 }
 

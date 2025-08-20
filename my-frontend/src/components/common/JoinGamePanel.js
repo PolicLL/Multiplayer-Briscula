@@ -11,7 +11,7 @@ function JoinGamePanel({
   leaveGame,
 }) {
   return (
-    <div>
+    <div className="game-controls">
       {setName && (
         <input
           type="text"
@@ -21,18 +21,18 @@ function JoinGamePanel({
         />
       )}
 
-      <button onClick={() => joinGame(2)} disabled={isDisabled}>
+      <button className="primary" onClick={() => joinGame(2)} disabled={isDisabled}>
         Join Game (1v1)
       </button>
-      <button onClick={() => joinGame(3)} disabled={isDisabled}>
+      <button className="primary" onClick={() => joinGame(3)} disabled={isDisabled}>
         Join Game (1v1v1)
       </button>
-      <button onClick={() => joinGame(4)} disabled={isDisabled}>
+      <button className="primary" onClick={() => joinGame(4)} disabled={isDisabled}>
         Join Game (2v2)
       </button>
 
-      <button onClick={() => leaveGame()} disabled={!isDisabled}>
-        Leave game
+      <button className="secondary" onClick={() => leaveGame()} disabled={!isDisabled}>
+        Leave Game
       </button>
 
       <label>
@@ -44,6 +44,7 @@ function JoinGamePanel({
         Show Points
       </label>
     </div>
+
   );
 }
 

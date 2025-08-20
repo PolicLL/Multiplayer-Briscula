@@ -38,13 +38,21 @@ function Menu({ onLogout }) {
   };
 
   return (
-    <div style={{ position: "absolute", top: 10, right: 10 }}>
-      <button onClick={() => navigate("/")}>Home</button>
-      {isLoggedIn && isRegistered && (
-        <button onClick={() => navigate("/dashboard")}>Dashboard</button>
-      )}
-      {isLoggedIn && <button onClick={handleLogout}>Logout</button>}
-    </div>
+  <div style={{ position: "absolute", top: 10, right: 10 }}>
+    <button className="button button-secondary" onClick={() => navigate("/")}>
+      Home
+    </button>
+    {isLoggedIn && isRegistered && (
+      <button className="button button-secondary" onClick={() => navigate("/dashboard")}>
+        Dashboard
+      </button>
+    )}
+    {isLoggedIn && (
+      <button className="button button-secondary" onClick={handleLogout}>
+        Logout
+      </button>
+    )}
+  </div>
   );
 }
 
