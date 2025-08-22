@@ -6,6 +6,7 @@ function Menu({ onLogout }) {
   const navigate = useNavigate();
   const isLoggedIn = !!sessionStorage.getItem("jwtToken");
   const isRegistered = sessionStorage.getItem("isRegistered");
+  const hasEnteredAnonymously = sessionStorage.getItem("hasEnteredAnonymously") === "true";
 
   const callLogoutMethod = () => {
     onLogout?.(); // will only call if onLogout exists and is a function
@@ -47,9 +48,11 @@ function Menu({ onLogout }) {
 
   return (
   <div style={{ position: "absolute", top: 10, right: 10 }}>
-    <button className="button button-secondary" onClick={() => navigate("/")}>
-      Home
-    </button>
+    {(hasEnteredAnonymously || isLoggedIn) && (
+      <button className="button button-secondary" onClick={() => navigate("/")}>
+        Home
+      </button>
+    )}
     {isLoggedIn && isRegistered && (
       <button className="button button-secondary" onClick={() => navigate("/dashboard")}>
         Dashboard

@@ -77,7 +77,7 @@ function Dashboard() {
     return () => {
       setOnMessage(null);
     };
-  }, [navigate, username, setOnMessage, handleMessage]); // ✅ `handleMessage` is memoized without `tournaments`
+  }, [navigate, username, setOnMessage, handleMessage]); 
 
   useEffect(() => {
     console.log("Tournaments updated:", tournaments);

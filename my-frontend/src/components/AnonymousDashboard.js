@@ -34,6 +34,8 @@ function PrepareGame() {
       shouldShowPoints: shouldShowPoints,
     });
 
+    sessionStorage.setItem("hasEnteredAnonymously", true);
+
     setIsDisabled(true);
   };
 

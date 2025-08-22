@@ -10,6 +10,8 @@ function Home() {
   const isRegistered = sessionStorage.getItem("isRegistered") === "true";
 
   useEffect(() => {
+    sessionStorage.setItem("hasEnteredAnonymously", false);
+
     const fetchUserInfo = async () => {
       try {
         const response = await axios.get("http://localhost:8080/api/users?numberOfElements=10");
@@ -31,8 +33,6 @@ function Home() {
 
         {!isRegistered && (
           <>
-            <h4>Please choose option to proceed: </h4>
-
             <button className="button button-primary" onClick={() => navigate("/login")}>
               Log In
             </button>
@@ -42,7 +42,6 @@ function Home() {
             <button className="button button-secondary" onClick={() => navigate("/anonymous")}>
               Continue Anonymously
             </button>
-
           </>
         )}
 
