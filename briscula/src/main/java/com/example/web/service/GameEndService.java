@@ -29,7 +29,7 @@ public class GameEndService {
 
   private final TournamentService tournamentService;
   private final MatchService matchService;
-  private final WebSocketMessageDispatcher messageDispatcher;
+  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
   public void update(GameEndStatus gameEndStatus, String matchId) {
     log.info("Game ended with status {} for match with id {}, updating statistics.", gameEndStatus.status(), matchId);

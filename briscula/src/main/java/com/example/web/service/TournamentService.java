@@ -1,15 +1,5 @@
 package com.example.web.service;
 
-import static com.example.web.model.enums.ServerToClientMessageType.RESTARTING_MATCH;
-import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_LOST;
-import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_UPDATE;
-import static com.example.web.model.enums.ServerToClientMessageType.TOURNAMENT_WON;
-import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY_IN_GAME_OR_TOURNAMENT;
-import static com.example.web.utils.Constants.OBJECT_MAPPER;
-import static com.example.web.utils.Constants.RANDOM;
-import static com.example.web.utils.SimpleWebSocketSession.getWebSocketSession;
-import static com.example.web.utils.WebSocketMessageSender.sendMessage;
-
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.user.player.RoomPlayerId;
@@ -20,17 +10,9 @@ import com.example.web.dto.tournament.JoinTournamentRequest;
 import com.example.web.dto.tournament.TournamentCreateDto;
 import com.example.web.dto.tournament.TournamentResponseDto;
 import com.example.web.dto.tournament.TournamentUpdateDto;
-import com.example.web.exception.TooBigNumberOfBotsException;
-import com.example.web.exception.TournamentIsFullException;
-import com.example.web.exception.UserAlreadyAssignedToTournament;
-import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
-import com.example.web.exception.UserNotFoundException;
+import com.example.web.exception.*;
 import com.example.web.mapper.TournamentMapper;
-import com.example.web.model.ConnectedPlayer;
-import com.example.web.model.Match;
-import com.example.web.model.MatchDetails;
-import com.example.web.model.Tournament;
-import com.example.web.model.User;
+import com.example.web.model.*;
 import com.example.web.model.enums.TournamentStatus;
 import com.example.web.repository.MatchDetailsRepository;
 import com.example.web.repository.TournamentRepository;
@@ -40,21 +22,23 @@ import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+
+import static com.example.web.model.enums.ServerToClientMessageType.*;
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static com.example.web.utils.Constants.RANDOM;
+import static com.example.web.utils.SimpleWebSocketSession.getWebSocketSession;
+import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 @Service
 @RequiredArgsConstructor
@@ -71,7 +55,7 @@ public class TournamentService {
   private final MatchService matchService;
   private final UserService userService;
 
-  private final WebSocketMessageDispatcher messageDispatcher;
+  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
   private final Map<String, Set<ConnectedPlayer>> tournamentPlayers = new HashMap<>();
   private final Map<String, Set<User>> tournamentUsers = new HashMap<>();

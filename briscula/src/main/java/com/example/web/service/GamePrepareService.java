@@ -32,14 +32,13 @@ public class GamePrepareService {
   private final GameRoomService gameRoomService;
   private final GameStartService gameStartService;
   private final UserService userService;
-  private final WebSocketMessageDispatcher messageDispatcher;
+  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
   public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService,
-      UserService userService, WebSocketMessageDispatcher messageDispatcher) {
+      UserService userService) {
     this.gameStartService = gameStartService;
     this.gameRoomService = gameRoomService;
     this.userService = userService;
-    this.messageDispatcher = messageDispatcher;
   }
 
   private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();

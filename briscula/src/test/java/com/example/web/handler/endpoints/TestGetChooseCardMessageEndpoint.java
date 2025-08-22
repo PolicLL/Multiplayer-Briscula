@@ -1,21 +1,16 @@
 package com.example.web.handler.endpoints;
 
+import com.example.web.dto.Message;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import jakarta.websocket.*;
+import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
 import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static utils.EntityUtils.getPlayerName;
 import static utils.EntityUtils.getUserId;
-
-import com.example.web.dto.Message;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import jakarta.websocket.ClientEndpoint;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import lombok.RequiredArgsConstructor;
 
 @ClientEndpoint
 @RequiredArgsConstructor
@@ -34,6 +29,10 @@ public class TestGetChooseCardMessageEndpoint {
     System.out.println("Web socket session: " + session + " id: " + session.getId());
 
     try {
+      session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
+              "type", "LOGGED_IN"
+      )));
+
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "JOIN_ROOM",
           "playerName", getPlayerName(),

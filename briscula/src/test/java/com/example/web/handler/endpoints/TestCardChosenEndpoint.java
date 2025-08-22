@@ -1,18 +1,13 @@
 package com.example.web.handler.endpoints;
 
-import static com.example.web.utils.Constants.OBJECT_MAPPER;
-
 import com.example.web.model.GameRoom;
-import jakarta.websocket.ClientEndpoint;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
+import jakarta.websocket.*;
+import lombok.RequiredArgsConstructor;
+
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import lombok.RequiredArgsConstructor;
+
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
 @ClientEndpoint
 @RequiredArgsConstructor
@@ -25,6 +20,10 @@ public class TestCardChosenEndpoint {
   public void onOpen(Session session) {
     System.out.println("✅ WebSocket connection established");
     try {
+      session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
+              "type", "LOGGED_IN"
+      )));
+
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "CARD_CHOSEN",
           "roomId", gameRoom.getRoomId(),

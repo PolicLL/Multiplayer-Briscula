@@ -1,6 +1,10 @@
 package com.example.web.utils;
 
-import static com.example.web.utils.Constants.RANDOM;
+import org.springframework.http.HttpHeaders;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.WebSocketExtension;
+import org.springframework.web.socket.WebSocketMessage;
+import org.springframework.web.socket.WebSocketSession;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -9,10 +13,8 @@ import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.springframework.http.HttpHeaders;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketExtension;
-import org.springframework.web.socket.WebSocketSession;
+
+import static com.example.web.utils.Constants.RANDOM;
 
 public class SimpleWebSocketSession implements WebSocketSession {
 
@@ -94,7 +96,7 @@ public class SimpleWebSocketSession implements WebSocketSession {
   }
 
   @Override
-  public void sendMessage(org.springframework.web.socket.WebSocketMessage<?> message) throws IOException {
+  public void sendMessage(WebSocketMessage<?> message) throws IOException {
     System.out.println("Message sent: " + message.getPayload());
   }
 

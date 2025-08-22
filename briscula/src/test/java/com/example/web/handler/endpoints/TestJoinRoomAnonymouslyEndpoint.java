@@ -1,17 +1,12 @@
 package com.example.web.handler.endpoints;
 
-import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import jakarta.websocket.*;
+import lombok.RequiredArgsConstructor;
 
-import jakarta.websocket.ClientEndpoint;
-import jakarta.websocket.CloseReason;
-import jakarta.websocket.OnClose;
-import jakarta.websocket.OnError;
-import jakarta.websocket.OnMessage;
-import jakarta.websocket.OnOpen;
-import jakarta.websocket.Session;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import lombok.RequiredArgsConstructor;
+
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
 
 @ClientEndpoint
 @RequiredArgsConstructor
@@ -26,6 +21,10 @@ public class TestJoinRoomAnonymouslyEndpoint {
     String alreadyUsedNameByRegisteredUser = "User1950";
 
     try {
+      session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
+              "type", "LOGGED_IN"
+      )));
+
       session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(
           "type", "JOIN_ROOM",
           "playerName", alreadyUsedNameByRegisteredUser,

@@ -1,22 +1,29 @@
 package com.example.web.service;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.LinkedBlockingQueue;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
 
-@Service
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WebSocketMessageDispatcher {
 
+  private static final WebSocketMessageDispatcher INSTANCE = new WebSocketMessageDispatcher();
   private final Map<WebSocketSession, BlockingQueue<String>> sessionQueues = new ConcurrentHashMap<>();
   private static final Map<WebSocketSession, Thread> sessionWorkers = new ConcurrentHashMap<>();
   private final Map<WebSocketSession, Boolean> sessionJoinedGame = new ConcurrentHashMap<>();
+
+  public static WebSocketMessageDispatcher getInstance() {
+    return INSTANCE;
+  }
 
   public void registerSession(WebSocketSession session) {
     if (sessionQueues.containsKey(session)) return;

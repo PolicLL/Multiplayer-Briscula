@@ -1,19 +1,12 @@
 package com.example.web.handler;
 
-import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY_IN_GAME_OR_TOURNAMENT;
-
 import com.example.web.dto.Message;
 import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
 import com.example.web.exception.WebSocketException;
-import com.example.web.service.CardsOperationService;
-import com.example.web.service.GameEndService;
-import com.example.web.service.GamePrepareService;
-import com.example.web.service.TournamentService;
-import com.example.web.service.WebSocketMessageDispatcher;
+import com.example.web.service.*;
 import com.example.web.utils.JsonUtils;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
@@ -22,6 +15,10 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.io.IOException;
+
+import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY_IN_GAME_OR_TOURNAMENT;
 
 @Slf4j
 @Component
@@ -36,7 +33,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
   private final TournamentService tournamentService;
 
-  private final WebSocketMessageDispatcher messageDispatcher;
+  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
   @Override
   public void afterConnectionEstablished(WebSocketSession session) {

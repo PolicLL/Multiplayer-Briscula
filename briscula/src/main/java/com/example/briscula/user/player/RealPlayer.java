@@ -1,36 +1,30 @@
 package com.example.briscula.user.player;
 
-import static com.example.briscula.utilities.constants.CardFormatter.formatCard;
-import static com.example.web.model.enums.ServerToClientMessageType.CARDS_STATE_UPDATE;
-import static com.example.web.model.enums.ServerToClientMessageType.CHOOSE_CARD;
-import static com.example.web.model.enums.ServerToClientMessageType.NO_WINNER;
-import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_LOST;
-import static com.example.web.model.enums.ServerToClientMessageType.PLAYER_WON;
-import static com.example.web.model.enums.ServerToClientMessageType.RECEIVED_THROWN_CARD;
-import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_CARD;
-import static com.example.web.model.enums.ServerToClientMessageType.REMOVE_MAIN_CARD;
-import static com.example.web.model.enums.ServerToClientMessageType.SENT_COLLEAGUES_CARDS;
-import static com.example.web.model.enums.ServerToClientMessageType.WAIT_FOR_NEXT_MATCH;
-import static com.example.web.utils.WebSocketMessageSender.sendMessage;
-
 import com.example.briscula.configuration.BrisculaConfig;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.utilities.constants.CardFormatter;
 import com.example.web.service.WebSocketMessageDispatcher;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static com.example.briscula.utilities.constants.CardFormatter.formatCard;
+import static com.example.web.model.enums.ServerToClientMessageType.*;
+import static com.example.web.utils.WebSocketMessageSender.sendMessage;
+
 @Getter
 @Slf4j
 @SuperBuilder
 public class RealPlayer extends Player {
+
+  private WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
   private final RoomPlayerId roomPlayerId;
 
