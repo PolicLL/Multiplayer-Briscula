@@ -16,7 +16,6 @@ function Dashboard() {
   const [username] = useState(() => sessionStorage.getItem("username"));
   const [message, setMessage] = useState("");
   const [shouldShowPoints, setShouldShowPoints] = useState(false);
-  const [isDisabled, setIsDisabled] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [status, setStatus] = useState("");
   const [showTournaments, setShowTournaments] = useState(false);
@@ -92,7 +91,6 @@ function Dashboard() {
       shouldShowPoints,
     });
 
-    setIsDisabled(true);
     setNumberOfPlayers(numberOfPlayers);
   };
 
@@ -102,7 +100,6 @@ function Dashboard() {
       playerName: username,
       numberOfPlayers: numberOfPlayers,
     });
-    setIsDisabled(false);
   };
 
   const getPhotoUrl = (id) => `http://localhost:8080/api/photo/${id}`;
@@ -110,11 +107,6 @@ function Dashboard() {
   return (
     <div className="dashboard-container">
       <Menu onLogout={() => setUserInfo(null)} />
-
-      <div className="dashboard-header">
-        <h2>Hello!</h2>
-        {message && <p>{message}</p>}
-      </div>
 
       {isEditing ? (
         <EditUserForm
@@ -128,15 +120,16 @@ function Dashboard() {
       ) : (
         <>
           <div className="user-info">
-            {userInfo?.photoId && (
-              <img
-                src={getPhotoUrl(userInfo.photoId)}
-                alt="User"
-                className="user-photo"
-                onError={(e) => (e.target.src = "/images/anonymous.png")}
-              />
-            )}
-            <h3>Welcome, {userInfo?.username}!</h3>
+            <img
+              src={userInfo?.photoId ? getPhotoUrl(userInfo.photoId) : "/images/anonymous.png"}
+              alt="User"
+              className="user-photo"
+              onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/images/anonymous.png";
+              }}
+            />
+            <p>Username: {userInfo?.username}</p>
             <p>Age: {userInfo?.age}</p>
             <p>Country: {userInfo?.country}</p>
             <p>Email: {userInfo?.email}</p>
@@ -189,7 +182,6 @@ function Dashboard() {
             shouldShowPoints={shouldShowPoints}
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
-            isDisabled={isDisabled}
             leaveGame={leaveGame}
           />
         </>

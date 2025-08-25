@@ -65,6 +65,15 @@ h1, h2, h4 {
   background: #1B5E20;
 }
 
+.button-primary:disabled {
+  background: #A5D6A7;   /* lighter green */
+  color: #E0E0E0;        /* gray text */
+  cursor: not-allowed;   /* show "not-allowed" cursor */
+  box-shadow: none;      /* remove shadow to indicate inactive */
+  opacity: 0.7;          /* optional: slightly transparent */
+}
+
+
 .button-secondary {
   background: #6B4226; 
   color: #fff;
@@ -396,7 +405,7 @@ h1, h2, h4 {
   flex-direction: column;
   align-items: flex-start; /* left-align everything */
   gap: 10px;
-  background: rgba(107, 66, 38, 0.85); /* dark wooden overlay */
+  background: rgba(131, 103, 71, 0.85); /* dark wooden overlay */
   padding: 20px;
   border-radius: 12px;
   color: #fff;
@@ -443,6 +452,12 @@ h1, h2, h4 {
 .game-controls label {
   margin-top: 8px;
   font-weight: normal;
+}
+
+.game-controls button.primary.active {
+  background-color: #D4A373; /* highlight color */
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 

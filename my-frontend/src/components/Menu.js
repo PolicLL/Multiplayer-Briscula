@@ -42,7 +42,7 @@ function Menu({ onLogout }) {
     callLogoutMethod();
     sessionStorage.clear();
     
-    onLogout();
+    onLogout?.();
     navigate("/");
   };
 

@@ -387,6 +387,14 @@ public class TournamentService {
     messageDispatcher.leftGameOrTournament(loser.getWebSocketSession());
     sendMessage(winner.getWebSocketSession(), TOURNAMENT_WON);
     sendMessage(loser.getWebSocketSession(), TOURNAMENT_LOST);
+
+    Tournament tournament = tournamentRepository.findById(tournamentId)
+            .orElseThrow(() -> new EntityNotFoundException(tournamentId));
+
+    tournamentPlayers.get(tournamentId).clear();
+    tournamentUsers.get(tournamentId).clear();
+    tournamentPlayersWinners.get(tournamentId).clear();
+    tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
   }
 
   private int getNumberOfPlayersInTournament(String tournamentId) {

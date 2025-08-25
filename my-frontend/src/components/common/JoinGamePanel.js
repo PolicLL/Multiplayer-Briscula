@@ -1,5 +1,4 @@
-// JoinGamePanel.js
-import React from "react";
+import React, { useState } from "react";
 
 function JoinGamePanel({
   name,
@@ -7,9 +6,20 @@ function JoinGamePanel({
   shouldShowPoints,
   handleCheckboxChange,
   joinGame,
-  isDisabled,
   leaveGame,
 }) {
+  const [selectedGame, setSelectedGame] = useState(null);
+
+  const handleJoin = (players) => {
+    joinGame(players);
+    setSelectedGame(players);
+  };
+
+  const handleLeave = () => {
+    leaveGame();
+    setSelectedGame(null);
+  };
+
   return (
     <div className="game-controls">
       {setName && (
@@ -21,17 +31,35 @@ function JoinGamePanel({
         />
       )}
 
-      <button className="primary" onClick={() => joinGame(2)} disabled={isDisabled}>
+      <button
+        className={`primary ${selectedGame === 2 ? "active" : ""}`}
+        onClick={() => handleJoin(2)}
+        disabled={!!selectedGame}
+      >
         Join Game (1v1)
       </button>
-      <button className="primary" onClick={() => joinGame(3)} disabled={isDisabled}>
+
+      <button
+        className={`primary ${selectedGame === 3 ? "active" : ""}`}
+        onClick={() => handleJoin(3)}
+        disabled={!!selectedGame}
+      >
         Join Game (1v1v1)
       </button>
-      <button className="primary" onClick={() => joinGame(4)} disabled={isDisabled}>
+
+      <button
+        className={`primary ${selectedGame === 4 ? "active" : ""}`}
+        onClick={() => handleJoin(4)}
+        disabled={!!selectedGame}
+      >
         Join Game (2v2)
       </button>
 
-      <button className="secondary" onClick={() => leaveGame()} disabled={!isDisabled}>
+      <button
+        className="secondary"
+        onClick={handleLeave}
+        disabled={!selectedGame}
+      >
         Leave Game
       </button>
 
@@ -44,7 +72,6 @@ function JoinGamePanel({
         Show Points
       </label>
     </div>
-
   );
 }
 

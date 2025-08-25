@@ -156,6 +156,11 @@ public class GamePrepareService {
           tempPlayer -> tempPlayer.getPlayer().getNickname().equals(playerName) &&
               tempPlayer.getWebSocketSession().equals(session)).findFirst();
       player.ifPresent(players::remove);
+
+      // check will it work
+      messageDispatcher.leftGameOrTournament(session);
+
+      log.info("User with player name {}, left room for {} players.", playerName, numberOfPlayers);
     }
   }
 }
