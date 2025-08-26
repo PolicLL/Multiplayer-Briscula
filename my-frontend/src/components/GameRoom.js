@@ -227,11 +227,22 @@ function GameRoom() {
   );
 
   useEffect(() => {
+      const handleBeforeUnload = (event) => {
+        // Send the disconnect message
+        sendMessage({
+          type: "DISCONNECT_FROM_GAME",
+          roomId,
+          playerId,
+        });
+
+        // Optional: prevent default dialog
+        event.preventDefault();
+        event.returnValue = "";
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
     setOnMessage(handleGameRoomMessage);
-
-    console.log("Registration: " + sessionStorage.getItem("isRegistered"));
-
-    console.log("Get initial cards sent.");
 
     sendMessage({
       type: "GET_INITIAL_CARDS",
@@ -244,11 +255,9 @@ function GameRoom() {
 
       setOnMessage(null);
 
-      sendMessage({
-        type: "DISCONNECT_FROM_GAME",
-        roomId,
-        playerId,
-      });
+      console.log("Sending disconnect from game message.")
+
+      window.removeEventListener("beforeunload", handleBeforeUnload);
     };
   }, [
     roomId,

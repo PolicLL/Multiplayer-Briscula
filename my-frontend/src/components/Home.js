@@ -46,29 +46,30 @@ function Home() {
         )}
 
         <h2 style={{ marginTop: "40px" }}>Top 10 players</h2>
-        <table className="leaderboard-table">
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Points</th>
-              <th>Total Matches Played</th>
-              <th>Total Wins</th>
-              <th>Level</th>
-            </tr>
-          </thead>
-          <tbody>
-            {userInfo.map((user) => (
-              <tr key={user.id}>
-                <td>{user.username}</td>
-                <td>{user.points}</td>
-                <td>{user.totalMatchesPlayed}</td>
-                <td>{user.totalWins}</td>
-                <td>{user.level}</td>
+        <div className="table-container">
+          <table className="leaderboard-table">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Points</th>
+                <th>Total Matches Played</th>
+                <th>Total Wins</th>
+                <th>Level</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-
+            </thead>
+            <tbody>
+              {userInfo.map((user) => (
+                <tr key={user.id}>
+                  <td>{user.username}</td>
+                  <td>{user.points}</td>
+                  <td>{user.totalMatchesPlayed}</td>
+                  <td>{user.totalWins}</td>
+                  <td>{user.level}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </>
   );

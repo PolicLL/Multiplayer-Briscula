@@ -7,6 +7,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Reset margin/padding */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Set base body styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+  line-height: 1.5;
+}
+
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -80,6 +98,17 @@ h1, h2, h4 {
 
 /* Home table with top 10 players */
 
+.table-container {
+  margin: 0 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+}
+
+.leaderboard-table {
+  width: 100%;
+  min-width: 600px;
+}
+
 .leaderboard-table {
   margin: 0 auto;
   border-collapse: collapse;
@@ -119,6 +148,7 @@ h1, h2, h4 {
 /* Login form */
 
 .login-container {
+  margin: 0 10px;
   text-align: center;
   margin-top: 80px;
 }
@@ -177,6 +207,7 @@ h1, h2, h4 {
 /* Registration form */
 
 .form-input-container {
+  margin: 0 10px;
   text-align: center;
   margin-top: 80px;
 }
@@ -295,7 +326,6 @@ h1, h2, h4 {
   display: flex;
   flex-direction: column;
   align-items: flex-start; /* Align everything to the left */
-  padding: 20px;
   min-height: 100vh;
   background-image: url("../public/images/light-wooden-background.jpg");
   background-size: cover; /* Cover the entire container */
@@ -316,12 +346,11 @@ h1, h2, h4 {
 }
 
 .user-info {
-  margin: 20px 0;
   padding: 20px;
-  border-radius: 12px;
   background: rgba(131, 103, 71, 0.85); /* semi-transparent warm brown */
   color: #fff; /* default text color for contrast */
-  max-width: 300px;
+  max-width: none;
+  width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
@@ -398,6 +427,20 @@ h1, h2, h4 {
   background: #E8D6B5;
 }
 
+.edit-profile {
+  padding: 10px 18px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+
+.edit-profile {
+  transform: translateY(-2px);
+}
+
 .create-btn {
   background: #2E7D32;
   color: #fff;
@@ -425,9 +468,10 @@ h1, h2, h4 {
   gap: 10px;
   background: rgba(131, 103, 71, 0.85); /* dark wooden overlay */
   padding: 20px;
-  border-radius: 12px;
+  border-radius: 0;
   color: #fff;
-  max-width: 300px;
+  width: 100%;   
+  max-width: none; 
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
@@ -532,3 +576,4 @@ h1, h2, h4 {
   cursor: not-allowed;
 }
 
+/* Responsive Layouts */

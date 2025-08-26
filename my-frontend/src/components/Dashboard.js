@@ -133,12 +133,20 @@ function Dashboard() {
             <p>Age: {userInfo?.age}</p>
             <p>Country: {userInfo?.country}</p>
             <p>Email: {userInfo?.email}</p>
+
+              <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
+                Edit Profile
+            </button>
           </div>
 
+          <JoinGamePanel
+            shouldShowPoints={shouldShowPoints}
+            handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
+            joinGame={joinGame}
+            leaveGame={leaveGame}
+          />
+
           <div className="dashboard-buttons">
-            <button className="edit-btn" onClick={() => setIsEditing(true)}>
-              Edit Profile
-            </button>
             <button
               onClick={() => navigate("/tournament/create")}
               className="create-btn"
@@ -177,13 +185,6 @@ function Dashboard() {
               }}
             />
           )}
-
-          <JoinGamePanel
-            shouldShowPoints={shouldShowPoints}
-            handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
-            joinGame={joinGame}
-            leaveGame={leaveGame}
-          />
         </>
       )}
     </div>

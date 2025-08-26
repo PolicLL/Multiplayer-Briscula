@@ -3,8 +3,10 @@ package com.example.web.service;
 import static com.example.web.utils.Constants.PLAYER_ID;
 import static com.example.web.utils.Constants.ROOM_ID;
 
+import com.example.briscula.user.player.RealPlayer;
 import com.example.web.dto.match.MatchDto;
 import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.GameRoom;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
 import com.example.web.utils.WebSocketMessageReader;
@@ -12,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -99,6 +102,15 @@ public class GameEndService {
 
     log.info("Player id={}, left room id={}.", playerId, roomId);
 
-    gameRoomService.getRoom(roomId).notifyPlayerLeft(playerId);
+    GameRoom gameRoom = gameRoomService.getRoom(roomId);
+    ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(playerId);
+    if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
+      CompletableFuture<Integer> completableFuture = realPlayer.getSelectedCardFuture();
+      if (completableFuture != null && !completableFuture.isDone()) {
+        completableFuture.complete(0);
+      }
+    }
+
+    gameRoom.notifyPlayerLeft(playerId);
   }
 }
