@@ -21,57 +21,58 @@ function JoinGamePanel({
   };
 
   return (
-    <div className="game-controls">
-      {setName && (
-        <input
-          type="text"
-          placeholder="Enter the name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-      )}
+    <main className="join-game-controls">
+      <div className="game-controls">
+        {setName && (
+          <input
+            type="text"
+            placeholder="Enter the name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
 
-      <button
-        className={`primary ${selectedGame === 2 ? "active" : ""}`}
-        onClick={() => handleJoin(2)}
-        disabled={!!selectedGame}
-      >
-        Join Game (1v1)
-      </button>
+        <button
+          className={`primary ${selectedGame === 2 ? "active" : ""}`}
+          onClick={() => handleJoin(2)}
+          disabled={!!selectedGame}
+        >
+          Join Game (1v1)
+        </button>
 
-      <button
-        className={`primary ${selectedGame === 3 ? "active" : ""}`}
-        onClick={() => handleJoin(3)}
-        disabled={!!selectedGame}
-      >
-        Join Game (1v1v1)
-      </button>
+        <button
+          className={`primary ${selectedGame === 3 ? "active" : ""}`}
+          onClick={() => handleJoin(3)}
+          disabled={!!selectedGame}
+        >
+          Join Game (1v1v1)
+        </button>
 
-      <button
-        className={`primary ${selectedGame === 4 ? "active" : ""}`}
-        onClick={() => handleJoin(4)}
-        disabled={!!selectedGame}
-      >
-        Join Game (2v2)
-      </button>
+        <button
+          className={`primary ${selectedGame === 4 ? "active" : ""}`}
+          onClick={() => handleJoin(4)}
+          disabled={!!selectedGame}
+        >
+          Join Game (2v2)
+        </button>
 
-      <button
-        className="secondary"
-        onClick={handleLeave}
-        disabled={!selectedGame}
-      >
-        Leave Game
-      </button>
-
-      <label>
-        <input
-          type="checkbox"
-          checked={shouldShowPoints}
-          onChange={handleCheckboxChange}
-        />
-        Show Points
-      </label>
-    </div>
+        <button
+          className="secondary"
+          onClick={handleLeave}
+          disabled={!selectedGame}
+        >
+          Leave Game
+        </button>
+        <label>
+          <input
+            type="checkbox"
+            checked={shouldShowPoints}
+            onChange={handleCheckboxChange}
+          />
+          Show Points
+        </label>
+      </div>
+    </main>
   );
 }
 

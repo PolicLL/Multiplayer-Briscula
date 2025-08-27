@@ -207,20 +207,25 @@ h1, h2, h4 {
 /* Registration form */
 
 .form-input-container {
-  margin: 0 10px;
+  display: flex;
+  justify-content: center;   /* horizontal */
+  align-items: center;       /* vertical */
+  height: 100vh;             /* full screen height */
+  margin: 0;                 /* remove margins */
   text-align: center;
-  margin-top: 80px;
+  padding: 0 10px;
 }
 
 .register-card {
   background: #FAF8F2; 
-  display: inline-block;
   padding: 30px 40px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   min-width: 320px;
   max-width: 450px;
+  width: auto;  
 }
+
 
 .register-card h2 {
   color: #4A3222; 
@@ -325,7 +330,7 @@ h1, h2, h4 {
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* Align everything to the left */
+  align-items: center; /* Align everything to the left */
   min-height: 100vh;
   background-image: url("../public/images/light-wooden-background.jpg");
   background-size: cover; /* Cover the entire container */
@@ -461,19 +466,29 @@ h1, h2, h4 {
 
 /* Game controls button (Join Game buttons) */
 
+.join-game-controls {
+  display: flex;
+  flex-direction: row;       /* lay items side by side */
+  justify-content: space-between; /* even spacing across full width */
+  align-items: center;       /* vertical alignment */
+  width: 100%;
+}
+
 .game-controls {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start; /* left-align everything */
-  gap: 10px;
-  background: rgba(131, 103, 71, 0.85); /* dark wooden overlay */
-  padding: 20px;
+  flex-direction: row;       /* lay items side by side */
+  justify-content: space-between; /* even spacing across full width */
+  align-items: center;       /* vertical alignment */
+  gap: 10px;                 /* spacing between items */
+  background: rgba(131, 103, 71, 0.85);
+  padding: 10px 200px; 
   border-radius: 0;
   color: #fff;
-  width: 100%;   
-  max-width: none; 
+  width: 100%;
+  max-width: none;
   box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
+
 
 .game-controls input[type="text"] {
   width: 100%;
@@ -486,11 +501,17 @@ h1, h2, h4 {
 .game-controls button {
   width: 100%;
   padding: 10px;
+  margin: 0 5px;
   border-radius: 6px;
   border: none;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  flex: 1;              /* each item takes equal width */
+  text-align: center;   /* center text inside buttons/inputs */
+  aspect-ratio: 1 / 1;       /* makes them squares */
+  max-width: 260px;          /* prevent oversized cubes */
+  min-width: 60px;           /* prevent too tiny cubes */
 }
 
 .game-controls button.primary {

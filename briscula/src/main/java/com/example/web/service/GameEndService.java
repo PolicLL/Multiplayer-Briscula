@@ -1,8 +1,5 @@
 package com.example.web.service;
 
-import static com.example.web.utils.Constants.PLAYER_ID;
-import static com.example.web.utils.Constants.ROOM_ID;
-
 import com.example.briscula.user.player.RealPlayer;
 import com.example.web.dto.match.MatchDto;
 import com.example.web.model.ConnectedPlayer;
@@ -11,16 +8,20 @@ import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.stream.Stream;
+
+import static com.example.web.utils.Constants.PLAYER_ID;
+import static com.example.web.utils.Constants.ROOM_ID;
 
 @Slf4j
 @Service
@@ -112,5 +113,12 @@ public class GameEndService {
     }
 
     gameRoom.notifyPlayerLeft(playerId);
+
+    messageDispatcher.leftGameOrTournament(session);
+
+    // TODO: Temporarily set that closing the tab should mean that user is logout.
+    // I think when logged in that should be on the level of browser and if game is exited, when user joins again he should be able
+    // to continue playing.
+    userService.logoutWithEmail(userService.getUserById(connectedPlayer.getUserId()).email());
   }
 }

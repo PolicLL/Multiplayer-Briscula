@@ -136,16 +136,16 @@ function Dashboard() {
 
               <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
                 Edit Profile
-            </button>
-          </div>
-
+              </button>
+          </div>          
+          
           <JoinGamePanel
             shouldShowPoints={shouldShowPoints}
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
             leaveGame={leaveGame}
           />
-
+          
           <div className="dashboard-buttons">
             <button
               onClick={() => navigate("/tournament/create")}
