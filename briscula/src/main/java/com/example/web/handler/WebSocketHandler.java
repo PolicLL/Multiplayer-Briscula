@@ -40,6 +40,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     log.info("New tournament WebSocket connection: {}", session.getId());
   }
 
+  // TODO: When clicking join room make sure state of join tournament changes
   @Override
   public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
     try {
