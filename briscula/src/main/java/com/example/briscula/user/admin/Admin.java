@@ -27,11 +27,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Admin {
 
+  @Getter
   private Card mainCard;
+
+  @Getter
   private final Deck deck;
 
   @Getter
   private List<ConnectedPlayer> players;
+
+  @Getter
   private List<List<Card>> listOfCardsForAllPlayers;
 
   private int indexOfCurrentPlayer = 0;
@@ -92,7 +97,7 @@ public class Admin {
     for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
       List<Card> playerCards = new LinkedList<>();
       for (int j = 0; j < cardsPerPlayer; ++j) {
-        Card card = deckCards.remove(getRandomNumber(deckCards.size()));
+        Card card = deckCards.remove(getRandomNumber(deckCards.size() - 1));
         playerCards.add(card);
       }
       listOfCardsForAllPlayers.add(playerCards);

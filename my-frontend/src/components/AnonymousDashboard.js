@@ -10,6 +10,7 @@ function PrepareGame() {
   const [isDisabled, setIsDisabled] = useState(false);
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
+  const [numberOfPlayers, setNumberOfPlayers] = useState(-1);
 
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
@@ -27,6 +28,8 @@ function PrepareGame() {
 
     console.log("Sending message to join room.");
 
+    setNumberOfPlayers(numberOfPlayers);
+
     sendMessage({
       type: "JOIN_ROOM",
       playerName: name,
@@ -37,6 +40,14 @@ function PrepareGame() {
     sessionStorage.setItem("hasEnteredAnonymously", true);
 
     setIsDisabled(true);
+  };
+
+  const leaveGame = () => {
+    sendMessage({
+      type: "LEAVE_ROOM",
+      playerName: name,
+      numberOfPlayers: numberOfPlayers,
+    });
   };
 
   useEffect(() => {
@@ -54,7 +65,7 @@ function PrepareGame() {
 
   return (
     <div>
-      <h1>Anonymous Game Lobby</h1>
+      <h1>Anonymous User</h1>
       <JoinGamePanel
         name={name}
         setName={setName}
@@ -63,6 +74,7 @@ function PrepareGame() {
         joinGame={joinGame}
         isDisabled={isDisabled}
         isStartEnabled={false}
+        leaveGame={leaveGame}
       />
       <p style={{ fontWeight: "bold", fontSize: "18px" }}>{status}</p>
       <h3>Received message: {receivedMessage}</h3>

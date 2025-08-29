@@ -1,19 +1,24 @@
 package com.example.briscula.model.card;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static utils.EntityUtils.getWebSocketSession;
-
+import com.example.briscula.game.Game;
 import com.example.briscula.game.Move;
 import com.example.briscula.game.RoundJudge;
 import com.example.briscula.game.RoundWinner;
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.Player;
+import com.example.web.model.ConnectedPlayer;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+
+import static com.example.briscula.utilities.constants.GameOptionNumberOfPlayers.FOUR_PLAYERS;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static utils.EntityUtils.getConnectedPlayer;
+import static utils.EntityUtils.getWebSocketSession;
 
 class GameTest {
 
@@ -122,6 +127,21 @@ class GameTest {
 
     assertThat(roundWinner.numberOfPoints()).isEqualTo(23);
     assertThat(roundWinner.player().getNickname()).isEqualTo("Bot 1");
+  }
+
+  @Test
+  void testGameNotDealingLastCard() {
+    List<ConnectedPlayer> connectedPlayerList = List.of(
+            getConnectedPlayer(), getConnectedPlayer(), getConnectedPlayer(), getConnectedPlayer());
+
+
+    for (int i = 0; i < 50; ++i) {
+      Game game = new Game(FOUR_PLAYERS, connectedPlayerList, true);
+
+      boolean isMainCardDealt = game.getCards().stream().anyMatch(card -> card.equals(game.getMainCard()));
+
+      assertThat(isMainCardDealt).isFalse();
+    }
   }
 
 

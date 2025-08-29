@@ -9,6 +9,7 @@ import TournamentList from "./tournament/TournamentList";
 import { useWebSocketContext } from "../context/WebSocketContext";
 
 // TODO If I am logged in and go to the dashboard, I should not see log in options
+// TODO: If user is waiting after finished match in tournament that should be shown with animation
 
 function Dashboard() {
   const navigate = useNavigate();

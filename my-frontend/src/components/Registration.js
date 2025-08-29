@@ -161,10 +161,13 @@ function UserForm() {
     return () => {};
   }, []);
 
+  /* TODO: Add some animation while registration is being processed */
+  /* TODO: Add limit for image size */
+
   return (
     <div className="form-input-container">
       <div className="register-card">
-        <h2>Create User</h2>
+        <h2>Registration</h2>
 
         {message && <p className="register-message">{message}</p>}
 

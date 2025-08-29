@@ -34,6 +34,21 @@ class PhotoControllerTest {
   }
 
   @Test
+  void uploadPhotoWithSameNameSuccess() throws Exception {
+    String sameName = "sample.jpg";
+
+    mockMvc.perform(multipart("/api/photo")
+                    .file(getMultipartFileImage(sameName))
+                    .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isOk());
+
+    mockMvc.perform(multipart("/api/photo")
+                    .file(getMultipartFileImage(sameName))
+                    .contentType(MediaType.MULTIPART_FORM_DATA))
+            .andExpect(status().isOk());
+  }
+
+  @Test
   void getPhotoSuccess() throws Exception {
     String photoId = mockMvc.perform(multipart("/api/photo")
             .file(getMultipartFileImage())

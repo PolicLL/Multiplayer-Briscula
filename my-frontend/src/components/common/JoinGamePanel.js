@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 
+/* TODO: Add animation while waiting for other players to join room */
+
 function JoinGamePanel({
   name,
   setName,

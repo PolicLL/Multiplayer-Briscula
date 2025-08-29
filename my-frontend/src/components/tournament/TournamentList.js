@@ -13,7 +13,7 @@ export default function TournamentList({
           <p className="register-message">No tournaments available.</p>
         ) : (
           <div className="table-container">
-            <table className="leaderboard-table">
+            <table className="tournament-table">
               <thead>
                 <tr>
                   <th>Name</th>

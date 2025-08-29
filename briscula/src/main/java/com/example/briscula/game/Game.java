@@ -9,10 +9,8 @@ import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Queue;
+
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +35,13 @@ public class Game {
 
   public List<Card> getCardsForPlayer(int playerId) {
     return admin.getCardsForPlayer(playerId);
+  }
+
+  public List<Card> getCards() {
+    return admin.getListOfCardsForAllPlayers()
+            .stream()
+            .flatMap(List::stream)
+            .toList();
   }
 
   public boolean isGameOver() {

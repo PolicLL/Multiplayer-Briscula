@@ -25,6 +25,7 @@ function Home() {
     fetchUserInfo();
   }, []);
 
+  // TODO: Sorting by other parameters
   return (
     <>
       <Menu />

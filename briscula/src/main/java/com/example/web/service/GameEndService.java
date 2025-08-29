@@ -42,6 +42,10 @@ public class GameEndService {
 
     if (gameEndStatus.status().equals(Status.NO_WINNER)) {
       handleNoWinnerCase(gameEndStatus, matchId);
+
+      gameEndStatus.playerResults().keySet().forEach(player ->
+              messageDispatcher.leftGameOrTournament(player.getWebSocketSession()));
+
       return;
     }
 

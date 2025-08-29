@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class Deck {
 
   @Getter
@@ -32,6 +34,8 @@ public class Deck {
         break;
       }
     }
+
+    log.info("Set main card {}.", mainCard);
 
     Card tempLastCard = deckCards.get(deckCards.size() - 1);
     deckCards.set(deckCards.size() - 1, mainCard);

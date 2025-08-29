@@ -1,7 +1,7 @@
 CREATE TABLE photos (
     id VARCHAR PRIMARY KEY,
     photo BYTEA NOT NULL,
-    name VARCHAR(50) UNIQUE
+    name VARCHAR(50)
 );
 
 CREATE TABLE users (
