@@ -345,7 +345,7 @@ h1, h2, h4 {
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Align everything to the left */
+  align-items: center; 
   min-height: 100vh;
   background-image: url("../public/images/light-wooden-background.jpg");
   background-size: cover; /* Cover the entire container */
@@ -356,9 +356,6 @@ h1, h2, h4 {
 }
 
 .dashboard-header h2,
-.user-info p {
-  margin: 5px 0;
-}
 
 .dashboard-header p {
   color: #2E7D32;
@@ -376,6 +373,10 @@ h1, h2, h4 {
   flex-direction: column;
   align-items: center; /* center content */
   gap: 8px; /* spacing between elements */
+}
+
+.user-info p {
+  margin: 5px 0;
 }
 
 /* User photo */
@@ -497,7 +498,7 @@ h1, h2, h4 {
 
 .game-controls {
   display: flex;
-  flex-direction: row;       /* lay items side by side */
+  flex-direction: column;       /* lay items side by side */
   justify-content: space-between; /* even spacing across full width */
   align-items: center;       /* vertical alignment */
   gap: 10px;                 /* spacing between items */
@@ -561,6 +562,11 @@ h1, h2, h4 {
   background-color: #D4A373; /* highlight color */
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
+}
+
+.join-game-buttons {
+  display: flex;
+  flex-direction: row;       /* lay items side by side */
 }
 
 
@@ -694,3 +700,17 @@ h1, h2, h4 {
   cursor: not-allowed;
 }
 
+/* Anonymous dashboard */
+
+.anonymous-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  min-height: 100vh;
+  background-image: url("../public/images/light-wooden-background.jpg");
+  background-size: cover; 
+  background-repeat: no-repeat;
+  background-position: top left;
+  color: hsl(0, 0%, 20%);
+  font-family: Arial, sans-serif;
+}
