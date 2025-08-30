@@ -64,7 +64,7 @@ function PrepareGame() {
   }, []);
 
   return (
-    <div>
+    <div className="anonymous-dashboard-container">
       <h1>Anonymous User</h1>
       <JoinGamePanel
         name={name}
@@ -77,7 +77,6 @@ function PrepareGame() {
         leaveGame={leaveGame}
       />
       <p style={{ fontWeight: "bold", fontSize: "18px" }}>{status}</p>
-      <h3>Received message: {receivedMessage}</h3>
     </div>
   );
 }

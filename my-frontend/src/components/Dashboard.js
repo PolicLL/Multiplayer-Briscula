@@ -138,24 +138,26 @@ function Dashboard() {
         />
       ) : (
         <>
-          <div className="user-info">
-            <img
-              src={userInfo?.photoId ? getPhotoUrl(userInfo.photoId) : "/images/anonymous.png"}
-              alt="User"
-              className="user-photo"
-              onError={(e) => {
-                e.currentTarget.onerror = null;
-                e.currentTarget.src = "/images/anonymous.png";
-              }}
-            />
-            <p>Username: {userInfo?.username}</p>
-            <p>Age: {userInfo?.age}</p>
-            <p>Country: {userInfo?.country}</p>
-            <p>Email: {userInfo?.email}</p>
+          <div className="user-info-container">
+            <div className="user-info">
+              <img
+                src={userInfo?.photoId ? getPhotoUrl(userInfo.photoId) : "/images/anonymous.png"}
+                alt="User"
+                className="user-photo"
+                onError={(e) => {
+                  e.currentTarget.onerror = null;
+                  e.currentTarget.src = "/images/anonymous.png";
+                }}
+              />
+              <p>Username: {userInfo?.username}</p>
+              <p>Age: {userInfo?.age}</p>
+              <p>Country: {userInfo?.country}</p>
+              <p>Email: {userInfo?.email}</p>
 
-              <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
-                Edit Profile
-              </button>
+                <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
+                  Edit Profile
+                </button>
+            </div>
           </div>          
           
           <JoinGamePanel

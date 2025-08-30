@@ -362,7 +362,7 @@ h1, h2, h4 {
   margin-bottom: 20px;
 }
 
-.user-info {
+.user-info-container {
   padding: 20px;
   background: rgba(131, 103, 71, 0.85); /* semi-transparent warm brown */
   color: #fff; /* default text color for contrast */
@@ -370,17 +370,17 @@ h1, h2, h4 {
   width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
-  flex-direction: column;
-  align-items: center; /* center content */
+  flex-direction: row;
+  align-items: left; /* center content */
   gap: 8px; /* spacing between elements */
 }
 
-.user-info p {
+.user-info-container p {
   margin: 5px 0;
 }
 
 /* User photo */
-.user-info img {
+.user-info-container img {
   border: 4px solid #E0D4C1;
   border-radius: 50%; /* make it circular */
   width: 100px;
@@ -390,23 +390,32 @@ h1, h2, h4 {
   transition: transform 0.3s ease;
 }
 
-.user-info img:hover {
+.user-info-container img:hover {
   transform: scale(1.05);
 }
 
 /* Optional: headings */
-.user-info h3 {
+.user-info-container h3 {
   font-size: 22px;
   margin: 5px 0;
   color: #fff; /* lighter color for contrast */
 }
 
 /* Paragraphs */
-.user-info p {
+.user-info-container p {
   font-size: 15px;
   color: #fff; /* white for readability */
   margin: 4px 0;
   text-align: center; /* center text under photo */
+}
+
+.user-info {
+  max-width: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center content */
+  gap: 8px; /* spacing between elements */
 }
 
 .user-photo {
