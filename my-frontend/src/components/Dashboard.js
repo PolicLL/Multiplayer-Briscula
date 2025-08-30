@@ -105,6 +105,24 @@ function Dashboard() {
 
   const getPhotoUrl = (id) => `http://localhost:8080/api/photo/${id}`;
 
+  useEffect(() => {
+    if (!isEditing) return;
+
+    // push a new state when editing starts
+    window.history.pushState({ editing: true }, "");
+
+    const handlePopState = (event) => {
+      // if editing, close the form instead of leaving
+      setIsEditing(false);
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isEditing]);
+
   return (
     <div className="dashboard-container">
       <Menu onLogout={() => setUserInfo(null)} />

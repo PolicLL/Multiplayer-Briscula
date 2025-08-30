@@ -489,9 +489,10 @@ h1, h2, h4 {
 .join-game-controls {
   display: flex;
   flex-direction: row;       /* lay items side by side */
-  justify-content: space-between; /* even spacing across full width */
+  justify-content: center; /* even spacing across full width */
   align-items: center;       /* vertical alignment */
   width: 100%;
+  background: rgba(131, 103, 71, 0.85);
 }
 
 .game-controls {
@@ -500,13 +501,12 @@ h1, h2, h4 {
   justify-content: space-between; /* even spacing across full width */
   align-items: center;       /* vertical alignment */
   gap: 10px;                 /* spacing between items */
-  background: rgba(131, 103, 71, 0.85);
   padding: 10px 200px; 
   border-radius: 0;
   color: #fff;
-  width: 100%;
+  width: 70%;
   max-width: none;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  
 }
 
 
