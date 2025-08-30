@@ -11,7 +11,6 @@ function PrepareGame() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
   const [numberOfPlayers, setNumberOfPlayers] = useState(-1);
-
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
   const handleMessage = useCallback(
@@ -19,10 +18,13 @@ function PrepareGame() {
     [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
   );
 
+  // set default anonymous user, if it s not choosen ,choose some random, give abilioty to chose custome
+
   const joinGame = (numberOfPlayers) => {
     if (!name.trim()) return alert("Enter a name.");
 
     setOnMessage(handleMessage);
+
     sessionStorage.setItem("isRegistered", false);
     sessionStorage.setItem("username", name);
 
@@ -65,7 +67,6 @@ function PrepareGame() {
 
   return (
     <div className="anonymous-dashboard-container">
-      <h1>Anonymous User</h1>
       <JoinGamePanel
         name={name}
         setName={setName}
@@ -75,6 +76,7 @@ function PrepareGame() {
         isDisabled={isDisabled}
         isStartEnabled={false}
         leaveGame={leaveGame}
+        isAnonymous={true}
       />
       <p style={{ fontWeight: "bold", fontSize: "18px" }}>{status}</p>
     </div>

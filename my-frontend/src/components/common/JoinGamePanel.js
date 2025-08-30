@@ -9,6 +9,7 @@ function JoinGamePanel({
   handleCheckboxChange,
   joinGame,
   leaveGame,
+  isAnonymous,
 }) {
   const [selectedGame, setSelectedGame] = useState(null);
 
@@ -26,13 +27,15 @@ function JoinGamePanel({
     <main className="join-game-controls">
       <div className="game-controls">
         {setName && (
-          <div>
-              <input
-              type="text"
-              placeholder="Enter the name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              />
+          <div className="anonymous-part">
+            <h1>Anonymous User</h1>
+
+            <input
+            type="text"
+            placeholder="Enter the name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            />
           </div>
         )}
 
@@ -40,7 +43,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 2 ? "active" : ""}`}
             onClick={() => handleJoin(2)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || (isAnonymous && !name.trim())}
           >
             Join Game (1v1)
           </button>
@@ -48,7 +51,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 3 ? "active" : ""}`}
             onClick={() => handleJoin(3)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || (isAnonymous && !name.trim())}
           >
             Join Game (1v1v1)
           </button>
@@ -56,7 +59,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 4 ? "active" : ""}`}
             onClick={() => handleJoin(4)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || (isAnonymous && !name.trim())}
           >
             Join Game (2v2)
           </button>

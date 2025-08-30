@@ -165,6 +165,7 @@ function Dashboard() {
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
             leaveGame={leaveGame}
+            isAnonymous={false}
           />
           
           <div className="dashboard-buttons">

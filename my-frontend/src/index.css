@@ -531,7 +531,7 @@ h1, h2, h4 {
 .game-controls button {
   width: 100%;
   padding: 10px;
-  margin: 0 5px;
+  margin: 1em 1em;
   border-radius: 6px;
   border: none;
   font-weight: bold;
@@ -577,6 +577,15 @@ h1, h2, h4 {
   display: flex;
   flex-direction: row;       /* lay items side by side */
 }
+
+/*
+.join-game-buttons button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}*/
+
 
 
 /* Check box for showing points */
@@ -722,4 +731,13 @@ h1, h2, h4 {
   background-position: top left;
   color: hsl(0, 0%, 20%);
   font-family: Arial, sans-serif;
+}
+
+.anonymous-part h1 {
+  color: white;
+  margin: 2rem;
+}
+
+.anonymous-part div {
+
 }
