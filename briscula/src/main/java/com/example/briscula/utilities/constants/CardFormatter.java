@@ -33,6 +33,10 @@ public class CardFormatter {
     return card.cardType().toString() + extractCardShortValue(card.cardValue().name());
   }
 
+  public static String formatCard(Card card, boolean isPlayersCard) {
+    return card.cardType().toString() + extractCardShortValue(card.cardValue().name()) + (isPlayersCard ? " players" : "");
+  }
+
   private static String extractCardShortValue(String valueName) {
     return switch (valueName) {
       case "TWO" -> "2";

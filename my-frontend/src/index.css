@@ -854,8 +854,9 @@ h1, h2, h4 {
 /* HUD info */
 .hud-info {
   position: absolute;
-  right: 30px;
+  right: 250px;
   top: 30px;
   text-align: right;
   z-index: 10;
+  margin-left: 100px;
 }

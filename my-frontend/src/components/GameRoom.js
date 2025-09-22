@@ -64,10 +64,12 @@ function GameRoom() {
     };
   };
 
-  const parseCard = (cardCode) => {
+  const parseCard = (cardString) => {
+    const [code, owner] = cardString.trim().split(" ");
     return {
-      code: cardCode,
-      imageUrl: `/cards/${cardCode}.png`,
+      code,
+      imageUrl: `/cards/${code}.png`,
+      isPlayer: owner === "players", 
     };
   };
 
@@ -178,13 +180,15 @@ function GameRoom() {
           setCardsClickable(false);
           break;
 
-        case "RECEIVED_THROWN_CARD":
-        // When you add a thrown card, specify the source
-        setThrownCards((prevCards) => [
-          ...prevCards,
-          { ...parseCard(parsedMessage.content), from: "bottom" }, // or "top" for opponent
-        ]);
+        case "RECEIVED_THROWN_CARD": {
+          const card = parseCard(parsedMessage.content);
+          const animation = card.isPlayer ? "bottom" : "top";
+          setThrownCards((prevCards) => [
+            ...prevCards,
+            { ...card, from: animation },
+          ]);
           break;
+        }
 
         case "WAIT_FOR_NEXT_MATCH":
           // TODO: Also when moving to /dashboard make sure there is some animation or message that will indicate that player is waiting

@@ -20,7 +20,7 @@ spring:
       max-request-size: 10MB
 
 briscula:
-  waiting-time-in-seconds-for-choosing-card: 60
+  waiting-time-in-seconds-for-choosing-card: 5
   waiting-time-after-round-in-seconds: 1
 #logging:
 #  level:

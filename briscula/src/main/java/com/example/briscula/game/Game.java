@@ -78,7 +78,7 @@ public class Game {
   private void sentMessageAboutNewCardToOtherPlayers(Move newMove) {
     admin.getPlayers().stream()
         .map(ConnectedPlayer::getPlayer)
-        .forEach(player -> player.sentMessageAboutNewCardFromAnotherPlayer(newMove.card()));
+        .forEach(player -> player.sentMessageAboutNewCardFromAnotherPlayer(newMove.card(), player.equals(newMove.player())));
   }
 
   public Card getMainCard() {

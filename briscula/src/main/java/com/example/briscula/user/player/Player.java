@@ -38,7 +38,7 @@ public abstract class Player {
   public abstract void sentLoosingMessage();
   public abstract void sentWinningMessage();
   public abstract void setNoWinnerMessage();
-  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card);
+  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard);
 
   public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
   public abstract void sendMessageToWaitForNextMatch();

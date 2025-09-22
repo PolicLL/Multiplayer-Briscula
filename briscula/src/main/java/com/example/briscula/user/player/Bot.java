@@ -37,7 +37,7 @@ public class Bot extends Player {
   }
 
   @Override
-  public void sentMessageAboutNewCardFromAnotherPlayer(Card card) {
+  public void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard) {
 
   }
 
