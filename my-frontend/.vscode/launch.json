@@ -5,9 +5,10 @@
       "type": "firefox",
       "request": "launch",
       "name": "Launch Firefox against localhost",
-      "url": "http://localhost:3000",
+      "url": "http://localhost:3001",
       "webRoot": "${workspaceFolder}/src",
-      "firefoxExecutable": "C:\\Program Files\\Mozilla Firefox\\firefox.exe"
+      "firefoxExecutable": "/Applications/Firefox.app/Contents/MacOS/firefox"
+
     }
   ]
 }

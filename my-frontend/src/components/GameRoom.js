@@ -22,6 +22,9 @@ function GameRoom() {
 
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
+  // Add this near your other useState hooks
+  const [animatingThrownCard, setAnimatingThrownCard] = useState(null);
+
   const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
 
@@ -69,7 +72,7 @@ function GameRoom() {
     return {
       code,
       imageUrl: `/cards/${code}.png`,
-      isPlayer: owner === "players", 
+      isPlayer: owner === "players",
     };
   };
 
@@ -182,11 +185,16 @@ function GameRoom() {
 
         case "RECEIVED_THROWN_CARD": {
           const card = parseCard(parsedMessage.content);
-          const animation = card.isPlayer ? "bottom" : "top";
-          setThrownCards((prevCards) => [
-            ...prevCards,
-            { ...card, from: animation },
-          ]);
+          setAnimatingThrownCard({ ...card, from: card.isPlayer ? "bottom" : "top" });
+
+          // After animation, move to thrownCards and clear animating card
+          setTimeout(() => {
+            setThrownCards((prevCards) => [
+              ...prevCards,
+              { ...card, from: card.isPlayer ? "bottom" : "top" },
+            ]);
+            setAnimatingThrownCard(null);
+          }, 500); // 500ms matches your CSS animation duration
           break;
         }
 
@@ -232,17 +240,17 @@ function GameRoom() {
   );
 
   useEffect(() => {
-      const handleBeforeUnload = (event) => {
-        // Send the disconnect message
-        sendMessage({
-          type: "DISCONNECT_FROM_GAME",
-          roomId,
-          playerId,
-        });
+    const handleBeforeUnload = (event) => {
+      // Send the disconnect message
+      sendMessage({
+        type: "DISCONNECT_FROM_GAME",
+        roomId,
+        playerId,
+      });
 
-        // Optional: prevent default dialog
-        event.preventDefault();
-        event.returnValue = "";
+      // Optional: prevent default dialog
+      event.preventDefault();
+      event.returnValue = "";
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
@@ -274,68 +282,76 @@ function GameRoom() {
   ]);
 
   return (
-  <div className="game-room">
-    <Menu />
+    <div className="game-room">
+      <Menu />
 
-    {/* Main card in top-left */}
-    {mainCard && mainCard.code && mainCard.imageUrl && (
-      <div className="main-card top-left">
-        <img
-          key={mainCard.code}
-          src={mainCard.imageUrl}
-          alt={mainCard.code}
-        />
+      {/* Main card in top-left */}
+      {mainCard && mainCard.code && mainCard.imageUrl && (
+        <div className="main-card top-left">
+          <img
+            key={mainCard.code}
+            src={mainCard.imageUrl}
+            alt={mainCard.code}
+          />
+        </div>
+      )}
+
+      {/* Opponent's cards at the top center */}
+      <div className="colleagues-cards top-center">
+        {colleaguesCards.map((card, idx) => (
+          <img
+            key={card.code}
+            src={card.imageUrl}
+            alt={card.code}
+            className="card from-top"
+            style={{ animationDelay: `${idx * 0.1}s` }}
+          />
+        ))}
       </div>
-    )}
 
-    {/* Opponent's cards at the top center */}
-    <div className="colleagues-cards top-center">
-      {colleaguesCards.map((card, idx) => (
-        <img
-          key={card.code}
-          src={card.imageUrl}
-          alt={card.code}
-          className="card from-top"
-          style={{ animationDelay: `${idx * 0.1}s` }}
-        />
-      ))}
-    </div>
+      <div className="thrown-cards center">
+        {/* First render already thrown cards */}
+        {thrownCards.map((card, idx) => (
+          <img
+            key={card.code + idx}
+            src={card.imageUrl}
+            alt={card.code}
+            className="card thrown-card"
+          />
+        ))}
+        {/* Then render the animating card, so it appears on the right */}
+        {animatingThrownCard && (
+          <img
+            key={animatingThrownCard.code + "-animating"}
+            src={animatingThrownCard.imageUrl}
+            alt={animatingThrownCard.code}
+            className={`card thrown-card ${animatingThrownCard.from === "top" ? "from-top-anim" : "from-bottom-anim"}`}
+          />
+        )}
+      </div>
 
-    {/* Thrown cards in the absolute center */}
-    <div className="thrown-cards center">
-      {thrownCards.map((card, idx) => (
-        <img
-          key={card.code}
-          src={card.imageUrl}
-          alt={card.code}
-          className={`card thrown-card ${card.from === "top" ? "from-top-anim" : "from-bottom-anim"}`}
-          style={{ animationDelay: `${idx * 0.1}s` }}
-        />
-      ))}
-    </div>
+      {/* Your cards centered at the bottom */}
+      <div className="your-cards bottom-center">
+        {cards.map((card, idx) => (
+          <img
+            key={card.code}
+            src={card.imageUrl}
+            alt={card.code}
+            className="card from-bottom"
+            onClick={() => cardsClickable && handleCardClick(card)}
+            style={{ animationDelay: `${idx * 0.1}s` }}
+          />
+        ))}
+      </div>
 
-    {/* Your cards centered at the bottom */}
-    <div className="your-cards bottom-center">
-      {cards.map((card, idx) => (
-        <img
-          key={card.code}
-          src={card.imageUrl}
-          alt={card.code}
-          className="card from-bottom"
-          onClick={() => cardsClickable && handleCardClick(card)}
-          style={{ animationDelay: `${idx * 0.1}s` }}
-        />
-      ))}
+      {/* HUD Info */}
+      <div className="hud-info">
+        {timeLeft > 0 && <h4 className="timer">Time left: {timeLeft}s</h4>}
+        {shouldShowPoints && <h3 className="points">Points: {points}</h3>}
+        <h3 className="messages">Messages: {message}</h3>
+      </div>
     </div>
-
-    {/* HUD Info */}
-    <div className="hud-info">
-      {timeLeft > 0 && <h4 className="timer">Time left: {timeLeft}s</h4>}
-      {shouldShowPoints && <h3 className="points">Points: {points}</h3>}
-      <h3 className="messages">Messages: {message}</h3>
-    </div>
-  </div>
-);
+  );
 
 }
 
