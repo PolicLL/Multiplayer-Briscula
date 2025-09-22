@@ -6,7 +6,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/briscula
     username: postgres
-    password: 123
+    password: password
 
   flyway:
     enabled: true
@@ -21,7 +21,7 @@ spring:
 
 briscula:
   waiting-time-in-seconds-for-choosing-card: 60
-  waiting-time-after-round-finishes: 1
+  waiting-time-after-round-in-seconds: 1
 #logging:
 #  level:
 #    org.springframework.security: DEBUG

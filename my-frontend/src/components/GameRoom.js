@@ -179,10 +179,11 @@ function GameRoom() {
           break;
 
         case "RECEIVED_THROWN_CARD":
-          setThrownCards((prevCards) => [
-            ...prevCards,
-            parseCard(parsedMessage.content),
-          ]);
+        // When you add a thrown card, specify the source
+        setThrownCards((prevCards) => [
+          ...prevCards,
+          { ...parseCard(parsedMessage.content), from: "bottom" }, // or "top" for opponent
+        ]);
           break;
 
         case "WAIT_FOR_NEXT_MATCH":
@@ -269,73 +270,69 @@ function GameRoom() {
   ]);
 
   return (
-    <div>
-      <Menu />
-      {mainCard && mainCard.code && mainCard.imageUrl && (
-        <>
-          <h2>Main Card</h2>
-          <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-            <img
-              key={mainCard.code}
-              src={mainCard.imageUrl}
-              alt={mainCard.code}
-              style={{ width: "100px", cursor: "pointer" }}
-            />
-          </div>
-        </>
-      )}
+  <div className="game-room">
+    <Menu />
 
-      <h3>Your cards</h3>
-      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-        {cards.map((card) => (
-          <img
-            key={card.code}
-            src={card.imageUrl}
-            alt={card.code}
-            style={{ width: "100px", cursor: "pointer" }}
-            onClick={() => cardsClickable && handleCardClick(card)}
-          />
-        ))}
+    {/* Main card in top-left */}
+    {mainCard && mainCard.code && mainCard.imageUrl && (
+      <div className="main-card top-left">
+        <img
+          key={mainCard.code}
+          src={mainCard.imageUrl}
+          alt={mainCard.code}
+        />
       </div>
+    )}
 
-      <h3>Thrown cards</h3>
-
-      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-        {thrownCards.map((card) => (
-          <img
-            key={card.code}
-            src={card.imageUrl}
-            alt={card.code}
-            style={{ width: "100px", cursor: "pointer" }}
-          />
-        ))}
-      </div>
-
-      <h3>Colleagues cards:</h3>
-      <div style={{ display: "flex", gap: "10px", marginTop: "20px" }}>
-        {colleaguesCards.map((card) => (
-          <img
-            key={card.code}
-            src={card.imageUrl}
-            alt={card.code}
-            style={{ width: "100px", cursor: "pointer" }}
-          />
-        ))}
-      </div>
-
-      {timeLeft > 0 && <h4 style={{ color: "red" }}>Time left: {timeLeft}s</h4>}
-
-      {shouldShowPoints && (
-        <div>
-          <h3>Points: {points}</h3>
-        </div>
-      )}
-
-      <div>
-        <h3>Messages: {message}</h3>
-      </div>
+    {/* Opponent's cards at the top center */}
+    <div className="colleagues-cards top-center">
+      {colleaguesCards.map((card, idx) => (
+        <img
+          key={card.code}
+          src={card.imageUrl}
+          alt={card.code}
+          className="card from-top"
+          style={{ animationDelay: `${idx * 0.1}s` }}
+        />
+      ))}
     </div>
-  );
+
+    {/* Thrown cards in the absolute center */}
+    <div className="thrown-cards center">
+      {thrownCards.map((card, idx) => (
+        <img
+          key={card.code}
+          src={card.imageUrl}
+          alt={card.code}
+          className={`card thrown-card ${card.from === "top" ? "from-top-anim" : "from-bottom-anim"}`}
+          style={{ animationDelay: `${idx * 0.1}s` }}
+        />
+      ))}
+    </div>
+
+    {/* Your cards centered at the bottom */}
+    <div className="your-cards bottom-center">
+      {cards.map((card, idx) => (
+        <img
+          key={card.code}
+          src={card.imageUrl}
+          alt={card.code}
+          className="card from-bottom"
+          onClick={() => cardsClickable && handleCardClick(card)}
+          style={{ animationDelay: `${idx * 0.1}s` }}
+        />
+      ))}
+    </div>
+
+    {/* HUD Info */}
+    <div className="hud-info">
+      {timeLeft > 0 && <h4 className="timer">Time left: {timeLeft}s</h4>}
+      {shouldShowPoints && <h3 className="points">Points: {points}</h3>}
+      <h3 className="messages">Messages: {message}</h3>
+    </div>
+  </div>
+);
+
 }
 
 export default GameRoom;

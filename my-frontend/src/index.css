@@ -741,3 +741,121 @@ h1, h2, h4 {
 .anonymous-part div {
 
 }
+
+/* Game Room */
+
+.game-room {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.card {
+  width: 110px;
+  height: 165px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  background: #fff;
+  cursor: pointer;
+}
+
+/* Main card in top-left, much smaller */
+.main-card.top-left {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 2;
+}
+
+/* Main card in top-left, use .card size */
+.main-card.top-left img {
+  width: 110px;
+  height: 165px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* Opponent's cards at top center, animate from top */
+.colleagues-cards.top-center {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 2;
+}
+.colleagues-cards.top-center .card {
+  /* width/height removed, uses .card */
+  animation: slideFromTopToCenter 0.5s ease;
+}
+@keyframes slideFromTopToCenter {
+  from { transform: translateY(-120px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Your cards at bottom center, same size as opponent's */
+.your-cards.bottom-center {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 16px;
+  z-index: 2;
+}
+.your-cards.bottom-center .card {
+  /* width/height removed, uses .card */
+  animation: slideFromBottom 0.5s ease;
+}
+@keyframes slideFromBottom {
+  from { transform: translateY(120px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Thrown cards in center */
+.thrown-cards.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  gap: 16px;
+  z-index: 3;
+}
+.card.thrown-card.from-top-anim {
+  animation: throwFromTop 0.5s ease;
+}
+.card.thrown-card.from-bottom-anim {
+  animation: throwFromBottom 0.5s ease;
+}
+@keyframes throwFromTop {
+  from { transform: translateY(-120px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+@keyframes throwFromBottom {
+  from { transform: translateY(120px) scale(0.8); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Card base style */
+.card {
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  background: #fff;
+  cursor: pointer;
+}
+
+/* HUD info */
+.hud-info {
+  position: absolute;
+  right: 30px;
+  top: 30px;
+  text-align: right;
+  z-index: 10;
+}
