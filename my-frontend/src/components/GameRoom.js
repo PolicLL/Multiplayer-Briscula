@@ -25,6 +25,8 @@ function GameRoom() {
   // Add this near your other useState hooks
   const [animatingThrownCard, setAnimatingThrownCard] = useState(null);
 
+  const [opponentName, setOpponentName] = useState("Opponent");
+
   const parsePlayerStatus = (cardString, n) => {
     if (!cardString) return [];
 
@@ -68,10 +70,13 @@ function GameRoom() {
   };
 
   const parseCard = (cardString) => {
-    const [code, owner] = cardString.trim().split(" ");
+    const [code, owner, ...playerNameParts] = cardString.trim().split(" ");
+    const playerName = playerNameParts.join(" "); // Handles names with spaces
     return {
       code,
       imageUrl: `/cards/${code}.png`,
+      owner,
+      playerName,
       isPlayer: owner === "players",
     };
   };
@@ -187,6 +192,8 @@ function GameRoom() {
           const card = parseCard(parsedMessage.content);
           setAnimatingThrownCard({ ...card, from: card.isPlayer ? "bottom" : "top" });
 
+          setOpponentName(card.playerName);
+
           // After animation, move to thrownCards and clear animating card
           setTimeout(() => {
             setThrownCards((prevCards) => [
@@ -295,6 +302,27 @@ function GameRoom() {
           />
         </div>
       )}
+
+      <div className="opponent-avatar top-center">
+        <div className="opponent-name">{opponentName}</div>
+        <img
+          src="/images/anonymous.png" // Place your image in public/images/
+          alt="Opponent"
+          className="opponent-image"
+        />
+      </div>
+
+      <div className="colleagues-cards top-center">
+        {colleaguesCards.map((card, idx) => (
+          <img
+            key={card.code}
+            src={card.imageUrl}
+            alt={card.code}
+            className="card from-top"
+            style={{ animationDelay: `${idx * 0.1}s` }}
+          />
+        ))}
+      </div>
 
       {/* Opponent's cards at the top center */}
       <div className="colleagues-cards top-center">

@@ -132,7 +132,7 @@ public class RealPlayer extends Player {
     sendMessage(webSocketSession, NO_WINNER, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "No winner.");
   }
 
-  public void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard) {
-    sendMessage(webSocketSession, RECEIVED_THROWN_CARD, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), formatCard(card, isPlayersCard));
+  public void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard, String name) {
+    sendMessage(webSocketSession, RECEIVED_THROWN_CARD, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), formatCard(card, isPlayersCard , name));
   }
 }

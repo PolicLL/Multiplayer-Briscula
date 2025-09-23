@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.web.socket.WebSocketSession;
@@ -14,6 +15,7 @@ import org.springframework.web.socket.WebSocketSession;
 @SuperBuilder
 public abstract class Player {
 
+  @Setter
   protected List<Card> playerCards;
   @Getter
   protected String nickname;
@@ -38,7 +40,7 @@ public abstract class Player {
   public abstract void sentLoosingMessage();
   public abstract void sentWinningMessage();
   public abstract void setNoWinnerMessage();
-  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard);
+  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard, String name);
 
   public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
   public abstract void sendMessageToWaitForNextMatch();
@@ -59,11 +61,7 @@ public abstract class Player {
     points = 0;
   }
 
-  public void setPlayerCards(List<Card> playerCards) {
-    this.playerCards = playerCards;
-  }
-
-  @Override
+    @Override
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Player player)) return false;

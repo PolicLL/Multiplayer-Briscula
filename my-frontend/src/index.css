@@ -753,11 +753,10 @@ h1, h2, h4 {
 }
 
 .card {
-  width: 110px;
-  height: 165px;
+  width: 130px;
+  height: 250px;
   object-fit: contain;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   background: #fff;
   cursor: pointer;
 }
@@ -772,11 +771,45 @@ h1, h2, h4 {
 
 /* Main card in top-left, use .card size */
 .main-card.top-left img {
-  width: 110px;
-  height: 165px;
+  width: 150px;
+  height: 295px;
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.opponent-avatar.top-center {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none; /* so it doesn't block cards */
+}
+
+.opponent-image {
+  width: 130px;
+  height:130px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #6B4226;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.opponent-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #6B4226;
+  text-align: center;
+  margin-bottom: 15px;
+  width: 100%;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px #fff, 0 0px 2px #e0d4c1;
+  pointer-events: none;
 }
 
 /* Opponent's cards at top center, animate from top */
@@ -851,6 +884,14 @@ h1, h2, h4 {
   box-shadow: 0 2px 8px rgba(0,0,0,0.4);
   background: #fff;
   cursor: pointer;
+}
+
+.card.from-bottom {
+  animation: slideFromBottom 0.5s ease;
+}
+@keyframes slideFromBottom {
+  from { transform: translateY(120px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* HUD info */

@@ -33,8 +33,9 @@ public class CardFormatter {
     return card.cardType().toString() + extractCardShortValue(card.cardValue().name());
   }
 
-  public static String formatCard(Card card, boolean isPlayersCard) {
-    return card.cardType().toString() + extractCardShortValue(card.cardValue().name()) + (isPlayersCard ? " players" : "");
+  public static String formatCard(Card card, boolean isPlayersCard, String name) {
+    return card.cardType().toString() +
+            extractCardShortValue(card.cardValue().name()) + (isPlayersCard ? " players " : " not " +  name);
   }
 
   private static String extractCardShortValue(String valueName) {
