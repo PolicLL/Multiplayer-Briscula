@@ -40,6 +40,11 @@ public class Bot extends Player {
     }
 
     @Override
+    public void sentWinningMessage(String message) {
+
+    }
+
+    @Override
     public void setNoWinnerMessage() {
 
     }

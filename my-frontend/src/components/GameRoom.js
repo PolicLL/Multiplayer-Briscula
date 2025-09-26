@@ -20,6 +20,8 @@ function GameRoom() {
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef(null);
 
+  const [winnerInfo, setWinnerInfo] = useState("");
+
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
   // Add this near your other useState hooks
@@ -173,21 +175,26 @@ function GameRoom() {
           setCardsClickable(false);
           break;
 
-        case "PLAYER_LOST":
-          setMessage(parsedMessage.content);
+        case "PLAYER_WON": {
+          const resultObject = JSON.parse(parsedMessage.content);
+          setWinnerInfo(resultObject);
           setCardsClickable(false);
           setThrownCards([]);
           break;
+        }
 
-        case "PLAYER_WON":
-          setMessage("Player won.");
+        case "PLAYER_LOST":
+          const resultObject = JSON.parse(parsedMessage.content);
+          setWinnerInfo(resultObject);
           setCardsClickable(false);
           setThrownCards([]);
           break;
 
         case "NO_WINNER":
           setMessage("No winner.");
+          setWinnerInfo("No winner.");
           setCardsClickable(false);
+          setThrownCards([]);
           break;
 
         case "RECEIVED_THROWN_CARD": {
@@ -208,11 +215,13 @@ function GameRoom() {
         }
 
         case "WAIT_FOR_NEXT_MATCH":
+          setThrownCards([]);
           // TODO: Also when moving to /dashboard make sure there is some animation or message that will indicate that player is waiting
           navigate(`/dashboard`);
           break;
 
         case "RESTARTING_MATCH":
+          setThrownCards([]);
           navigate(`/dashboard`);
           break;
 
@@ -340,13 +349,25 @@ function GameRoom() {
       </div>
 
       <div className="thrown-cards center">
+        {/* Winner info overlay */}
+        {winnerInfo && typeof winnerInfo === "object" && (
+          <div className="winner-info-overlay">
+            <h2>{winnerInfo.status}</h2>
+            <div>
+              <strong>Winner:</strong> {winnerInfo.winner}
+            </div>
+            <div>
+              <strong>Points:</strong> {winnerInfo.points}
+            </div>
+          </div>
+        )}
         {/* First render already thrown cards */}
         {thrownCards.map((card, idx) => (
           <img
             key={card.code + idx}
-            src={card.imageUrl}
+            src={card.imageUrl} ßß
             alt={card.code}
-            className="card thrown-card"
+            className="card thrown-card" ß
           />
         ))}
         {/* Then render the animating card, so it appears on the right */}

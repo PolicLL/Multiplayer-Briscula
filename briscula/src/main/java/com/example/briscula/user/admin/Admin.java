@@ -167,19 +167,20 @@ public class Admin {
             return gameEndStatus;
         }
 
-
-        List<Integer> winnerIds = gameEndStatus.playerResults().entrySet().stream()
-                .filter(Map.Entry::getValue)
-                .peek(entry -> entry.getKey().getPlayer().sentWinningMessage())
-                .map(entry -> entry.getKey().getId())
-                .toList();
-
         Map<String, Integer> winnerNamesList = gameEndStatus.playerResults().entrySet().stream()
                 .filter(Map.Entry::getValue)
                 .collect(Collectors.toMap(value -> value.getKey().getPlayer().getNickname(),
                         value -> value.getKey().getPlayer().getPoints()));
 
         String winnerNames = String.join(", ", winnerNamesList.keySet());
+
+        List<Integer> winnerIds = gameEndStatus.playerResults().entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .peek(entry -> entry.getKey().getPlayer().sentWinningMessage(
+                        formatMessageForWinner(winnerNames, entry.getKey().getPlayer().getPoints())
+                ))
+                .map(entry -> entry.getKey().getId())
+                .toList();
 
         players.stream()
                 .filter(p -> !winnerIds.contains(p.getId()))
@@ -192,6 +193,14 @@ public class Admin {
     private String formatMessageForLoser(String winner, int points) {
         ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
         objectNode.put("status", "Lost.");
+        objectNode.put("winner", winner);
+        objectNode.put("points", points);
+        return JsonUtils.toJson(objectNode);
+    }
+
+    private String formatMessageForWinner(String winner, int points) {
+        ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
+        objectNode.put("status", "Won.");
         objectNode.put("winner", winner);
         objectNode.put("points", points);
         return JsonUtils.toJson(objectNode);

@@ -46,6 +46,8 @@ public abstract class Player {
 
     public abstract void sentWinningMessage();
 
+    public abstract void sentWinningMessage(String message);
+
     public abstract void setNoWinnerMessage();
 
     public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard, String name);

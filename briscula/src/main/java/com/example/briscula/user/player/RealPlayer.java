@@ -130,6 +130,10 @@ public class RealPlayer extends Player {
         sendMessage(webSocketSession, PLAYER_LOST, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "Lost.");
     }
 
+    public void sentWinningMessage(String message) {
+        sendMessage(webSocketSession, PLAYER_WON, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), message);
+    }
+
     public void sentWinningMessage() {
         sendMessage(webSocketSession, PLAYER_WON, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "Win.");
     }
