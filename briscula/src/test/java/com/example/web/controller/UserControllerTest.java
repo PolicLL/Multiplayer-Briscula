@@ -40,323 +40,323 @@ import utils.AuthService;
 @TestPropertySource(locations = "classpath:application-test.yml")
 class UserControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Autowired
-  private TokenStore tokenStore;
+    @Autowired
+    private TokenStore tokenStore;
 
-  private static String userToken, adminToken;
+    private static String userToken, adminToken;
 
-  private AuthService authService;
+    private AuthService authService;
 
-  private static boolean loggedIn = false;
+    private static boolean loggedIn = false;
 
-  @BeforeEach
-  void setUp() throws Exception {
-    if (!loggedIn) {
-      userToken = new AuthService(mockMvc).getUserBearerToken();
-      adminToken = new AuthService(mockMvc).getAdminBearerToken();
-      loggedIn = true;
+    @BeforeEach
+    void setUp() throws Exception {
+        if (!loggedIn) {
+            userToken = new AuthService(mockMvc).getUserBearerToken();
+            adminToken = new AuthService(mockMvc).getAdminBearerToken();
+            loggedIn = true;
+        }
     }
-  }
 
-  @Test
-  void loginUser() throws Exception {
-    String loginPayload = "{ \"username\": \"" + "user1" + "\", \"password\": \"" + "user" + "\" }";
+    @Test
+    void loginUser() throws Exception {
+        String loginPayload = "{ \"username\": \"" + "user1" + "\", \"password\": \"" + "user" + "\" }";
 
-    mockMvc.perform(post("/api/users/login")
-            .contentType("application/json")
-            .content(loginPayload))
-        .andExpect(status().isOk());
-  }
+        mockMvc.perform(post("/api/users/login")
+                        .contentType("application/json")
+                        .content(loginPayload))
+                .andExpect(status().isOk());
+    }
 
-  @Test
-  void testLoginTwiceException() throws Exception {
-    String loginPayloadUser2 = "{ \"username\": \"" + "user2" + "\", \"password\": \"" + "user" + "\" }";
+    @Test
+    void testLoginTwiceException() throws Exception {
+        String loginPayloadUser2 = "{ \"username\": \"" + "user2" + "\", \"password\": \"" + "user" + "\" }";
 
-    mockMvc.perform(post("/api/users/login")
-            .contentType("application/json")
-            .content(loginPayloadUser2))
-        .andExpect(status().isOk());
+        mockMvc.perform(post("/api/users/login")
+                        .contentType("application/json")
+                        .content(loginPayloadUser2))
+                .andExpect(status().isOk());
 
-    mockMvc.perform(post("/api/users/login")
-          .contentType("application/json")
-          .content(loginPayloadUser2))
-        .andExpect(status().isConflict())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(result -> {
-          ObjectMapper objectMapper = new ObjectMapper();
-          objectMapper.registerModule(new JavaTimeModule());
-          ErrorResponse errorResponse = objectMapper.readValue(
-              result.getResponse().getContentAsString(),
-              ErrorResponse.class
-          );
+        mockMvc.perform(post("/api/users/login")
+                        .contentType("application/json")
+                        .content(loginPayloadUser2))
+                .andExpect(status().isConflict())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ErrorResponse errorResponse = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            ErrorResponse.class
+                    );
 
-          assertThat(errorResponse.status()).isEqualTo(409);
-          assertThat(errorResponse.error()).isEqualTo("User is already logged in");
-          assertThat(errorResponse.message()).isEqualTo("User with name user2 is already logged in.");
-          assertThat(errorResponse.timestamp()).isNotNull();
-        });
-  }
+                    assertThat(errorResponse.status()).isEqualTo(409);
+                    assertThat(errorResponse.error()).isEqualTo("User is already logged in");
+                    assertThat(errorResponse.message()).isEqualTo("User with name user2 is already logged in.");
+                    assertThat(errorResponse.timestamp()).isNotNull();
+                });
+    }
 
-  @Test
-  void testLogout() throws Exception {
-    String user = "user3";
-    String userEmail = "user3@example.com";
-    String loginPayloadUser3 = "{ \"username\": \"" + user + "\", \"password\": \"" + "user" + "\" }";
+    @Test
+    void testLogout() throws Exception {
+        String user = "user3";
+        String userEmail = "user3@example.com";
+        String loginPayloadUser3 = "{ \"username\": \"" + user + "\", \"password\": \"" + "user" + "\" }";
 
-    String loginToken = mockMvc.perform(post("/api/users/login")
-            .contentType("application/json")
-            .content(loginPayloadUser3))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+        String loginToken = mockMvc.perform(post("/api/users/login")
+                        .contentType("application/json")
+                        .content(loginPayloadUser3))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    assertThat(tokenStore.isTokenActive(userEmail)).isTrue();
+        assertThat(tokenStore.isTokenActive(userEmail)).isTrue();
 
-    mockMvc.perform(post("/api/users/logout")
-            .contentType("application/json")
-            .header("Authorization", "Bearer " + loginToken))
-        .andExpect(status().isOk());
+        mockMvc.perform(post("/api/users/logout")
+                        .contentType("application/json")
+                        .header("Authorization", "Bearer " + loginToken))
+                .andExpect(status().isOk());
 
-    assertThat(tokenStore.isTokenActive(userEmail)).isFalse();
-  }
+        assertThat(tokenStore.isTokenActive(userEmail)).isFalse();
+    }
 
-  @Test
-  void createUserSuccess() throws Exception {
-    mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
-        .andExpect(status().isOk());
-  }
+    @Test
+    void createUserSuccess() throws Exception {
+        mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+                .andExpect(status().isOk());
+    }
 
-  @Test
-  void createUserSuccessThrowsUserAlreadyExistsException_UsernameIsUsed() throws Exception {
-    MockMultipartHttpServletRequestBuilder firstRequest = buildValidUserDtoMultipartRequest("/api/users/create");
+    @Test
+    void createUserSuccessThrowsUserAlreadyExistsException_UsernameIsUsed() throws Exception {
+        MockMultipartHttpServletRequestBuilder firstRequest = buildValidUserDtoMultipartRequest("/api/users/create");
 
-    mockMvc.perform(firstRequest)
-        .andExpect(status().isOk());
+        mockMvc.perform(firstRequest)
+                .andExpect(status().isOk());
 
-    mockMvc.perform(firstRequest)
-        .andExpect(status().isBadRequest())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(result -> {
-          ObjectMapper objectMapper = new ObjectMapper();
-          objectMapper.registerModule(new JavaTimeModule());
-          ErrorResponse errorResponse = objectMapper.readValue(
-              result.getResponse().getContentAsString(),
-              ErrorResponse.class
-          );
+        mockMvc.perform(firstRequest)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ErrorResponse errorResponse = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            ErrorResponse.class
+                    );
 
-          assertThat(errorResponse.status()).isEqualTo(400);
-          assertThat(errorResponse.error()).isEqualTo("User Already Exists With Username");
-          assertThat(errorResponse.message()).isEqualTo("Username is already taken!");
-          assertThat(errorResponse.timestamp()).isNotNull();
-        });
+                    assertThat(errorResponse.status()).isEqualTo(400);
+                    assertThat(errorResponse.error()).isEqualTo("User Already Exists With Username");
+                    assertThat(errorResponse.message()).isEqualTo("Username is already taken!");
+                    assertThat(errorResponse.timestamp()).isNotNull();
+                });
 
-  }
+    }
 
-  @Test
-  void createUserSuccessThrowsUserAlreadyExistsException_EmailIsUsed() throws Exception {
-    UserDto firstUserDto = UserDto.builder()
-        .username(randomUsername())
-        .age(randomAge())
-        .country(randomCountry())
-        .email("usedemail@gmail.com")
-        .password(randomPassword())
-        .photoId(PHOTO_ID)
-        .build();
+    @Test
+    void createUserSuccessThrowsUserAlreadyExistsException_EmailIsUsed() throws Exception {
+        UserDto firstUserDto = UserDto.builder()
+                .username(randomUsername())
+                .age(randomAge())
+                .country(randomCountry())
+                .email("usedemail@gmail.com")
+                .password(randomPassword())
+                .photoId(PHOTO_ID)
+                .build();
 
-    UserDto secondUserDto = UserDto.builder()
-        .username(randomUsername())
-        .age(randomAge())
-        .country(randomCountry())
-        .email("usedemail@gmail.com")
-        .password(randomPassword())
-        .photoId(PHOTO_ID)
-        .build();
+        UserDto secondUserDto = UserDto.builder()
+                .username(randomUsername())
+                .age(randomAge())
+                .country(randomCountry())
+                .email("usedemail@gmail.com")
+                .password(randomPassword())
+                .photoId(PHOTO_ID)
+                .build();
 
-    MockMultipartHttpServletRequestBuilder firstRequest = buildUserDtoMultipartRequest("/api/users/create", firstUserDto);
-    MockMultipartHttpServletRequestBuilder secondRequest = buildUserDtoMultipartRequest("/api/users/create", secondUserDto);
+        MockMultipartHttpServletRequestBuilder firstRequest = buildUserDtoMultipartRequest("/api/users/create", firstUserDto);
+        MockMultipartHttpServletRequestBuilder secondRequest = buildUserDtoMultipartRequest("/api/users/create", secondUserDto);
 
-    mockMvc.perform(firstRequest)
-        .andExpect(status().isOk());
+        mockMvc.perform(firstRequest)
+                .andExpect(status().isOk());
 
-    mockMvc.perform(secondRequest)
-        .andExpect(status().isBadRequest())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(result -> {
-          ObjectMapper objectMapper = new ObjectMapper();
-          objectMapper.registerModule(new JavaTimeModule());
-          ErrorResponse errorResponse = objectMapper.readValue(
-              result.getResponse().getContentAsString(),
-              ErrorResponse.class
-          );
+        mockMvc.perform(secondRequest)
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ErrorResponse errorResponse = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            ErrorResponse.class
+                    );
 
-          assertThat(errorResponse.status()).isEqualTo(400);
-          assertThat(errorResponse.error()).isEqualTo("User Already Exists With Email");
-          assertThat(errorResponse.message()).isEqualTo("Email is already taken!");
-          assertThat(errorResponse.timestamp()).isNotNull();
-        });
+                    assertThat(errorResponse.status()).isEqualTo(400);
+                    assertThat(errorResponse.error()).isEqualTo("User Already Exists With Email");
+                    assertThat(errorResponse.message()).isEqualTo("Email is already taken!");
+                    assertThat(errorResponse.timestamp()).isNotNull();
+                });
 
-  }
+    }
 
-  @Test
-  void getAllUsersSuccess() throws Exception {
-    mockMvc.perform(get("/api/users")
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(print());
-  }
+    @Test
+    void getAllUsersSuccess() throws Exception {
+        mockMvc.perform(get("/api/users")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+    }
 
-  @Test
-  void getUserById() throws Exception {
-    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+    @Test
+    void getUserById() throws Exception {
+        String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
+        UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
 
-    String userJson = mockMvc.perform(get("/api/users/by")
-            .param("id", createdUser.id())
-            .header("Authorization", userToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+        String userJson = mockMvc.perform(get("/api/users/by")
+                        .param("id", createdUser.id())
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-    UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
-    assertThat(createdUser).isEqualTo(finalUserObject);
-  }
+        UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
+        assertThat(createdUser).isEqualTo(finalUserObject);
+    }
 
-  @Test
-  void getUserByUsername() throws Exception {
-    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+    @Test
+    void getUserByUsername() throws Exception {
+        String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
+        UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
 
-    String userJson = mockMvc.perform(get("/api/users/by")
-            .param("username", createdUser.username())
-            .header("Authorization", userToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+        String userJson = mockMvc.perform(get("/api/users/by")
+                        .param("username", createdUser.username())
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-    UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
-    assertThat(createdUser).isEqualTo(finalUserObject);
-  }
+        UserDto finalUserObject = JsonUtils.fromJson(userJson, UserDto.class);
+        assertThat(createdUser).isEqualTo(finalUserObject);
+    }
 
-  @Test
-  void getUserByIdUsernameAndIdNotProvided() throws Exception {
-    mockMvc.perform(get("/api/users/by")
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isBadRequest())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(result -> {
-          ObjectMapper objectMapper = new ObjectMapper();
-          objectMapper.registerModule(new JavaTimeModule());
-          ErrorResponse errorResponse = objectMapper.readValue(
-              result.getResponse().getContentAsString(),
-              ErrorResponse.class
-          );
+    @Test
+    void getUserByIdUsernameAndIdNotProvided() throws Exception {
+        mockMvc.perform(get("/api/users/by")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ErrorResponse errorResponse = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            ErrorResponse.class
+                    );
 
-          assertThat(errorResponse.status()).isEqualTo(400);
-          assertThat(errorResponse.error()).isEqualTo("Bad request: both id and username are null");
-          assertThat(errorResponse.message()).isEqualTo("Either 'id' or 'username' must be provided.");
-          assertThat(errorResponse.timestamp()).isNotNull();
-        });
-  }
+                    assertThat(errorResponse.status()).isEqualTo(400);
+                    assertThat(errorResponse.error()).isEqualTo("Bad request: both id and username are null");
+                    assertThat(errorResponse.message()).isEqualTo("Either 'id' or 'username' must be provided.");
+                    assertThat(errorResponse.timestamp()).isNotNull();
+                });
+    }
 
-  @Test
-  void getUserByIdThrowsUserNotFoundException() throws Exception {
-    mockMvc.perform(get("/api/users/by?id={id}", "NON-EXISTING-ID")
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andDo(result -> {
-          ObjectMapper objectMapper = new ObjectMapper();
-          objectMapper.registerModule(new JavaTimeModule());
-          ErrorResponse errorResponse = objectMapper.readValue(
-              result.getResponse().getContentAsString(),
-              ErrorResponse.class
-          );
+    @Test
+    void getUserByIdThrowsUserNotFoundException() throws Exception {
+        mockMvc.perform(get("/api/users/by?id={id}", "NON-EXISTING-ID")
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andDo(result -> {
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+                    ErrorResponse errorResponse = objectMapper.readValue(
+                            result.getResponse().getContentAsString(),
+                            ErrorResponse.class
+                    );
 
-          assertThat(errorResponse.status()).isEqualTo(404);
-          assertThat(errorResponse.error()).isEqualTo("Entity Not Found");
-          assertThat(errorResponse.message()).isEqualTo("User not found with id: NON-EXISTING-ID");
-          assertThat(errorResponse.timestamp()).isNotNull();
-        });
-  }
+                    assertThat(errorResponse.status()).isEqualTo(404);
+                    assertThat(errorResponse.error()).isEqualTo("Entity Not Found");
+                    assertThat(errorResponse.message()).isEqualTo("User not found with id: NON-EXISTING-ID");
+                    assertThat(errorResponse.timestamp()).isNotNull();
+                });
+    }
 
-  @Test
-  void deleteUserSuccess() throws Exception {
-    String responseContent = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+    @Test
+    void deleteUserSuccess() throws Exception {
+        String responseContent = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    UserDto createdUser = JsonUtils.fromJson(responseContent, UserDto.class);
-    String userId = createdUser.id();
+        UserDto createdUser = JsonUtils.fromJson(responseContent, UserDto.class);
+        String userId = createdUser.id();
 
-    mockMvc.perform(delete("/api/users/" + userId)
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk());
+        mockMvc.perform(delete("/api/users/" + userId)
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
 
-    mockMvc.perform(get("/api/users/by")
-            .param("id", userId)
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isNotFound());
-  }
+        mockMvc.perform(get("/api/users/by")
+                        .param("id", userId)
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
 
-  @Test
-  void updateUserSuccess() throws Exception {
-    String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+    @Test
+    void updateUserSuccess() throws Exception {
+        String createdUserJson = mockMvc.perform(buildValidUserDtoMultipartRequest("/api/users/create"))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
-    String userId = createdUser.id();
+        UserDto createdUser = JsonUtils.fromJson(createdUserJson, UserDto.class);
+        String userId = createdUser.id();
 
-    String userUpdatePayload = JsonUtils.toJson(UserDto.builder()
-        .id(createdUser.id())
-        .username(createdUser.username())
-        .age(createdUser.age())
-        .email("updateemail@gmail.com")
-        .country(createdUser.country())
-        .password(randomPassword())
-        .build());
+        String userUpdatePayload = JsonUtils.toJson(UserDto.builder()
+                .id(createdUser.id())
+                .username(createdUser.username())
+                .age(createdUser.age())
+                .email("updateemail@gmail.com")
+                .country(createdUser.country())
+                .password(randomPassword())
+                .build());
 
-    mockMvc.perform(put("/api/users/{id}", userId)
-            .header("Authorization", userToken)
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(userUpdatePayload))
-        .andExpect(status().isOk())
-        .andDo(print());
+        mockMvc.perform(put("/api/users/{id}", userId)
+                        .header("Authorization", userToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userUpdatePayload))
+                .andExpect(status().isOk())
+                .andDo(print());
 
-    String finalUserJson = mockMvc.perform(get("/api/users/by")
-            .param("id", userId)
-            .header("Authorization", adminToken)
-            .contentType(MediaType.APPLICATION_JSON))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+        String finalUserJson = mockMvc.perform(get("/api/users/by")
+                        .param("id", userId)
+                        .header("Authorization", adminToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    UserDto finalUserObject = JsonUtils.fromJson(finalUserJson, UserDto.class);
-    assertThat(finalUserObject.email()).isEqualTo("updateemail@gmail.com");
-  }
+        UserDto finalUserObject = JsonUtils.fromJson(finalUserJson, UserDto.class);
+        assertThat(finalUserObject.email()).isEqualTo("updateemail@gmail.com");
+    }
 
 }

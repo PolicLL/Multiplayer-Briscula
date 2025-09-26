@@ -19,81 +19,81 @@ import org.springframework.test.web.servlet.MockMvc;
 @AutoConfigureMockMvc
 class TournamentValidationTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Test
-  void shouldFailWhenNameIsBlank() throws Exception {
-    TournamentCreateDto dto = TournamentCreateDto.builder()
-        .name("  ")
-        .numberOfPlayers(8)
-        .roundsToWin(2)
-        .build();
+    @Test
+    void shouldFailWhenNameIsBlank() throws Exception {
+        TournamentCreateDto dto = TournamentCreateDto.builder()
+                .name("  ")
+                .numberOfPlayers(8)
+                .roundsToWin(2)
+                .build();
 
-    String responseJson = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(dto)))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        String responseJson = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
 
-    ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message()).contains("Name is mandatory");
-  }
+        ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
+        assertThat(error.message()).contains("Name is mandatory");
+    }
 
-  @Test
-  void shouldFailWhenNumberOfPlayersIsTooLow() throws Exception {
-    TournamentCreateDto dto = TournamentCreateDto.builder()
-        .name("Tournament")
-        .numberOfPlayers(1)
-        .roundsToWin(2)
-        .build();
+    @Test
+    void shouldFailWhenNumberOfPlayersIsTooLow() throws Exception {
+        TournamentCreateDto dto = TournamentCreateDto.builder()
+                .name("Tournament")
+                .numberOfPlayers(1)
+                .roundsToWin(2)
+                .build();
 
-    String responseJson = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(dto)))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        String responseJson = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
 
-    ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message()).contains("Number of players must be one of 2, 4, 8, 16, 32");
-  }
+        ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
+        assertThat(error.message()).contains("Number of players must be one of 2, 4, 8, 16, 32");
+    }
 
-  @Test
-  void shouldFailWhenRoundsToWinIsTooHigh() throws Exception {
-    TournamentCreateDto dto = TournamentCreateDto.builder()
-        .name("Tournament")
-        .numberOfPlayers(8)
-        .roundsToWin(5)
-        .build();
+    @Test
+    void shouldFailWhenRoundsToWinIsTooHigh() throws Exception {
+        TournamentCreateDto dto = TournamentCreateDto.builder()
+                .name("Tournament")
+                .numberOfPlayers(8)
+                .roundsToWin(5)
+                .build();
 
-    String responseJson = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(dto)))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        String responseJson = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
 
-    ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message()).contains("Rounds to win must be between 1 and 4");
-  }
+        ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
+        assertThat(error.message()).contains("Rounds to win must be between 1 and 4");
+    }
 
-  @Test
-  void shouldReturnMultipleErrorsWhenAllFieldsInvalid() throws Exception {
-    TournamentCreateDto dto = TournamentCreateDto.builder()
-        .name("")
-        .numberOfPlayers(99)
-        .roundsToWin(0)
-        .build();
+    @Test
+    void shouldReturnMultipleErrorsWhenAllFieldsInvalid() throws Exception {
+        TournamentCreateDto dto = TournamentCreateDto.builder()
+                .name("")
+                .numberOfPlayers(99)
+                .roundsToWin(0)
+                .build();
 
-    String responseJson = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(toJson(dto)))
-        .andExpect(status().isBadRequest())
-        .andReturn().getResponse().getContentAsString();
+        String responseJson = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(toJson(dto)))
+                .andExpect(status().isBadRequest())
+                .andReturn().getResponse().getContentAsString();
 
-    ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
-    assertThat(error.message())
-        .contains("Name is mandatory")
-        .contains("Number of players must be one of 4, 8, 16, 32")
-        .contains("Rounds to win must be between 1 and 4");
-  }
+        ErrorResponse error = fromJsonUsingJavaTimeModule(responseJson, ErrorResponse.class);
+        assertThat(error.message())
+                .contains("Name is mandatory")
+                .contains("Number of players must be one of 4, 8, 16, 32")
+                .contains("Rounds to win must be between 1 and 4");
+    }
 }

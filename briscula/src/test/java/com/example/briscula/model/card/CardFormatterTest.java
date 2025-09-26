@@ -16,8 +16,10 @@ import static com.example.briscula.model.card.CardValue.TWO;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.briscula.utilities.constants.CardFormatter;
+
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -25,31 +27,31 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class CardFormatterTest {
 
-  @ParameterizedTest
-  @MethodSource("cardListProvider")
-  @DisplayName("Should format cards into expected string")
-  void testCardFormatter(CardType type1, CardValue value1,
-      CardType type2, CardValue value2,
-      CardType type3, CardValue value3,
-      String expected) {
+    @ParameterizedTest
+    @MethodSource("cardListProvider")
+    @DisplayName("Should format cards into expected string")
+    void testCardFormatter(CardType type1, CardValue value1,
+                           CardType type2, CardValue value2,
+                           CardType type3, CardValue value3,
+                           String expected) {
 
-    var firstCard = new Card(type1, value1);
-    var secondCard = new Card(type2, value2);
-    var thirdCard = new Card(type3, value3);
+        var firstCard = new Card(type1, value1);
+        var secondCard = new Card(type2, value2);
+        var thirdCard = new Card(type3, value3);
 
-    List<Card> cards = List.of(firstCard, secondCard, thirdCard);
-    String result = CardFormatter.formatCards(cards);
+        List<Card> cards = List.of(firstCard, secondCard, thirdCard);
+        String result = CardFormatter.formatCards(cards);
 
-    assertThat(result).isEqualTo(expected);
-  }
+        assertThat(result).isEqualTo(expected);
+    }
 
-  private static Stream<Arguments> cardListProvider() {
-    return Stream.of(
-        Arguments.of(DENARI, SEVEN, COPPE, TWO, BASTONI, THREE, "D7 C2 B3"),
-        Arguments.of(SPADE, JACK, COPPE, ACE, DENARI, FIVE, "SJ CA D5"),
-        Arguments.of(BASTONI, FOUR, SPADE, KNIGHT, COPPE, KING, "B4 SK CKI"),
-        Arguments.of(COPPE, THREE, COPPE, FOUR, COPPE, FIVE, "C3 C4 C5"),
-        Arguments.of(SPADE, ACE, SPADE, TWO, SPADE, THREE, "SA S2 S3")
-    );
-  }
+    private static Stream<Arguments> cardListProvider() {
+        return Stream.of(
+                Arguments.of(DENARI, SEVEN, COPPE, TWO, BASTONI, THREE, "D7 C2 B3"),
+                Arguments.of(SPADE, JACK, COPPE, ACE, DENARI, FIVE, "SJ CA D5"),
+                Arguments.of(BASTONI, FOUR, SPADE, KNIGHT, COPPE, KING, "B4 SK CKI"),
+                Arguments.of(COPPE, THREE, COPPE, FOUR, COPPE, FIVE, "C3 C4 C5"),
+                Arguments.of(SPADE, ACE, SPADE, TWO, SPADE, THREE, "SA S2 S3")
+        );
+    }
 }

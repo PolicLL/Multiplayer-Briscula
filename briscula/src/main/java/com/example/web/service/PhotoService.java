@@ -4,7 +4,9 @@ import com.example.web.dto.photo.UploadPhotoDto;
 import com.example.web.mapper.PhotoMapper;
 import com.example.web.model.Photo;
 import com.example.web.repository.PhotoRepository;
+
 import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,22 +16,22 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PhotoService {
 
-  private final PhotoRepository photoRepository;
+    private final PhotoRepository photoRepository;
 
-  private final PhotoMapper photoMapper;
+    private final PhotoMapper photoMapper;
 
-  public String uploadPhoto(UploadPhotoDto uploadPhotoDto)  {
-    Photo photoEntity = photoMapper.toEntity(uploadPhotoDto);
-    photoEntity.setName(uploadPhotoDto.file().getOriginalFilename());
-    photoRepository.save(photoEntity);
-    return photoEntity.getId();
-  }
+    public String uploadPhoto(UploadPhotoDto uploadPhotoDto) {
+        Photo photoEntity = photoMapper.toEntity(uploadPhotoDto);
+        photoEntity.setName(uploadPhotoDto.file().getOriginalFilename());
+        photoRepository.save(photoEntity);
+        return photoEntity.getId();
+    }
 
-  public boolean existsById(String photoId) {
-    return photoRepository.existsById(photoId);
-  }
+    public boolean existsById(String photoId) {
+        return photoRepository.existsById(photoId);
+    }
 
-  public Optional<Photo> findPhotoById(String photoId) {
-    return photoRepository.findById(photoId);
-  }
+    public Optional<Photo> findPhotoById(String photoId) {
+        return photoRepository.findById(photoId);
+    }
 }

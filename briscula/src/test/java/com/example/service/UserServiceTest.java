@@ -15,30 +15,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class UserServiceTest extends AbstractIntegrationTest {
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  @Test
-  void testUpdateUserWithExistingNameThrowsException() {
-    userService.createUser( generateValidUserDtoWithoutPhoto("Name1"));
-    UserDto createdUser = userService.createUser( generateValidUserDtoWithoutPhoto("Name2"));
+    @Test
+    void testUpdateUserWithExistingNameThrowsException() {
+        userService.createUser(generateValidUserDtoWithoutPhoto("Name1"));
+        UserDto createdUser = userService.createUser(generateValidUserDtoWithoutPhoto("Name2"));
 
-    UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
-        .username("Name1")
-        .age(createdUser.age())
-        .country(createdUser.country())
-        .email(createdUser.email())
-        .build();
+        UpdateUserRequest updateUserRequest = UpdateUserRequest.builder()
+                .username("Name1")
+                .age(createdUser.age())
+                .country(createdUser.country())
+                .email(createdUser.email())
+                .build();
 
-    assertThrows(UserWithUsernameAlreadyExistsException.class, () -> {
-      userService.updateUser(createdUser.id(), updateUserRequest);
-    });
-  }
+        assertThrows(UserWithUsernameAlreadyExistsException.class, () -> {
+            userService.updateUser(createdUser.id(), updateUserRequest);
+        });
+    }
 
-   @Test
-  void testLogin() {
-     UserLoginDto userLoginDto = new UserLoginDto("user", "WRONG_PASSWORD");
+    @Test
+    void testLogin() {
+        UserLoginDto userLoginDto = new UserLoginDto("user", "WRONG_PASSWORD");
 
-     assertThrows(WrongUsernameOrPassword.class, () -> userService.verify(userLoginDto));
-  }
+        assertThrows(WrongUsernameOrPassword.class, () -> userService.verify(userLoginDto));
+    }
 }

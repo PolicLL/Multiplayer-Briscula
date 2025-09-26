@@ -17,7 +17,9 @@ import static com.example.briscula.model.card.CardValue.TWO;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 import com.example.briscula.game.RoundJudge;
+
 import java.util.stream.Stream;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -30,110 +32,109 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 class CardTest {
 
-  private static final CardType mainCardType = CardType.COPPE;
+    private static final CardType mainCardType = CardType.COPPE;
 
-  @ParameterizedTest
-  @MethodSource("testSameNonMainCardType")
-  void testBothCardsSameNonMainTypeCombination(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) {
-    var firstCard = new Card(cardType1, cardValue1);
-    var secondCard = new Card(cardType2, cardValue2);
+    @ParameterizedTest
+    @MethodSource("testSameNonMainCardType")
+    void testBothCardsSameNonMainTypeCombination(
+            CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
+    ) {
+        var firstCard = new Card(cardType1, cardValue1);
+        var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
-  }
+        assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
+    }
 
-  private static Stream<Arguments> testSameNonMainCardType() {
+    private static Stream<Arguments> testSameNonMainCardType() {
 
-    return Stream.of(
-        Arguments.of(SPADE, ACE, SPADE, THREE),
-        Arguments.of(SPADE, THREE, SPADE, FOUR)
-    );
-  }
+        return Stream.of(
+                Arguments.of(SPADE, ACE, SPADE, THREE),
+                Arguments.of(SPADE, THREE, SPADE, FOUR)
+        );
+    }
 
-  @ParameterizedTest
-  @MethodSource("testDifferentNonMainCardType")
-  void testCardsDifferentNonMainTypeCombination(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2)
-   {
+    @ParameterizedTest
+    @MethodSource("testDifferentNonMainCardType")
+    void testCardsDifferentNonMainTypeCombination(
+            CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2) {
 
-    var firstCard = new Card(cardType1, cardValue1);
-    var secondCard = new Card(cardType2, cardValue2);
+        var firstCard = new Card(cardType1, cardValue1);
+        var secondCard = new Card(cardType2, cardValue2);
 
-    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
-  }
+        assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
+    }
 
-  private static Stream<Arguments> testDifferentNonMainCardType() {
+    private static Stream<Arguments> testDifferentNonMainCardType() {
 
-    return Stream.of(
-        Arguments.of(SPADE, ACE, DENARI, TWO),
-        Arguments.of(DENARI, JACK, SPADE, SEVEN)
-    );
-  }
-
-
-  @ParameterizedTest
-  @MethodSource("testFirstCardMainCardType")
-  void TestFirstCardMainType(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) {
-
-    var firstCard = new Card(cardType1, cardValue1);
-    var secondCard = new Card(cardType2, cardValue2);
-
-    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
-  }
-
-  private static Stream<Arguments> testFirstCardMainCardType() {
-
-    return Stream.of(
-        Arguments.of(COPPE, ACE, DENARI, TWO),
-        Arguments.of(COPPE, TWO, SPADE, ACE),
-        Arguments.of(COPPE, FOUR, BASTONI, FIVE)
-    );
-  }
+        return Stream.of(
+                Arguments.of(SPADE, ACE, DENARI, TWO),
+                Arguments.of(DENARI, JACK, SPADE, SEVEN)
+        );
+    }
 
 
-  @ParameterizedTest
-  @MethodSource("testSecondCardMainCardType")
-  void TestSecondCardMainType(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) {
-    var firstCard = new Card(cardType1, cardValue1);
-    var secondCard = new Card(cardType2, cardValue2);
+    @ParameterizedTest
+    @MethodSource("testFirstCardMainCardType")
+    void TestFirstCardMainType(
+            CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
+    ) {
 
-    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isTrue();
-  }
+        var firstCard = new Card(cardType1, cardValue1);
+        var secondCard = new Card(cardType2, cardValue2);
 
-  private static Stream<Arguments> testSecondCardMainCardType() {
+        assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
+    }
 
-    return Stream.of(
-        Arguments.of(SPADE, ACE, COPPE, TWO),
-        Arguments.of(DENARI, THREE, COPPE, FOUR),
-        Arguments.of(BASTONI, KNIGHT, COPPE, SIX)
-    );
-  }
+    private static Stream<Arguments> testFirstCardMainCardType() {
+
+        return Stream.of(
+                Arguments.of(COPPE, ACE, DENARI, TWO),
+                Arguments.of(COPPE, TWO, SPADE, ACE),
+                Arguments.of(COPPE, FOUR, BASTONI, FIVE)
+        );
+    }
 
 
-  @ParameterizedTest
-  @MethodSource("testBothCardsMainCardType")
-  void TestBothCardsMainType(
-      CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
-  ) {
+    @ParameterizedTest
+    @MethodSource("testSecondCardMainCardType")
+    void TestSecondCardMainType(
+            CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
+    ) {
+        var firstCard = new Card(cardType1, cardValue1);
+        var secondCard = new Card(cardType2, cardValue2);
 
-    var firstCard = new Card(cardType1, cardValue1);
-    var secondCard = new Card(cardType2, cardValue2);
+        assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isTrue();
+    }
 
-    assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
-  }
+    private static Stream<Arguments> testSecondCardMainCardType() {
 
-  private static Stream<Arguments> testBothCardsMainCardType() {
+        return Stream.of(
+                Arguments.of(SPADE, ACE, COPPE, TWO),
+                Arguments.of(DENARI, THREE, COPPE, FOUR),
+                Arguments.of(BASTONI, KNIGHT, COPPE, SIX)
+        );
+    }
 
-    return Stream.of(
-        Arguments.of(COPPE, ACE, COPPE, TWO),
-        Arguments.of(COPPE, THREE, COPPE, SEVEN),
-        Arguments.of(COPPE, SEVEN, COPPE, FIVE),
-        Arguments.of(COPPE, JACK, COPPE, FOUR)
-    );
-  }
+
+    @ParameterizedTest
+    @MethodSource("testBothCardsMainCardType")
+    void TestBothCardsMainType(
+            CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
+    ) {
+
+        var firstCard = new Card(cardType1, cardValue1);
+        var secondCard = new Card(cardType2, cardValue2);
+
+        assertThat(RoundJudge.isSecondCardStronger(firstCard, secondCard, mainCardType)).isFalse();
+    }
+
+    private static Stream<Arguments> testBothCardsMainCardType() {
+
+        return Stream.of(
+                Arguments.of(COPPE, ACE, COPPE, TWO),
+                Arguments.of(COPPE, THREE, COPPE, SEVEN),
+                Arguments.of(COPPE, SEVEN, COPPE, FIVE),
+                Arguments.of(COPPE, JACK, COPPE, FOUR)
+        );
+    }
 }

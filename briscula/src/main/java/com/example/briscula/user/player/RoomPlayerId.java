@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RoomPlayerId {
-  private String roomId;
-  private int playerId;
+    private String roomId;
+    private int playerId;
 }
 

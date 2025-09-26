@@ -11,9 +11,11 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,26 +28,26 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "match")
 @NamedEntityGraph(
-    name = "Match.users",
-    attributeNodes = @NamedAttributeNode("users")
+        name = "Match.users",
+        attributeNodes = @NamedAttributeNode("users")
 )
 public class Match {
 
-  @Id
-  private String id;
+    @Id
+    private String id;
 
-  private int numberOfPlayers;
+    private int numberOfPlayers;
 
-  private String tournamentId;
+    private String tournamentId;
 
-  @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
-  private List<MatchDetails> matchDetails;
+    @OneToMany(mappedBy = "match", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MatchDetails> matchDetails;
 
-  @ManyToMany
-  @JoinTable(
-      name = "user_match",
-      joinColumns = @JoinColumn(name = "match_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id")
-  )
-  private Set<User> users = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+            name = "user_match",
+            joinColumns = @JoinColumn(name = "match_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users = new HashSet<>();
 }

@@ -1,13 +1,14 @@
 package com.example.web.dto.match;
 
 import java.util.List;
+
 import lombok.Builder;
 
 @Builder
 public record CreateMatchDto(
-    int numberOfPlayers,
-    String tournamentId,
-    List<String> userIds
+        int numberOfPlayers,
+        String tournamentId,
+        List<String> userIds
 ) {
 
 }

@@ -12,19 +12,19 @@ import org.springframework.stereotype.Component;
 @Setter
 public class BrisculaConfig {
 
-  private int waitingTimeInSecondsForChoosingCard;
+    private int waitingTimeInSecondsForChoosingCard;
 
-  private int waitingTimeAfterRoundInSeconds;
+    private int waitingTimeAfterRoundInSeconds;
 
-  @Getter
-  private static int waitingTimeForChoosingCard;
+    @Getter
+    private static int waitingTimeForChoosingCard;
 
-  @Getter
-  private static int waitingTimeAfterRoundFinishes;
+    @Getter
+    private static int waitingTimeAfterRoundFinishes;
 
-  @PostConstruct
-  public void init() {
-    waitingTimeForChoosingCard = waitingTimeInSecondsForChoosingCard;
-    waitingTimeAfterRoundFinishes = waitingTimeAfterRoundInSeconds;
-  }
+    @PostConstruct
+    public void init() {
+        waitingTimeForChoosingCard = waitingTimeInSecondsForChoosingCard;
+        waitingTimeAfterRoundFinishes = waitingTimeAfterRoundInSeconds;
+    }
 }

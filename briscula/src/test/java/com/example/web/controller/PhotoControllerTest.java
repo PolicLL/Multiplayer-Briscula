@@ -22,51 +22,51 @@ import org.springframework.test.web.servlet.MockMvc;
 @TestPropertySource(locations = "classpath:application-test.yml")
 class PhotoControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Test
-  void uploadPhotoSuccess() throws Exception {
-    mockMvc.perform(multipart("/api/photo")
-            .file(getMultipartFileImage())
-            .contentType(MediaType.MULTIPART_FORM_DATA))
-        .andExpect(status().isOk());
-  }
+    @Test
+    void uploadPhotoSuccess() throws Exception {
+        mockMvc.perform(multipart("/api/photo")
+                        .file(getMultipartFileImage())
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk());
+    }
 
-  @Test
-  void uploadPhotoWithSameNameSuccess() throws Exception {
-    String sameName = "sample.jpg";
+    @Test
+    void uploadPhotoWithSameNameSuccess() throws Exception {
+        String sameName = "sample.jpg";
 
-    mockMvc.perform(multipart("/api/photo")
-                    .file(getMultipartFileImage(sameName))
-                    .contentType(MediaType.MULTIPART_FORM_DATA))
-            .andExpect(status().isOk());
+        mockMvc.perform(multipart("/api/photo")
+                        .file(getMultipartFileImage(sameName))
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk());
 
-    mockMvc.perform(multipart("/api/photo")
-                    .file(getMultipartFileImage(sameName))
-                    .contentType(MediaType.MULTIPART_FORM_DATA))
-            .andExpect(status().isOk());
-  }
+        mockMvc.perform(multipart("/api/photo")
+                        .file(getMultipartFileImage(sameName))
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk());
+    }
 
-  @Test
-  void getPhotoSuccess() throws Exception {
-    String photoId = mockMvc.perform(multipart("/api/photo")
-            .file(getMultipartFileImage())
-            .contentType(MediaType.MULTIPART_FORM_DATA))
-        .andExpect(status().isOk())
-        .andReturn()
-        .getResponse()
-        .getContentAsString();
+    @Test
+    void getPhotoSuccess() throws Exception {
+        String photoId = mockMvc.perform(multipart("/api/photo")
+                        .file(getMultipartFileImage())
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-    mockMvc.perform(get("/api/photo/{photoId}", photoId))
-        .andExpect(status().isOk())
-        .andExpect(header().exists("Content-Disposition"))
-        .andExpect(content().contentType(MediaType.IMAGE_JPEG));
-  }
+        mockMvc.perform(get("/api/photo/{photoId}", photoId))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Content-Disposition"))
+                .andExpect(content().contentType(MediaType.IMAGE_JPEG));
+    }
 
-  @Test
-  void getPhotoNotFound() throws Exception {
-    mockMvc.perform(get("/api/photo/NON_EXISTING_ID"))
-        .andExpect(status().isNotFound());
-  }
+    @Test
+    void getPhotoNotFound() throws Exception {
+        mockMvc.perform(get("/api/photo/NON_EXISTING_ID"))
+                .andExpect(status().isNotFound());
+    }
 }

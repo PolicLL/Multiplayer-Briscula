@@ -1,24 +1,26 @@
 package com.example.web.model.enums;
 
 import com.example.web.model.ConnectedPlayer;
+
 import java.util.Map;
+
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 public record GameEndStatus(
-    Map<ConnectedPlayer, Boolean> playerResults,
-    Status status
+        Map<ConnectedPlayer, Boolean> playerResults,
+        Status status
 ) {
-  @Getter
-  public enum Status {
-    WINNER_FOUND("Winner Found"),
-    NO_WINNER("No Winner");
+    @Getter
+    public enum Status {
+        WINNER_FOUND("Winner Found"),
+        NO_WINNER("No Winner");
 
-    private final String value;
+        private final String value;
 
-    Status(String value) {
-      this.value = value;
+        Status(String value) {
+            this.value = value;
+        }
     }
-  }
 }

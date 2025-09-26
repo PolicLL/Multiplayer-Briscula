@@ -23,42 +23,42 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-  // Make sure anonymous cannot use name if it is already used by someone
-  @Autowired
-  private UserDetailsService userDetailsService;
+    // Make sure anonymous cannot use name if it is already used by someone
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-  @Autowired
-  private JwtFilter jwtFilter;
+    @Autowired
+    private JwtFilter jwtFilter;
 
-  // TODO - Some problem with allowing paths,""/api/photo/**"" does not work.
-  @Bean
-  public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
-    return httpSecurity.csrf(AbstractHttpConfigurer::disable)
-        .authorizeHttpRequests(request -> request
-            .requestMatchers("/api/users/create", "/api/users/login",
-                "/api/users", "/api/game/**", "/actuator/**").permitAll()
-            .requestMatchers("/api/photo/**").permitAll()
-            .requestMatchers("/api/tournament/**").permitAll()
-            .requestMatchers("/game/**").permitAll()
-            .anyRequest().permitAll())
-        .httpBasic(Customizer.withDefaults())
-        .cors(Customizer.withDefaults())
-        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-        .build();
-  }
+    // TODO - Some problem with allowing paths,""/api/photo/**"" does not work.
+    @Bean
+    public SecurityFilterChain securityWebFilterChain(HttpSecurity httpSecurity) throws Exception {
+        return httpSecurity.csrf(AbstractHttpConfigurer::disable)
+                .authorizeHttpRequests(request -> request
+                        .requestMatchers("/api/users/create", "/api/users/login",
+                                "/api/users", "/api/game/**", "/actuator/**").permitAll()
+                        .requestMatchers("/api/photo/**").permitAll()
+                        .requestMatchers("/api/tournament/**").permitAll()
+                        .requestMatchers("/game/**").permitAll()
+                        .anyRequest().permitAll())
+                .httpBasic(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
+    }
 
-  @Bean
-  public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-      throws Exception {
-    return config.getAuthenticationManager();
-  }
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
+        return config.getAuthenticationManager();
+    }
 
-  @Bean
-  public AuthenticationProvider authenticationProvider() {
-    DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-    provider.setPasswordEncoder(new BCryptPasswordEncoder());
-    provider.setUserDetailsService(userDetailsService);
-    return provider;
-  }
+    @Bean
+    public AuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setPasswordEncoder(new BCryptPasswordEncoder());
+        provider.setUserDetailsService(userDetailsService);
+        return provider;
+    }
 
 }

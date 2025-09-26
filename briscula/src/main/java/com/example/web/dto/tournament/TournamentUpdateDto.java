@@ -10,17 +10,18 @@ import lombok.Builder;
 @Builder
 public record TournamentUpdateDto(
 
-    @NotBlank(message = "Name is mandatory")
-    String name,
+        @NotBlank(message = "Name is mandatory")
+        String name,
 
-    @Min(value = 2, message = "Number of players must be one of 2, 4, 8, 16, 32")
-    @Max(value = 32, message = "Number of players must be one of 4, 8, 16, 32")
-    int numberOfPlayers,
+        @Min(value = 2, message = "Number of players must be one of 2, 4, 8, 16, 32")
+        @Max(value = 32, message = "Number of players must be one of 4, 8, 16, 32")
+        int numberOfPlayers,
 
-    @NotNull(message = "Status is mandatory")
-    TournamentStatus status,
+        @NotNull(message = "Status is mandatory")
+        TournamentStatus status,
 
-    @Min(value = 1, message = "Rounds to win must be between 1 and 4")
-    @Max(value = 4, message = "Rounds to win must be between 1 and 4")
-    int roundsToWin
-) {}
+        @Min(value = 1, message = "Rounds to win must be between 1 and 4")
+        @Max(value = 4, message = "Rounds to win must be between 1 and 4")
+        int roundsToWin
+) {
+}

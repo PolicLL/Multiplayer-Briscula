@@ -2,9 +2,11 @@ package com.example.briscula.user.player;
 
 
 import com.example.briscula.model.card.Card;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,61 +17,68 @@ import org.springframework.web.socket.WebSocketSession;
 @SuperBuilder
 public abstract class Player {
 
-  @Setter
-  protected List<Card> playerCards;
-  @Getter
-  protected String nickname;
-  @Getter
-  protected int points;
+    @Setter
+    protected List<Card> playerCards;
+    @Getter
+    protected String nickname;
+    @Getter
+    protected int points;
 
-  @Getter
-  protected final WebSocketSession webSocketSession;
+    @Getter
+    protected final WebSocketSession webSocketSession;
 
-  protected Player(List<Card> playerCards, String nickname, WebSocketSession webSocketSession) {
-    this.playerCards = playerCards;
-    this.nickname = nickname;
-    this.webSocketSession = webSocketSession;
-  }
+    protected Player(List<Card> playerCards, String nickname, WebSocketSession webSocketSession) {
+        this.playerCards = playerCards;
+        this.nickname = nickname;
+        this.webSocketSession = webSocketSession;
+    }
 
-  protected Player(String nickname, WebSocketSession webSocketSession) {
-    this.nickname = nickname;
-    this.webSocketSession = webSocketSession;
-  }
+    protected Player(String nickname, WebSocketSession webSocketSession) {
+        this.nickname = nickname;
+        this.webSocketSession = webSocketSession;
+    }
 
-  public abstract Card playRound();
-  public abstract void sentLoosingMessage();
-  public abstract void sentWinningMessage();
-  public abstract void setNoWinnerMessage();
-  public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard, String name);
+    public abstract Card playRound();
 
-  public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
-  public abstract void sendMessageToWaitForNextMatch();
+    public abstract void sentLoosingMessage(String message);
 
-  public boolean isPlayerDone() {
-    return playerCards.isEmpty();
-  }
+    public abstract void sentLoosingMessage();
 
-  public void incrementPoints(int points) {
-    this.points += points;
-  }
+    public abstract void sentWinningMessage();
 
-  public void addCard(Card card) {
-    playerCards.add(card);
-  }
+    public abstract void setNoWinnerMessage();
 
-  public void resetPoints() {
-    points = 0;
-  }
+    public abstract void sentMessageAboutNewCardFromAnotherPlayer(Card card, boolean isPlayersCard, String name);
+
+    public abstract CompletableFuture<Void> sentInformationAboutColleaguesCards(List<Card> cards);
+
+    public abstract void sendMessageToWaitForNextMatch();
+
+    public boolean isPlayerDone() {
+        return playerCards.isEmpty();
+    }
+
+    public void incrementPoints(int points) {
+        this.points += points;
+    }
+
+    public void addCard(Card card) {
+        playerCards.add(card);
+    }
+
+    public void resetPoints() {
+        points = 0;
+    }
 
     @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof Player player)) return false;
-    return Objects.equals(nickname, player.nickname);
-  }
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Player player)) return false;
+        return Objects.equals(nickname, player.nickname);
+    }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(nickname);
-  }
+    @Override
+    public int hashCode() {
+        return Objects.hash(nickname);
+    }
 }

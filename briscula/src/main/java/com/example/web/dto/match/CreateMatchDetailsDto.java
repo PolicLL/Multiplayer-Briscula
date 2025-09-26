@@ -5,9 +5,9 @@ import lombok.Builder;
 
 @Builder
 public record CreateMatchDetailsDto(
-    String userId,
-    Match match,
-    int group
+        String userId,
+        Match match,
+        int group
 ) {
 
 }

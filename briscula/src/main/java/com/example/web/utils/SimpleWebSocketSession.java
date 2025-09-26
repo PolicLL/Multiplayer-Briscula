@@ -18,100 +18,100 @@ import static com.example.web.utils.Constants.RANDOM;
 
 public class SimpleWebSocketSession implements WebSocketSession {
 
-  private final String id;
-  private final Map<String, Object> attributes;
+    private final String id;
+    private final Map<String, Object> attributes;
 
-  public SimpleWebSocketSession(String id) {
-    this.id = id;
-    this.attributes = new HashMap<>();
-  }
+    public SimpleWebSocketSession(String id) {
+        this.id = id;
+        this.attributes = new HashMap<>();
+    }
 
-  public static WebSocketSession getWebSocketSession() {
-    return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
-  }
+    public static WebSocketSession getWebSocketSession() {
+        return new SimpleWebSocketSession("webSocketSessionId" + RANDOM.nextInt(10000));
+    }
 
-  @Override
-  public String getId() {
-    return id;
-  }
+    @Override
+    public String getId() {
+        return id;
+    }
 
-  @Override
-  public URI getUri() {
-    return URI.create("ws://localhost:8080");
-  }
+    @Override
+    public URI getUri() {
+        return URI.create("ws://localhost:8080");
+    }
 
-  @Override
-  public HttpHeaders getHandshakeHeaders() {
-    return null;
-  }
+    @Override
+    public HttpHeaders getHandshakeHeaders() {
+        return null;
+    }
 
-  @Override
-  public Map<String, Object> getAttributes() {
-    return attributes;
-  }
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
 
-  @Override
-  public Principal getPrincipal() {
-    return null;
-  }
+    @Override
+    public Principal getPrincipal() {
+        return null;
+    }
 
-  @Override
-  public InetSocketAddress getLocalAddress() {
-    return null;
-  }
+    @Override
+    public InetSocketAddress getLocalAddress() {
+        return null;
+    }
 
-  @Override
-  public InetSocketAddress getRemoteAddress() {
-    return null;
-  }
+    @Override
+    public InetSocketAddress getRemoteAddress() {
+        return null;
+    }
 
-  @Override
-  public String getAcceptedProtocol() {
-    return null;
-  }
+    @Override
+    public String getAcceptedProtocol() {
+        return null;
+    }
 
-  @Override
-  public void setTextMessageSizeLimit(int messageSizeLimit) {
+    @Override
+    public void setTextMessageSizeLimit(int messageSizeLimit) {
 
-  }
+    }
 
-  @Override
-  public int getTextMessageSizeLimit() {
-    return 0;
-  }
+    @Override
+    public int getTextMessageSizeLimit() {
+        return 0;
+    }
 
-  @Override
-  public void setBinaryMessageSizeLimit(int messageSizeLimit) {
+    @Override
+    public void setBinaryMessageSizeLimit(int messageSizeLimit) {
 
-  }
+    }
 
-  @Override
-  public int getBinaryMessageSizeLimit() {
-    return 0;
-  }
+    @Override
+    public int getBinaryMessageSizeLimit() {
+        return 0;
+    }
 
-  @Override
-  public List<WebSocketExtension> getExtensions() {
-    return null;
-  }
+    @Override
+    public List<WebSocketExtension> getExtensions() {
+        return null;
+    }
 
-  @Override
-  public void sendMessage(WebSocketMessage<?> message) throws IOException {
-    System.out.println("Message sent: " + message.getPayload());
-  }
+    @Override
+    public void sendMessage(WebSocketMessage<?> message) throws IOException {
+        System.out.println("Message sent: " + message.getPayload());
+    }
 
-  @Override
-  public boolean isOpen() {
-    return true;
-  }
+    @Override
+    public boolean isOpen() {
+        return true;
+    }
 
-  @Override
-  public void close() throws IOException {
-    System.out.println("Session closed.");
-  }
+    @Override
+    public void close() throws IOException {
+        System.out.println("Session closed.");
+    }
 
-  @Override
-  public void close(CloseStatus status) throws IOException {
-    System.out.println("Session closed with status: " + status);
-  }
+    @Override
+    public void close(CloseStatus status) throws IOException {
+        System.out.println("Session closed with status: " + status);
+    }
 }

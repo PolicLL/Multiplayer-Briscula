@@ -18,12 +18,14 @@ import com.example.web.service.GameRoomService;
 import com.example.web.service.UserService;
 import jakarta.websocket.ContainerProvider;
 import jakarta.websocket.WebSocketContainer;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,143 +34,143 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 
 class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
-  @LocalServerPort
-  private int port;
+    @LocalServerPort
+    private int port;
 
-  @Autowired
-  private GameRoomService gameRoomService;
+    @Autowired
+    private GameRoomService gameRoomService;
 
-  @Autowired
-  private UserService userService;
+    @Autowired
+    private UserService userService;
 
-  private GameRoom gameRoom;
+    private GameRoom gameRoom;
 
-  List<ConnectedPlayer> connectedPlayers = new ArrayList<>();
+    List<ConnectedPlayer> connectedPlayers = new ArrayList<>();
 
-  private URI WS_URI;
+    private URI WS_URI;
 
-  @BeforeEach
-  void setUp() throws Exception {
-    WS_URI = new URI("ws://localhost:" + port + "/game");
+    @BeforeEach
+    void setUp() throws Exception {
+        WS_URI = new URI("ws://localhost:" + port + "/game");
 
-    connectedPlayers = List.of(getConnectedPlayer(), getConnectedPlayer());
+        connectedPlayers = List.of(getConnectedPlayer(), getConnectedPlayer());
 
-    gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
+        gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
 
 
-    gameRoom.getPlayers()
-        .stream()
-        .map(ConnectedPlayer::getPlayer)
-        .map(RealPlayer.class::cast)
-        .forEach(realPlayer -> realPlayer.setSelectedCardFuture(new CompletableFuture<>()));
-  }
-
-  @Test
-  void testRawWebSocketJoinRoom() throws Exception {
-    CompletableFuture<String> future = new CompletableFuture<>();
-
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-    TestJoinRoomEndpoint endpoint = new TestJoinRoomEndpoint(future);
-
-    container.connectToServer(endpoint, WS_URI);
-    container.connectToServer(endpoint, WS_URI);
-
-    String response = future.get(5, TimeUnit.SECONDS);
-
-    assertThat(response).contains("GAME_STARTED");
-
-    System.out.println("✅ Test completed successfully: " + response);
-  }
-
-  @Test
-  void testRawWebSocketJoinRoomExceptionUsernameIsAlreadyUsed() throws Exception {
-    userService.createUser(generateValidUserDtoWithoutPhoto("User1950"));
-
-    CompletableFuture<String> future = new CompletableFuture<>();
-
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-    TestJoinRoomAnonymouslyEndpoint endpoint = new TestJoinRoomAnonymouslyEndpoint(future);
-
-    container.connectToServer(endpoint, WS_URI);
-
-    ExecutionException ex = assertThrows(
-        ExecutionException.class,
-        () -> future.get(10, TimeUnit.SECONDS)
-    );
-
-    assertThat(ex.getCause())
-        .isInstanceOf(RuntimeException.class)
-        .hasMessageContaining("WebSocket closed with code");
-  }
-
-  @Test
-  void testRawWebSocketGetInitialCards() throws Exception {
-    CompletableFuture<String> future = new CompletableFuture<>();
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-
-    TestGetInitialCardsEndpoint endpoint = new TestGetInitialCardsEndpoint(future, gameRoom);
-
-    container.connectToServer(endpoint, WS_URI);
-
-    String response = future.get(5, TimeUnit.SECONDS);
-
-    assertThat(response)
-        .contains("SENT_INITIAL_CARDS")
-        .contains("SENT_MAIN_CARD");
-
-    System.out.println("✅ Test completed successfully: " + response);
-  }
-
-  @Test
-  @Order(1)
-  void testRawWebSocketInitialCardsReceived() throws Exception {
-    CompletableFuture<String> future1 = new CompletableFuture<>();
-    CompletableFuture<String> future2 = new CompletableFuture<>();
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-
-    TestGetChooseCardMessageEndpoint endpoint1 = new TestGetChooseCardMessageEndpoint(0, future1);
-    TestGetChooseCardMessageEndpoint endpoint2 = new TestGetChooseCardMessageEndpoint(1, future2);
-
-    container.connectToServer(endpoint1, WS_URI); // ✅ separate instance
-    container.connectToServer(endpoint2, WS_URI); // ✅ separate instance
-
-    String response1 = "";
-    String response2 = "";
-
-    try {
-      response1 = future1.get(30, TimeUnit.SECONDS);
-    } catch (Exception e) {
-      System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
+        gameRoom.getPlayers()
+                .stream()
+                .map(ConnectedPlayer::getPlayer)
+                .map(RealPlayer.class::cast)
+                .forEach(realPlayer -> realPlayer.setSelectedCardFuture(new CompletableFuture<>()));
     }
 
-    try {
-      response2 = future2.get(30, TimeUnit.SECONDS);
-    } catch (Exception e) {
-      System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
+    @Test
+    void testRawWebSocketJoinRoom() throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        TestJoinRoomEndpoint endpoint = new TestJoinRoomEndpoint(future);
+
+        container.connectToServer(endpoint, WS_URI);
+        container.connectToServer(endpoint, WS_URI);
+
+        String response = future.get(5, TimeUnit.SECONDS);
+
+        assertThat(response).contains("GAME_STARTED");
+
+        System.out.println("✅ Test completed successfully: " + response);
     }
 
-    assertThat(response1 + response2).contains("CHOOSE_CARD");
+    @Test
+    void testRawWebSocketJoinRoomExceptionUsernameIsAlreadyUsed() throws Exception {
+        userService.createUser(generateValidUserDtoWithoutPhoto("User1950"));
 
-    System.out.println("✅ Test completed successfully: " + response1);
-    System.out.println("✅ Test completed successfully: " + response2);
-  }
+        CompletableFuture<String> future = new CompletableFuture<>();
 
-  /**
-   * This test will pass if no exception has been thrown.
-   */
-  @Test
-  void testRawWebSocketCardChosen() throws Exception {
-    CompletableFuture<String> future = new CompletableFuture<>();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        TestJoinRoomAnonymouslyEndpoint endpoint = new TestJoinRoomAnonymouslyEndpoint(future);
 
-    WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+        container.connectToServer(endpoint, WS_URI);
 
-    TestCardChosenEndpoint endpoint = new TestCardChosenEndpoint(gameRoom, future);
+        ExecutionException ex = assertThrows(
+                ExecutionException.class,
+                () -> future.get(10, TimeUnit.SECONDS)
+        );
 
-    container.connectToServer(endpoint, WS_URI);
+        assertThat(ex.getCause())
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("WebSocket closed with code");
+    }
 
-    RealPlayer realPlayer = (RealPlayer) gameRoom.getPlayers().get(0).getPlayer();
-    assertThat(realPlayer.getSelectedCardFuture().get()).isEqualTo(0);
+    @Test
+    void testRawWebSocketGetInitialCards() throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
 
-    System.out.println("✅ Test completed successfully!");
-  }
+        TestGetInitialCardsEndpoint endpoint = new TestGetInitialCardsEndpoint(future, gameRoom);
+
+        container.connectToServer(endpoint, WS_URI);
+
+        String response = future.get(5, TimeUnit.SECONDS);
+
+        assertThat(response)
+                .contains("SENT_INITIAL_CARDS")
+                .contains("SENT_MAIN_CARD");
+
+        System.out.println("✅ Test completed successfully: " + response);
+    }
+
+    @Test
+    @Order(1)
+    void testRawWebSocketInitialCardsReceived() throws Exception {
+        CompletableFuture<String> future1 = new CompletableFuture<>();
+        CompletableFuture<String> future2 = new CompletableFuture<>();
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
+        TestGetChooseCardMessageEndpoint endpoint1 = new TestGetChooseCardMessageEndpoint(0, future1);
+        TestGetChooseCardMessageEndpoint endpoint2 = new TestGetChooseCardMessageEndpoint(1, future2);
+
+        container.connectToServer(endpoint1, WS_URI); // ✅ separate instance
+        container.connectToServer(endpoint2, WS_URI); // ✅ separate instance
+
+        String response1 = "";
+        String response2 = "";
+
+        try {
+            response1 = future1.get(30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            System.out.println("⚠️ future1 did not complete in time: " + e.getMessage());
+        }
+
+        try {
+            response2 = future2.get(30, TimeUnit.SECONDS);
+        } catch (Exception e) {
+            System.out.println("⚠️ future2 did not complete in time: " + e.getMessage());
+        }
+
+        assertThat(response1 + response2).contains("CHOOSE_CARD");
+
+        System.out.println("✅ Test completed successfully: " + response1);
+        System.out.println("✅ Test completed successfully: " + response2);
+    }
+
+    /**
+     * This test will pass if no exception has been thrown.
+     */
+    @Test
+    void testRawWebSocketCardChosen() throws Exception {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        WebSocketContainer container = ContainerProvider.getWebSocketContainer();
+
+        TestCardChosenEndpoint endpoint = new TestCardChosenEndpoint(gameRoom, future);
+
+        container.connectToServer(endpoint, WS_URI);
+
+        RealPlayer realPlayer = (RealPlayer) gameRoom.getPlayers().get(0).getPlayer();
+        assertThat(realPlayer.getSelectedCardFuture().get()).isEqualTo(0);
+
+        System.out.println("✅ Test completed successfully!");
+    }
 }

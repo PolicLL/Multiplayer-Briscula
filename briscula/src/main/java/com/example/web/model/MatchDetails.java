@@ -19,21 +19,21 @@ import lombok.NoArgsConstructor;
 @Table(name = "match_details")
 public class MatchDetails {
 
-  @Id
-  private String id;
+    @Id
+    private String id;
 
-  @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  private User user;
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-  @ManyToOne
-  @JoinColumn(name = "match_id", nullable = false)
-  private Match match;
+    @ManyToOne
+    @JoinColumn(name = "match_id", nullable = false)
+    private Match match;
 
-  private int points;
+    private int points;
 
-  private int numberOfWins;
+    private int numberOfWins;
 
-  @Column(name = "group_number")
-  private int group;
+    @Column(name = "group_number")
+    private int group;
 }

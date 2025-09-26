@@ -174,13 +174,15 @@ function GameRoom() {
           break;
 
         case "PLAYER_LOST":
-          setMessage("Player lost.");
+          setMessage(parsedMessage.content);
           setCardsClickable(false);
+          setThrownCards([]);
           break;
 
         case "PLAYER_WON":
           setMessage("Player won.");
           setCardsClickable(false);
+          setThrownCards([]);
           break;
 
         case "NO_WINNER":
@@ -376,7 +378,7 @@ function GameRoom() {
       <div className="hud-info">
         {timeLeft > 0 && <h4 className="timer">Time left: {timeLeft}s</h4>}
         {shouldShowPoints && <h3 className="points">Points: {points}</h3>}
-        <h3 className="messages">Messages: {message}</h3>
+        <h2 className="messages">{message}</h2>
       </div>
     </div>
   );

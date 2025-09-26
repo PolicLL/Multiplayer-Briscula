@@ -22,15 +22,15 @@ import org.hibernate.type.SqlTypes;
 @AllArgsConstructor
 public class Photo {
 
-  @Id
-  @Getter
-  private String id;
+    @Id
+    @Getter
+    private String id;
 
-  @Setter
-  private String name;
+    @Setter
+    private String name;
 
-  @Lob
-  @JdbcTypeCode(SqlTypes.BINARY)
-  private byte[] photo;
+    @Lob
+    @JdbcTypeCode(SqlTypes.BINARY)
+    private byte[] photo;
 
 }

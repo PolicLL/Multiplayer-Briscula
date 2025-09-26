@@ -13,11 +13,13 @@ import com.example.web.model.GameRoom;
 import com.example.web.model.Match;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
+
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
@@ -29,138 +31,136 @@ import org.springframework.web.socket.WebSocketSession;
 @Component
 public class GamePrepareService {
 
-  private final GameRoomService gameRoomService;
-  private final GameStartService gameStartService;
-  private final UserService userService;
-  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
+    private final GameRoomService gameRoomService;
+    private final GameStartService gameStartService;
+    private final UserService userService;
+    private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
-  public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService,
-      UserService userService) {
-    this.gameStartService = gameStartService;
-    this.gameRoomService = gameRoomService;
-    this.userService = userService;
-  }
-
-  private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();
-
-  {
-    mapPreparingPlayers.put(2, new LinkedHashSet<>());
-    mapPreparingPlayers.put(3, new LinkedHashSet<>());
-    mapPreparingPlayers.put(4, new LinkedHashSet<>());
-  }
-
-  // TODO: Make sure that user can leave the tournament/game before it starts.
-  // TODO: While waiting for another player to join room/tournament, make some animation on front
-  public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
-      throws JsonProcessingException {
-
-    String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
-    boolean shouldPointsShow = Boolean.parseBoolean(
-        WebSocketMessageReader.getValueFromJsonMessage(message, "shouldShowPoints"));
-    int numberOfPlayersOption = Integer.parseInt(
-        WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
-
-    String userId = null;
-
-    boolean isRegisteredUser = WebSocketMessageReader.contains(message, "userId");
-
-    if (isRegisteredUser) {
-      userId =  WebSocketMessageReader.getValueFromJsonMessage(message, "userId");
-    }
-    else {
-      // TODO Check for the name used by anonymous, make sure it is not used by registered player
-      if (userService.existsByUsername(playerName))
-        throw new UserWithUsernameAlreadyExistsException();
+    public GamePrepareService(@Lazy GameStartService gameStartService, GameRoomService gameRoomService,
+                              UserService userService) {
+        this.gameStartService = gameStartService;
+        this.gameRoomService = gameRoomService;
+        this.userService = userService;
     }
 
+    private final Map<Integer, Set<ConnectedPlayer>> mapPreparingPlayers = new HashMap<>();
 
-    if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
-      log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
-      return;
+    {
+        mapPreparingPlayers.put(2, new LinkedHashSet<>());
+        mapPreparingPlayers.put(3, new LinkedHashSet<>());
+        mapPreparingPlayers.put(4, new LinkedHashSet<>());
     }
 
-    synchronized (mapPreparingPlayers) {
-      ConnectedPlayer connectedPlayer = new ConnectedPlayer(new RealPlayer(playerName, session), shouldPointsShow);
+    // TODO: Make sure that user can leave the tournament/game before it starts.
+    // TODO: While waiting for another player to join room/tournament, make some animation on front
+    public void handle(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message)
+            throws JsonProcessingException {
 
-      if (userId != null)
-        connectedPlayer.setUserId(userId);
+        String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
+        boolean shouldPointsShow = Boolean.parseBoolean(
+                WebSocketMessageReader.getValueFromJsonMessage(message, "shouldShowPoints"));
+        int numberOfPlayersOption = Integer.parseInt(
+                WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
 
-      Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
+        String userId = null;
 
-      if (messageDispatcher.isSessionInGameOrTournament(session)) {
-        throw new UserIsAlreadyInTournamentOrGame(session);
-      }
+        boolean isRegisteredUser = WebSocketMessageReader.contains(message, "userId");
 
-      messageDispatcher.joinGameOrTournament(session);
+        if (isRegisteredUser) {
+            userId = WebSocketMessageReader.getValueFromJsonMessage(message, "userId");
+        } else {
+            // TODO Check for the name used by anonymous, make sure it is not used by registered player
+            if (userService.existsByUsername(playerName))
+                throw new UserWithUsernameAlreadyExistsException();
+        }
 
-      if (!waitingPlayers.add(connectedPlayer)) {
-        throw new RuntimeException("User already entered this game.");
-      }
 
-      if (waitingPlayers.size() == numberOfPlayersOption) {
-        ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
+        if (!mapPreparingPlayers.containsKey(numberOfPlayersOption)) {
+            log.warn("Invalid numberOfPlayers value: {}", numberOfPlayersOption);
+            return;
+        }
 
-        GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
-            GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption), firstPlayer.isDoesWantPointsToShow());
+        synchronized (mapPreparingPlayers) {
+            ConnectedPlayer connectedPlayer = new ConnectedPlayer(new RealPlayer(playerName, session), shouldPointsShow);
 
-        notifyPlayersGameIsStarting(waitingPlayers, gameRoom);
+            if (userId != null)
+                connectedPlayer.setUserId(userId);
 
-        waitingPlayers.clear();
-      }
+            Set<ConnectedPlayer> waitingPlayers = mapPreparingPlayers.get(numberOfPlayersOption);
+
+            if (messageDispatcher.isSessionInGameOrTournament(session)) {
+                throw new UserIsAlreadyInTournamentOrGame(session);
+            }
+
+            messageDispatcher.joinGameOrTournament(session);
+
+            if (!waitingPlayers.add(connectedPlayer)) {
+                throw new RuntimeException("User already entered this game.");
+            }
+
+            if (waitingPlayers.size() == numberOfPlayersOption) {
+                ConnectedPlayer firstPlayer = waitingPlayers.iterator().next();
+
+                GameRoom gameRoom = gameRoomService.createRoom(waitingPlayers,
+                        GameOptionNumberOfPlayers.fromInt(numberOfPlayersOption), firstPlayer.isDoesWantPointsToShow());
+
+                notifyPlayersGameIsStarting(waitingPlayers, gameRoom);
+
+                waitingPlayers.clear();
+            }
+        }
     }
-  }
 
-  public void startProcessForGameStartForMatch(Match match, Set<ConnectedPlayer> connectedPlayers) {
-    GameRoom gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
+    public void startProcessForGameStartForMatch(Match match, Set<ConnectedPlayer> connectedPlayers) {
+        GameRoom gameRoom = gameRoomService.createRoom(connectedPlayers, GameOptionNumberOfPlayers.TWO_PLAYERS, true);
 
-    log.info("Created game room with id {}.", gameRoom.getRoomId());
+        log.info("Created game room with id {}.", gameRoom.getRoomId());
 
-    gameRoom.setMatchId(match.getId());
+        gameRoom.setMatchId(match.getId());
 
-    notifyPlayersGameIsStarting(connectedPlayers, gameRoom);
-  }
-
-  private void notifyPlayersGameIsStarting(Set<ConnectedPlayer> connectedPlayers, GameRoom gameRoom) {
-    connectedPlayers.forEach(tempUser -> {
-      if (tempUser.getPlayer() instanceof RealPlayer) {
-        log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
-        sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
-      }
-      else {
-        tempUser.setInitialCardsReceived(true);
-      }
-    });
-
-    if (areAllPlayersBots(connectedPlayers)) {
-      gameStartService.startGame(gameRoom.getRoomId());
+        notifyPlayersGameIsStarting(connectedPlayers, gameRoom);
     }
-  }
 
-  public static boolean areAllPlayersBots(Set<ConnectedPlayer> waitingPlayers) {
-    for (ConnectedPlayer tempConnectedPlayer : waitingPlayers) {
-      if (!(tempConnectedPlayer.getPlayer() instanceof Bot)) {
-        return false;
-      }
+    private void notifyPlayersGameIsStarting(Set<ConnectedPlayer> connectedPlayers, GameRoom gameRoom) {
+        connectedPlayers.forEach(tempUser -> {
+            if (tempUser.getPlayer() instanceof RealPlayer) {
+                log.info("Sending message that game room started with id {}.", gameRoom.getRoomId());
+                sendMessage(tempUser.getWebSocketSession(), GAME_STARTED, gameRoom.getRoomId(), tempUser.getId());
+            } else {
+                tempUser.setInitialCardsReceived(true);
+            }
+        });
+
+        if (areAllPlayersBots(connectedPlayers)) {
+            gameStartService.startGame(gameRoom.getRoomId());
+        }
     }
-    return true;
-  }
 
-  public void handleLeavingRoom(WebSocketSession session, WebSocketMessage<?> message)
-      throws JsonProcessingException {
-    String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
-    Integer numberOfPlayers = Integer.valueOf(WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
-
-    synchronized (mapPreparingPlayers) {
-      Set<ConnectedPlayer> players = mapPreparingPlayers.get(numberOfPlayers);
-      Optional<ConnectedPlayer> player = players.stream().filter(
-          tempPlayer -> tempPlayer.getPlayer().getNickname().equals(playerName) &&
-              tempPlayer.getWebSocketSession().equals(session)).findFirst();
-      player.ifPresent(players::remove);
-
-      // check will it work
-      messageDispatcher.leftGameOrTournament(session);
-
-      log.info("User with player name {}, left room for {} players.", playerName, numberOfPlayers);
+    public static boolean areAllPlayersBots(Set<ConnectedPlayer> waitingPlayers) {
+        for (ConnectedPlayer tempConnectedPlayer : waitingPlayers) {
+            if (!(tempConnectedPlayer.getPlayer() instanceof Bot)) {
+                return false;
+            }
+        }
+        return true;
     }
-  }
+
+    public void handleLeavingRoom(WebSocketSession session, WebSocketMessage<?> message)
+            throws JsonProcessingException {
+        String playerName = WebSocketMessageReader.getValueFromJsonMessage(message, "playerName");
+        Integer numberOfPlayers = Integer.valueOf(WebSocketMessageReader.getValueFromJsonMessage(message, "numberOfPlayers"));
+
+        synchronized (mapPreparingPlayers) {
+            Set<ConnectedPlayer> players = mapPreparingPlayers.get(numberOfPlayers);
+            Optional<ConnectedPlayer> player = players.stream().filter(
+                    tempPlayer -> tempPlayer.getPlayer().getNickname().equals(playerName) &&
+                            tempPlayer.getWebSocketSession().equals(session)).findFirst();
+            player.ifPresent(players::remove);
+
+            // check will it work
+            messageDispatcher.leftGameOrTournament(session);
+
+            log.info("User with player name {}, left room for {} players.", playerName, numberOfPlayers);
+        }
+    }
 }

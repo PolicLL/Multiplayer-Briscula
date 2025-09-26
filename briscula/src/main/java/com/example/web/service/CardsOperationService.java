@@ -27,48 +27,48 @@ import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 @RequiredArgsConstructor
 public class CardsOperationService {
 
-  private final GameRoomService gameRoomService;
-  private final GameStartService gameStartService;
+    private final GameRoomService gameRoomService;
+    private final GameStartService gameStartService;
 
-  public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
-      throws IOException {
-    String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
-    int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, PLAYER_ID));
+    public void handleGetCards(WebSocketSession session, WebSocketMessage<?> message)
+            throws IOException {
+        String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
+        int playerId = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, PLAYER_ID));
 
-    GameRoom gameRoom = gameRoomService.getRoom(roomId);
-    List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
+        GameRoom gameRoom = gameRoomService.getRoom(roomId);
+        List<Card> listCards = gameRoom.getCardsForPlayer(playerId);
 
-    sendMessage(session, SENT_INITIAL_CARDS, roomId, playerId,
-            CardFormatter.formatSentInitialCardsState(listCards, gameRoom.isShowingPoints()));
+        sendMessage(session, SENT_INITIAL_CARDS, roomId, playerId,
+                CardFormatter.formatSentInitialCardsState(listCards, gameRoom.isShowingPoints()));
 
-    sendMessage(session, SENT_MAIN_CARD, roomId, playerId,
-            CardFormatter.formatCard(gameRoom.getMainCard()));
+        sendMessage(session, SENT_MAIN_CARD, roomId, playerId,
+                CardFormatter.formatCard(gameRoom.getMainCard()));
 
-    log.info("Handling cards {} {}.", roomId, playerId);
-  }
-
-  public synchronized void handleGetInitialCards(WebSocketMessage<?> message)
-      throws JsonProcessingException {
-    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
-    gameRoomService.notifyRoomPlayerReceivedInitialCards(
-        roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
-
-    log.info("Check handle initial cards for room {}. Value {}.", roomId,
-        gameRoomService.areInitialCardsReceived(roomId));
-
-    gameStartService.startGame(roomId);
-  }
-
-  public void handleChosenCard(WebSocketMessage<?> message) throws JsonProcessingException {
-    String roomId =  WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
-    String playerId =  WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
-
-    int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "card"));
-
-    GameRoom gameRoom = gameRoomService.getRoom(roomId);
-    ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
-    if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
-      realPlayer.completeSelectedCard(card);
+        log.info("Handling cards {} {}.", roomId, playerId);
     }
-  }
+
+    public synchronized void handleGetInitialCards(WebSocketMessage<?> message)
+            throws JsonProcessingException {
+        String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
+        gameRoomService.notifyRoomPlayerReceivedInitialCards(
+                roomId, WebSocketMessageReader.getValueFromJsonMessage(message, "playerId"));
+
+        log.info("Check handle initial cards for room {}. Value {}.", roomId,
+                gameRoomService.areInitialCardsReceived(roomId));
+
+        gameStartService.startGame(roomId);
+    }
+
+    public void handleChosenCard(WebSocketMessage<?> message) throws JsonProcessingException {
+        String roomId = WebSocketMessageReader.getValueFromJsonMessage(message, ROOM_ID);
+        String playerId = WebSocketMessageReader.getValueFromJsonMessage(message, "playerId");
+
+        int card = Integer.parseInt(WebSocketMessageReader.getValueFromJsonMessage(message, "card"));
+
+        GameRoom gameRoom = gameRoomService.getRoom(roomId);
+        ConnectedPlayer connectedPlayer = gameRoom.getGame().getPlayer(Integer.parseInt(playerId));
+        if (connectedPlayer.getPlayer() instanceof RealPlayer realPlayer) {
+            realPlayer.completeSelectedCard(card);
+        }
+    }
 }

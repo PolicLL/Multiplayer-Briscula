@@ -1,5 +1,6 @@
 package com.example.briscula.user.admin;
 
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
 import static com.example.web.utils.Constants.getRandomNumber;
 
 import com.example.briscula.game.RoundWinner;
@@ -13,6 +14,7 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,6 +22,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import com.example.web.utils.JsonUtils;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -27,188 +33,203 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Admin {
 
-  @Getter
-  private Card mainCard;
+    @Getter
+    private Card mainCard;
 
-  @Getter
-  private final Deck deck;
+    @Getter
+    private final Deck deck;
 
-  @Getter
-  private List<ConnectedPlayer> players;
+    @Getter
+    private List<ConnectedPlayer> players;
 
-  @Getter
-  private List<List<Card>> listOfCardsForAllPlayers;
+    @Getter
+    private List<List<Card>> listOfCardsForAllPlayers;
 
-  private int indexOfCurrentPlayer = 0;
-  private GameOptionNumberOfPlayers gameOptionNumberOfPlayers;
+    private int indexOfCurrentPlayer = 0;
+    private GameOptionNumberOfPlayers gameOptionNumberOfPlayers;
 
-  public Admin() {
-    deck = new Deck();
-  }
-
-  public void prepareDeckAndPlayers(GameOptionNumberOfPlayers gameOptions, List<ConnectedPlayer> players) {
-    prepareDeck(gameOptions);
-    chooseMainCard();
-    deck.setLastCard(mainCard);
-
-    initializePlayers(gameOptions, players);
-
-    chooseStartingPlayer();
-
-    AtomicInteger index = new AtomicInteger();
-    players.forEach(player -> player.getPlayer().setPlayerCards(getCardsForPlayer(
-        index.getAndIncrement())));
-
-    this.gameOptionNumberOfPlayers = gameOptions;
-
-    log.info("Index of starting player: " + indexOfCurrentPlayer);
-  }
-
-  public List<Card> getCardsForPlayer(int playerId) {
-    return listOfCardsForAllPlayers.get(playerId);
-  }
-
-  public boolean isLastRound() {
-    int cardsInPlayerHand;
-    if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.THREE_PLAYERS) {
-      cardsInPlayerHand = 3;
-    } else {
-      cardsInPlayerHand = 4;
+    public Admin() {
+        deck = new Deck();
     }
 
-    return deck.getDeckCards().isEmpty() &&
-        listOfCardsForAllPlayers.stream().allMatch(cards -> cards.size() == cardsInPlayerHand);
-  }
+    public void prepareDeckAndPlayers(GameOptionNumberOfPlayers gameOptions, List<ConnectedPlayer> players) {
+        prepareDeck(gameOptions);
+        chooseMainCard();
+        deck.setLastCard(mainCard);
 
-  private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {
-    if (gameOptions == GameOptionNumberOfPlayers.THREE_PLAYERS) deck.removeOneWithCardValueTwo();
-  }
+        initializePlayers(gameOptions, players);
 
-  private void initializePlayers(GameOptionNumberOfPlayers gameOptions, List<ConnectedPlayer> players) {
-    dealCards(gameOptions);
-    this.players = players;
-  }
+        chooseStartingPlayer();
 
-  private void dealCards(GameOptionNumberOfPlayers gameOptions) {
-    listOfCardsForAllPlayers = new ArrayList<>();
-    List<Card> deckCards = deck.getDeckCards();
-    int cardsPerPlayer = getStartNumberOfCards(gameOptions);
+        AtomicInteger index = new AtomicInteger();
+        players.forEach(player -> player.getPlayer().setPlayerCards(getCardsForPlayer(
+                index.getAndIncrement())));
 
-    for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
-      List<Card> playerCards = new LinkedList<>();
-      for (int j = 0; j < cardsPerPlayer; ++j) {
-        Card card = deckCards.remove(getRandomNumber(deckCards.size() - 1));
-        playerCards.add(card);
-      }
-      listOfCardsForAllPlayers.add(playerCards);
-    }
-  }
+        this.gameOptionNumberOfPlayers = gameOptions;
 
-  private int getStartNumberOfCards(GameOptionNumberOfPlayers gameOptions) {
-    return switch (gameOptions) {
-      case TWO_PLAYERS, FOUR_PLAYERS -> 4;
-      case THREE_PLAYERS -> 3;
-    };
-  }
-
-  private void chooseStartingPlayer() {
-    indexOfCurrentPlayer = getRandomNumber(players.size());
-  }
-
-  private void chooseMainCard() {
-    mainCard = new Card(CardType.values()[getRandomNumber(CardType.values().length)],
-        CardValue.values()[getRandomNumber(CardValue.values().length)]);
-  }
-
-  public void dealNextRound(RoundWinner roundWinner) {
-    if (deck.getNumberOfDeckCards() == 0) return;
-
-    players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
-
-    if (GameOptionNumberOfPlayers.TWO_PLAYERS.equals(gameOptionNumberOfPlayers)) {
-      players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+        log.info("Index of starting player: " + indexOfCurrentPlayer);
     }
 
-    for (int i = 0; i < players.size(); ++i) {
-      if (roundWinner.player() == players.get(i).getPlayer()) {
-        indexOfCurrentPlayer = i;
-        break;
-      }
+    public List<Card> getCardsForPlayer(int playerId) {
+        return listOfCardsForAllPlayers.get(playerId);
     }
-  }
 
-  public Player getCurrentPlayer() {
-    Player currentPlayer = players.get(indexOfCurrentPlayer).getPlayer();
-    indexOfCurrentPlayer = (indexOfCurrentPlayer + 1) % players.size();
-    return currentPlayer;
-  }
+    public boolean isLastRound() {
+        int cardsInPlayerHand;
+        if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.THREE_PLAYERS) {
+            cardsInPlayerHand = 3;
+        } else {
+            cardsInPlayerHand = 4;
+        }
 
+        return deck.getDeckCards().isEmpty() &&
+                listOfCardsForAllPlayers.stream().allMatch(cards -> cards.size() == cardsInPlayerHand);
+    }
 
-  public boolean isGameOver() {
-    return deck.getNumberOfDeckCards() == 0 &&
-        players.stream().allMatch(player -> player.getPlayer().isPlayerDone());
-  }
+    private void prepareDeck(GameOptionNumberOfPlayers gameOptions) {
+        if (gameOptions == GameOptionNumberOfPlayers.THREE_PLAYERS) deck.removeOneWithCardValueTwo();
+    }
 
-  public GameEndStatus notifyPlayers() {
-    GameEndStatus gameEndStatus = getGameEndStatus();
+    private void initializePlayers(GameOptionNumberOfPlayers gameOptions, List<ConnectedPlayer> players) {
+        dealCards(gameOptions);
+        this.players = players;
+    }
 
-    if (Status.NO_WINNER.equals(gameEndStatus.status())) {
-      players.stream()
-          .filter(player -> player.getPlayer() instanceof RealPlayer)
-          .map(player -> (RealPlayer) player.getPlayer())
-          .forEach(RealPlayer::setNoWinnerMessage);
+    private void dealCards(GameOptionNumberOfPlayers gameOptions) {
+        listOfCardsForAllPlayers = new ArrayList<>();
+        List<Card> deckCards = deck.getDeckCards();
+        int cardsPerPlayer = getStartNumberOfCards(gameOptions);
 
-      return gameEndStatus;
+        for (int i = 0; i < gameOptions.getNumberOfPlayers(); ++i) {
+            List<Card> playerCards = new LinkedList<>();
+            for (int j = 0; j < cardsPerPlayer; ++j) {
+                Card card = deckCards.remove(getRandomNumber(deckCards.size() - 1));
+                playerCards.add(card);
+            }
+            listOfCardsForAllPlayers.add(playerCards);
+        }
+    }
+
+    private int getStartNumberOfCards(GameOptionNumberOfPlayers gameOptions) {
+        return switch (gameOptions) {
+            case TWO_PLAYERS, FOUR_PLAYERS -> 4;
+            case THREE_PLAYERS -> 3;
+        };
+    }
+
+    private void chooseStartingPlayer() {
+        indexOfCurrentPlayer = getRandomNumber(players.size());
+    }
+
+    private void chooseMainCard() {
+        mainCard = new Card(CardType.values()[getRandomNumber(CardType.values().length)],
+                CardValue.values()[getRandomNumber(CardValue.values().length)]);
+    }
+
+    public void dealNextRound(RoundWinner roundWinner) {
+        if (deck.getNumberOfDeckCards() == 0) return;
+
+        players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+
+        if (GameOptionNumberOfPlayers.TWO_PLAYERS.equals(gameOptionNumberOfPlayers)) {
+            players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+        }
+
+        for (int i = 0; i < players.size(); ++i) {
+            if (roundWinner.player() == players.get(i).getPlayer()) {
+                indexOfCurrentPlayer = i;
+                break;
+            }
+        }
+    }
+
+    public Player getCurrentPlayer() {
+        Player currentPlayer = players.get(indexOfCurrentPlayer).getPlayer();
+        indexOfCurrentPlayer = (indexOfCurrentPlayer + 1) % players.size();
+        return currentPlayer;
     }
 
 
-    List<Integer> winnerIds = gameEndStatus.playerResults().entrySet().stream()
-        .filter(Map.Entry::getValue)
-        .peek(entry -> entry.getKey().getPlayer().sentWinningMessage())
-        .map(entry -> entry.getKey().getId())
-        .toList();
-
-    players.stream()
-        .filter(p -> !winnerIds.contains(p.getId()))
-        .map(ConnectedPlayer::getPlayer)
-        .forEach(Player::sentLoosingMessage);
-
-    return gameEndStatus;
-  }
-
-  private GameEndStatus getGameEndStatus() {
-    if (players.stream().map(p -> p.getPlayer().getPoints()).distinct().count() == 1) {
-      Map<ConnectedPlayer, Boolean> noWinnerPlayers = this.players.stream()
-          .collect(Collectors.toMap(p -> p, p -> false));
-      return new GameEndStatus(noWinnerPlayers, Status.NO_WINNER);
+    public boolean isGameOver() {
+        return deck.getNumberOfDeckCards() == 0 &&
+                players.stream().allMatch(player -> player.getPlayer().isPlayerDone());
     }
 
-    int maxPoints = players.stream()
-        .mapToInt(p -> p.getPlayer().getPoints())
-        .max()
-        .orElseThrow();
+    public GameEndStatus notifyPlayers() {
+        GameEndStatus gameEndStatus = getGameEndStatus();
 
-    Set<ConnectedPlayer> winners;
+        if (Status.NO_WINNER.equals(gameEndStatus.status())) {
+            players.stream()
+                    .filter(player -> player.getPlayer() instanceof RealPlayer)
+                    .map(player -> (RealPlayer) player.getPlayer())
+                    .forEach(RealPlayer::setNoWinnerMessage);
 
-    if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.FOUR_PLAYERS) {
-      winners = (players.get(0).getPlayer().getPoints() +
-          players.get(2).getPlayer().getPoints() > 60)
-          ? Set.of(players.get(0), players.get(2))
-          : Set.of(players.get(1), players.get(3));
-    } else {
-      winners = players.stream()
-          .filter(p -> p.getPlayer().getPoints() == maxPoints)
-          .findFirst()
-          .map(Set::of)
-          .orElse(Set.of());
+            return gameEndStatus;
+        }
+
+
+        List<Integer> winnerIds = gameEndStatus.playerResults().entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .peek(entry -> entry.getKey().getPlayer().sentWinningMessage())
+                .map(entry -> entry.getKey().getId())
+                .toList();
+
+        Map<String, Integer> winnerNamesList = gameEndStatus.playerResults().entrySet().stream()
+                .filter(Map.Entry::getValue)
+                .collect(Collectors.toMap(value -> value.getKey().getPlayer().getNickname(),
+                        value -> value.getKey().getPlayer().getPoints()));
+
+        String winnerNames = String.join(", ", winnerNamesList.keySet());
+
+        players.stream()
+                .filter(p -> !winnerIds.contains(p.getId()))
+                .map(ConnectedPlayer::getPlayer)
+                .forEach(player -> player.sentLoosingMessage(formatMessageForLoser(winnerNames, player.getPoints())));
+
+        return gameEndStatus;
     }
 
-    Map<ConnectedPlayer, Boolean> results = players.stream()
-        .collect(Collectors.toMap(
-            p -> p,
-            winners::contains
-        ));
+    private String formatMessageForLoser(String winner, int points) {
+        ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
+        objectNode.put("status", "Lost.");
+        objectNode.put("winner", winner);
+        objectNode.put("points", points);
+        return JsonUtils.toJson(objectNode);
+    }
 
-    return new GameEndStatus(results, Status.WINNER_FOUND);
-  }
+    private GameEndStatus getGameEndStatus() {
+        if (players.stream().map(p -> p.getPlayer().getPoints()).distinct().count() == 1) {
+            Map<ConnectedPlayer, Boolean> noWinnerPlayers = this.players.stream()
+                    .collect(Collectors.toMap(p -> p, p -> false));
+            return new GameEndStatus(noWinnerPlayers, Status.NO_WINNER);
+        }
+
+        int maxPoints = players.stream()
+                .mapToInt(p -> p.getPlayer().getPoints())
+                .max()
+                .orElseThrow();
+
+        Set<ConnectedPlayer> winners;
+
+        if (gameOptionNumberOfPlayers == GameOptionNumberOfPlayers.FOUR_PLAYERS) {
+            winners = (players.get(0).getPlayer().getPoints() +
+                    players.get(2).getPlayer().getPoints() > 60)
+                    ? Set.of(players.get(0), players.get(2))
+                    : Set.of(players.get(1), players.get(3));
+        } else {
+            winners = players.stream()
+                    .filter(p -> p.getPlayer().getPoints() == maxPoints)
+                    .findFirst()
+                    .map(Set::of)
+                    .orElse(Set.of());
+        }
+
+        Map<ConnectedPlayer, Boolean> results = players.stream()
+                .collect(Collectors.toMap(
+                        p -> p,
+                        winners::contains
+                ));
+
+        return new GameEndStatus(results, Status.WINNER_FOUND);
+    }
 }

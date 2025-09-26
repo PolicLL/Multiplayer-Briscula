@@ -13,45 +13,45 @@ import com.example.web.service.TournamentService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class TournamentServiceTest  extends AbstractIntegrationTest {
+class TournamentServiceTest extends AbstractIntegrationTest {
 
-  @Autowired
-  private TournamentService tournamentService;
+    @Autowired
+    private TournamentService tournamentService;
 
-  @Test
-  void testCreateTournament() {
+    @Test
+    void testCreateTournament() {
 
-    TournamentCreateDto tournamentCreateDto = TournamentCreateDto.builder()
-        .name("Tournament")
-        .numberOfPlayers(4)
-        .numberOfBots(2)
-        .roundsToWin(2)
-        .build();
+        TournamentCreateDto tournamentCreateDto = TournamentCreateDto.builder()
+                .name("Tournament")
+                .numberOfPlayers(4)
+                .numberOfBots(2)
+                .roundsToWin(2)
+                .build();
 
-    TournamentResponseDto tournamentResponseDto = tournamentService.create(tournamentCreateDto);
+        TournamentResponseDto tournamentResponseDto = tournamentService.create(tournamentCreateDto);
 
-    assertThat(tournamentResponseDto.status()).isEqualTo(TournamentStatus.INITIALIZING);
-    assertThat(tournamentResponseDto.id()).isNotNull();
-    assertThat(tournamentResponseDto.name()).isEqualTo(tournamentCreateDto.name());
-    assertThat(tournamentResponseDto.numberOfPlayers()).isEqualTo(tournamentCreateDto.numberOfPlayers());
-    assertThat(tournamentResponseDto.currentNumberOfPlayers()).isEqualTo(2);
-    assertThat(tournamentResponseDto.roundsToWin()).isEqualTo(tournamentCreateDto.roundsToWin());
-  }
+        assertThat(tournamentResponseDto.status()).isEqualTo(TournamentStatus.INITIALIZING);
+        assertThat(tournamentResponseDto.id()).isNotNull();
+        assertThat(tournamentResponseDto.name()).isEqualTo(tournamentCreateDto.name());
+        assertThat(tournamentResponseDto.numberOfPlayers()).isEqualTo(tournamentCreateDto.numberOfPlayers());
+        assertThat(tournamentResponseDto.currentNumberOfPlayers()).isEqualTo(2);
+        assertThat(tournamentResponseDto.roundsToWin()).isEqualTo(tournamentCreateDto.roundsToWin());
+    }
 
-  @Test
-  void testCreateTournamentThrowsTooBigNumberOfBotsException() {
-    TournamentCreateDto tournamentCreateDto = TournamentCreateDto.builder()
-        .name(getTournamentName())
-        .numberOfPlayers(4)
-        .numberOfBots(4)
-        .roundsToWin(2)
-        .build();
+    @Test
+    void testCreateTournamentThrowsTooBigNumberOfBotsException() {
+        TournamentCreateDto tournamentCreateDto = TournamentCreateDto.builder()
+                .name(getTournamentName())
+                .numberOfPlayers(4)
+                .numberOfBots(4)
+                .roundsToWin(2)
+                .build();
 
-    TooBigNumberOfBotsException tooBigNumberOfBotsException = assertThrows(TooBigNumberOfBotsException.class,
-        () -> tournamentService.create(tournamentCreateDto));
+        TooBigNumberOfBotsException tooBigNumberOfBotsException = assertThrows(TooBigNumberOfBotsException.class,
+                () -> tournamentService.create(tournamentCreateDto));
 
-    assertThat(tooBigNumberOfBotsException.getMessage())
-        .isEqualTo("Number of bots 4 is bigger or equal to number of players 4.");
-  }
+        assertThat(tooBigNumberOfBotsException.getMessage())
+                .isEqualTo("Number of bots 4 is bigger or equal to number of players 4.");
+    }
 
 }

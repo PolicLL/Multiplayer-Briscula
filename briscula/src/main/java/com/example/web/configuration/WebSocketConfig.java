@@ -13,14 +13,14 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-  @Autowired
-  private WebSocketHandler webSocketHandler;
+    @Autowired
+    private WebSocketHandler webSocketHandler;
 
-  public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-    registry
-        .addHandler(webSocketHandler, "/game")
-        .setAllowedOrigins("*");
+    public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
+        registry
+                .addHandler(webSocketHandler, "/game")
+                .setAllowedOrigins("*");
 
-    log.info("WebSocket handler registered for path /game");
-  }
+        log.info("WebSocket handler registered for path /game");
+    }
 }

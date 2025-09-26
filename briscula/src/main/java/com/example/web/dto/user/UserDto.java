@@ -10,22 +10,23 @@ import lombok.Builder;
 
 @Builder
 public record UserDto(
-    String id,
-    @NotBlank(message = "Username is required.")
-    @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters.")
-    String username,
-    @NotBlank(message = "Password is required.")
-    String password,
-    @NotNull(message = "Age is required.")
-    @Min(value = 3, message = "Age must be at least 3.")
-    @Max(value = 100, message = "Age must be no more than 100.")
-    Integer age,
-    @NotBlank(message = "Country is required.")
-    String country,
-    @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
-    String email,
-    String photoId,
-    Integer points,
-    String jwtToken
-) {}
+        String id,
+        @NotBlank(message = "Username is required.")
+        @Size(min = 3, max = 100, message = "Username must be between 3 and 100 characters.")
+        String username,
+        @NotBlank(message = "Password is required.")
+        String password,
+        @NotNull(message = "Age is required.")
+        @Min(value = 3, message = "Age must be at least 3.")
+        @Max(value = 100, message = "Age must be no more than 100.")
+        Integer age,
+        @NotBlank(message = "Country is required.")
+        String country,
+        @NotBlank(message = "Email is required")
+        @Email(message = "Invalid email format")
+        String email,
+        String photoId,
+        Integer points,
+        String jwtToken
+) {
+}

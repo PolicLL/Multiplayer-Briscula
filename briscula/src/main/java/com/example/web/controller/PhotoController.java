@@ -21,24 +21,24 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/photo")
 public class PhotoController {
 
-  private final PhotoService photoService;
+    private final PhotoService photoService;
 
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<String> uploadPhoto(@RequestParam("photo") MultipartFile file) {
-    log.info("Received file: {}", file.getOriginalFilename());
-    String photoId = photoService.uploadPhoto(new UploadPhotoDto(file));
-    return ResponseEntity.ok(photoId);
-  }
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadPhoto(@RequestParam("photo") MultipartFile file) {
+        log.info("Received file: {}", file.getOriginalFilename());
+        String photoId = photoService.uploadPhoto(new UploadPhotoDto(file));
+        return ResponseEntity.ok(photoId);
+    }
 
 
-  @GetMapping("/{photoId}")
-  public ResponseEntity<byte[]> getPhoto(@PathVariable String photoId) {
-    return photoService.findPhotoById(photoId)
-        .map(photo -> ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + photo.getName() + "\"")
-            .contentType(MediaType.IMAGE_JPEG)
-            .body(photo.getPhoto()))
-        .orElseGet(() -> ResponseEntity.notFound().build());
-  }
+    @GetMapping("/{photoId}")
+    public ResponseEntity<byte[]> getPhoto(@PathVariable String photoId) {
+        return photoService.findPhotoById(photoId)
+                .map(photo -> ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + photo.getName() + "\"")
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(photo.getPhoto()))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
 
 }

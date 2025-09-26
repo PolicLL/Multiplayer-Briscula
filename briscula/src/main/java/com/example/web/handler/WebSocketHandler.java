@@ -25,60 +25,60 @@ import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY
 @RequiredArgsConstructor
 public class WebSocketHandler extends TextWebSocketHandler {
 
-  private final GamePrepareService gamePrepareService;
+    private final GamePrepareService gamePrepareService;
 
-  private final CardsOperationService cardsOperationService;
+    private final CardsOperationService cardsOperationService;
 
-  private final GameEndService gameEndService;
+    private final GameEndService gameEndService;
 
-  private final TournamentService tournamentService;
+    private final TournamentService tournamentService;
 
-  private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
+    private final WebSocketMessageDispatcher messageDispatcher = WebSocketMessageDispatcher.getInstance();
 
-  @Override
-  public void afterConnectionEstablished(WebSocketSession session) {
-    log.info("New tournament WebSocket connection: {}", session.getId());
-  }
-
-  // TODO: When clicking join room make sure state of join tournament changes
-  @Override
-  public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
-    try {
-      log.debug("Handling message type {} for {}. ", WebSocketMessageReader.getMessageType(message),
-          WebSocketMessageReader.getName(message));
-      switch (WebSocketMessageReader.getMessageType(message)) {
-        case LOGGED_IN -> messageDispatcher.registerSession(session);
-        case JOIN_ROOM -> gamePrepareService.handle(session, message);
-        case GET_INITIAL_CARDS -> cardsOperationService.handleGetCards(session, message);
-        case INITIAL_CARDS_RECEIVED -> cardsOperationService.handleGetInitialCards(message);
-        case CARD_CHOSEN -> cardsOperationService.handleChosenCard(message);
-        case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message, session);
-        case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
-        case LEAVE_ROOM -> gamePrepareService.handleLeavingRoom(session, message);
-        case LEAVE_TOURNAMENT -> tournamentService.handleLeaving(session, message);
-        default -> throw new WebSocketException();
-      }
-    } catch (UserIsAlreadyInTournamentOrGame e) {
-      messageDispatcher.sendMessage(session, JsonUtils.toJson(Message.builder()
-          .content(e.getMessage())
-          .type(USER_ALREADY_IN_GAME_OR_TOURNAMENT)
-          .build()));
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+    @Override
+    public void afterConnectionEstablished(WebSocketSession session) {
+        log.info("New tournament WebSocket connection: {}", session.getId());
     }
-  }
 
-  @Override
-  public void handleTransportError(WebSocketSession session, Throwable exception) {
-    log.error("Tournament WebSocket error:", exception);
-  }
+    // TODO: When clicking join room make sure state of join tournament changes
+    @Override
+    public void handleMessage(@NonNull WebSocketSession session, @NonNull WebSocketMessage<?> message) {
+        try {
+            log.debug("Handling message type {} for {}. ", WebSocketMessageReader.getMessageType(message),
+                    WebSocketMessageReader.getName(message));
+            switch (WebSocketMessageReader.getMessageType(message)) {
+                case LOGGED_IN -> messageDispatcher.registerSession(session);
+                case JOIN_ROOM -> gamePrepareService.handle(session, message);
+                case GET_INITIAL_CARDS -> cardsOperationService.handleGetCards(session, message);
+                case INITIAL_CARDS_RECEIVED -> cardsOperationService.handleGetInitialCards(message);
+                case CARD_CHOSEN -> cardsOperationService.handleChosenCard(message);
+                case DISCONNECT_FROM_GAME -> gameEndService.handleDisconnectionFromGame(message, session);
+                case JOIN_TOURNAMENT -> tournamentService.handle(session, message);
+                case LEAVE_ROOM -> gamePrepareService.handleLeavingRoom(session, message);
+                case LEAVE_TOURNAMENT -> tournamentService.handleLeaving(session, message);
+                default -> throw new WebSocketException();
+            }
+        } catch (UserIsAlreadyInTournamentOrGame e) {
+            messageDispatcher.sendMessage(session, JsonUtils.toJson(Message.builder()
+                    .content(e.getMessage())
+                    .type(USER_ALREADY_IN_GAME_OR_TOURNAMENT)
+                    .build()));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-  @Override
-  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-    tournamentService.removePlayerWithSession(session);
-    messageDispatcher.unregisterSession(session);
-    log.info("Tournament WebSocket disconnected: {}", session.getId());
-  }
+    @Override
+    public void handleTransportError(WebSocketSession session, Throwable exception) {
+        log.error("Tournament WebSocket error:", exception);
+    }
+
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        tournamentService.removePlayerWithSession(session);
+        messageDispatcher.unregisterSession(session);
+        log.info("Tournament WebSocket disconnected: {}", session.getId());
+    }
 }

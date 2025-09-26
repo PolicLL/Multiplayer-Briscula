@@ -29,112 +29,112 @@ import org.springframework.test.web.servlet.MockMvc;
 @TestPropertySource(locations = "classpath:application-test.yml")
 class TournamentControllerTest {
 
-  @Autowired
-  private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-  @Test
-  void createTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = createTournamentCreateDto();
+    @Test
+    void createTournamentSuccess() throws Exception {
+        TournamentCreateDto createDto = createTournamentCreateDto();
 
-    String requestBody = JsonUtils.toJson(createDto);
+        String requestBody = JsonUtils.toJson(createDto);
 
-    String response = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto tournamentResponseDto = JsonUtils.fromJson(response, TournamentResponseDto.class);
+        TournamentResponseDto tournamentResponseDto = JsonUtils.fromJson(response, TournamentResponseDto.class);
 
-    assertThat(tournamentResponseDto.status()).isEqualTo(TournamentStatus.INITIALIZING);
-    assertThat(tournamentResponseDto.name()).isEqualTo(createDto.name());
-    assertThat(tournamentResponseDto.numberOfPlayers()).isEqualTo(createDto.numberOfPlayers());
-    assertThat(tournamentResponseDto.roundsToWin()).isEqualTo(createDto.roundsToWin());
-  }
+        assertThat(tournamentResponseDto.status()).isEqualTo(TournamentStatus.INITIALIZING);
+        assertThat(tournamentResponseDto.name()).isEqualTo(createDto.name());
+        assertThat(tournamentResponseDto.numberOfPlayers()).isEqualTo(createDto.numberOfPlayers());
+        assertThat(tournamentResponseDto.roundsToWin()).isEqualTo(createDto.roundsToWin());
+    }
 
-  @Test
-  void getTournamentByIdSuccess() throws Exception {
-    TournamentCreateDto createDto = createTournamentCreateDto();
-    String requestBody = JsonUtils.toJson(createDto);
+    @Test
+    void getTournamentByIdSuccess() throws Exception {
+        TournamentCreateDto createDto = createTournamentCreateDto();
+        String requestBody = JsonUtils.toJson(createDto);
 
-    String response = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
+        TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
 
-    String fetched = mockMvc.perform(get("/api/tournament/{id}", created.id()))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andReturn().getResponse().getContentAsString();
+        String fetched = mockMvc.perform(get("/api/tournament/{id}", created.id()))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto fetchedDto = JsonUtils.fromJson(fetched, TournamentResponseDto.class);
-    assertThat(fetchedDto).isEqualTo(created);
-  }
+        TournamentResponseDto fetchedDto = JsonUtils.fromJson(fetched, TournamentResponseDto.class);
+        assertThat(fetchedDto).isEqualTo(created);
+    }
 
-  @Test
-  void getAllTournaments() throws Exception {
-    mockMvc.perform(get("/api/tournament"))
-        .andExpect(status().isOk())
-        .andExpect(content().contentType(MediaType.APPLICATION_JSON));
-  }
+    @Test
+    void getAllTournaments() throws Exception {
+        mockMvc.perform(get("/api/tournament"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+    }
 
-  @Test
-  void deleteTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = createTournamentCreateDto();
-    String requestBody = JsonUtils.toJson(createDto);
+    @Test
+    void deleteTournamentSuccess() throws Exception {
+        TournamentCreateDto createDto = createTournamentCreateDto();
+        String requestBody = JsonUtils.toJson(createDto);
 
-    String response = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
+        TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
 
-    mockMvc.perform(delete("/api/tournament/{id}", created.id()))
-        .andExpect(status().isNoContent());
+        mockMvc.perform(delete("/api/tournament/{id}", created.id()))
+                .andExpect(status().isNoContent());
 
-    mockMvc.perform(get("/api/tournament/{id}", created.id()))
-        .andExpect(status().isNotFound());
-  }
+        mockMvc.perform(get("/api/tournament/{id}", created.id()))
+                .andExpect(status().isNotFound());
+    }
 
-  @Test
-  void updateTournamentSuccess() throws Exception {
-    TournamentCreateDto createDto = createTournamentCreateDto();
-    String requestBody = JsonUtils.toJson(createDto);
+    @Test
+    void updateTournamentSuccess() throws Exception {
+        TournamentCreateDto createDto = createTournamentCreateDto();
+        String requestBody = JsonUtils.toJson(createDto);
 
-    String response = mockMvc.perform(post("/api/tournament")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(requestBody))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        String response = mockMvc.perform(post("/api/tournament")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
+        TournamentResponseDto created = JsonUtils.fromJson(response, TournamentResponseDto.class);
 
-    TournamentUpdateDto updatedDto = TournamentUpdateDto.builder()
-        .name("Updated Tournament")
-        .numberOfPlayers(created.numberOfPlayers())
-        .status(TournamentStatus.IN_PROGRESS)
-        .roundsToWin(created.roundsToWin())
-        .build();
+        TournamentUpdateDto updatedDto = TournamentUpdateDto.builder()
+                .name("Updated Tournament")
+                .numberOfPlayers(created.numberOfPlayers())
+                .status(TournamentStatus.IN_PROGRESS)
+                .roundsToWin(created.roundsToWin())
+                .build();
 
-    System.out.println(updatedDto);
+        System.out.println(updatedDto);
 
-    mockMvc.perform(put("/api/tournament/{id}", created.id())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(JsonUtils.toJson(updatedDto)))
-        .andExpect(status().isOk());
+        mockMvc.perform(put("/api/tournament/{id}", created.id())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(JsonUtils.toJson(updatedDto)))
+                .andExpect(status().isOk());
 
-    String updatedJson = mockMvc.perform(get("/api/tournament/{id}", created.id()))
-        .andExpect(status().isOk())
-        .andReturn().getResponse().getContentAsString();
+        String updatedJson = mockMvc.perform(get("/api/tournament/{id}", created.id()))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-    TournamentResponseDto updated = JsonUtils.fromJson(updatedJson, TournamentResponseDto.class);
-    assertThat(updated.name()).isEqualTo("Updated Tournament");
-    assertThat(updated.status()).isEqualTo(TournamentStatus.IN_PROGRESS);
-  }
+        TournamentResponseDto updated = JsonUtils.fromJson(updatedJson, TournamentResponseDto.class);
+        assertThat(updated.name()).isEqualTo("Updated Tournament");
+        assertThat(updated.status()).isEqualTo(TournamentStatus.IN_PROGRESS);
+    }
 }
