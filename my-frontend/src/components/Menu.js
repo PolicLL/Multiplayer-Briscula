@@ -47,7 +47,7 @@ function Menu({ onLogout }) {
   };
 
   return (
-  <div style={{ position: "absolute", top: 10, right: 10 }}>
+  <div style={{ position: "absolute", top: 10, right: 10 }} className="menu-buttons">
     {(hasEnteredAnonymously || isLoggedIn) && (
       <button className="button button-secondary" onClick={() => navigate("/")}>
         Home

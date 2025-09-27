@@ -180,6 +180,8 @@ function GameRoom() {
           setWinnerInfo(resultObject);
           setCardsClickable(false);
           setThrownCards([]);
+          setOpponentName("")
+          setTimeLeft(0);
           break;
         }
 
@@ -188,6 +190,8 @@ function GameRoom() {
           setWinnerInfo(resultObject);
           setCardsClickable(false);
           setThrownCards([]);
+          setOpponentName("")
+          setTimeLeft(0);
           break;
 
         case "NO_WINNER":
@@ -195,6 +199,8 @@ function GameRoom() {
           setWinnerInfo("No winner.");
           setCardsClickable(false);
           setThrownCards([]);
+          setOpponentName("")
+          setTimeLeft(0);
           break;
 
         case "RECEIVED_THROWN_CARD": {
@@ -258,14 +264,13 @@ function GameRoom() {
   );
 
   useEffect(() => {
-    const handleBeforeUnload = (event) => {
-      // Send the disconnect message
-      sendMessage({
-        type: "DISCONNECT_FROM_GAME",
-        roomId,
-        playerId,
-      });
-
+      const handleBeforeUnload = (event) => {
+          // Send the disconnect message
+          sendMessage({
+              type: "DISCONNECT_FROM_GAME",
+              roomId,
+              playerId,
+          });
       // Optional: prevent default dialog
       event.preventDefault();
       event.returnValue = "";
@@ -349,9 +354,16 @@ function GameRoom() {
       </div>
 
       <div className="thrown-cards center">
-        {/* Winner info overlay */}
+
         {winnerInfo && typeof winnerInfo === "object" && (
-          <div className="winner-info-overlay">
+          <div
+            className={
+              "winner-info-overlay" +
+              (winnerInfo.status && winnerInfo.status.toLowerCase().includes("lost")
+                ? " winner-info-overlay-loser"
+                : "")
+            }
+          >
             <h2>{winnerInfo.status}</h2>
             <div>
               <strong>Winner:</strong> {winnerInfo.winner}

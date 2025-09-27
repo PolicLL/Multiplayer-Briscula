@@ -1,7 +1,5 @@
 package com.example.web.controller;
 
-import static org.springframework.http.HttpStatus.CONFLICT;
-
 import com.example.web.dto.user.UpdateUserRequest;
 import com.example.web.dto.user.UserDto;
 import com.example.web.dto.user.UserLoginDto;
@@ -9,25 +7,16 @@ import com.example.web.dto.user.UserStatsDto;
 import com.example.web.exception.BadRequestException;
 import com.example.web.service.UserService;
 import jakarta.validation.Valid;
-
-import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.CONFLICT;
 
 @RestController
 @Slf4j

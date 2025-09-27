@@ -37,7 +37,7 @@ export const WebSocketProvider = ({ children }) => {
       console.log("WebSocket connected");
       sendMessage({ type: "LOGGED_IN" });
     };
-    socket.onclose = () => console.log("WebSocket closed");
+    socket.onclose = () => {console.log("WebSocket closed");}
     socket.onerror = (err) => console.error("WebSocket error:", err);
 
     socket.onmessage = (event) => {

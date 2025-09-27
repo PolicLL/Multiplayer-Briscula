@@ -102,11 +102,11 @@ h1, h2, h4 {
 }
 
 .button-primary:disabled {
-  background: #A5D6A7;   /* lighter green */
-  color: #E0E0E0;        /* gray text */
-  cursor: not-allowed;   /* show "not-allowed" cursor */
-  box-shadow: none;      /* remove shadow to indicate inactive */
-  opacity: 0.7;          /* optional: slightly transparent */
+  background: #A5D6A7;
+  color: #E0E0E0;
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
 }
 
 .button-secondary {
@@ -114,12 +114,17 @@ h1, h2, h4 {
   color: #fff;
 }
 
-/* Home table with top 10 players */
+.menu-buttons {
+  position: relative;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+}
 
 .table-container {
   margin: 0 10px;
   overflow-x: auto;
-  -webkit-overflow-scrolling: touch; /* smooth scroll on iOS */
+  -webkit-overflow-scrolling: touch;
   width: 100%;
 }
 
@@ -852,14 +857,13 @@ h1, h2, h4 {
 
 /* Thrown cards in center */
 .thrown-cards.center {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px; /* or whatever fits your layout */
   display: flex;
-  flex-direction: row; /* Ensure this is row, not row-reverse */
-  gap: 16px;
-  z-index: 3;
+  justify-content: center;  /* centers horizontally */
+  align-items: center;      /* centers vertically */
 }
 
 .card.thrown-card.from-top-anim {
@@ -905,27 +909,41 @@ h1, h2, h4 {
 }
 
 .winner-info-overlay {
+  width: 55%;
+  height: 55%;
   position: absolute;
-  top: 50%;
   left: 50%;
+  top: 50%;
   transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   background: linear-gradient(135deg, #2e8b57 0%, #3cb371 100%);
   color: #fff;
-  font-size: 1.7rem;
+  font-size: 2.5rem;
   font-weight: bold;
-  padding: 32px 48px;
-  border-radius: 16px;
   z-index: 10;
   text-align: center;
   box-shadow: 0 4px 24px rgba(0,0,0,0.2);
   pointer-events: none;
-  min-width: 320px;
+  border-radius: 24px;
 }
+
+.winner-info-overlay-loser {
+  background: linear-gradient(135deg, #b22222 0%, #ff5252 100%);
+}
+
 .winner-info-overlay h2 {
-  margin-bottom: 18px;
-  font-size: 2.2rem;
+  margin-bottom: 32px;
+  font-size: 3rem;
   color: #fffbe7;
 }
 .winner-info-overlay strong {
   color: #ffe082;
+  font-size: 2.2rem;
+}
+.winner-info-overlay div {
+  margin: 12px 0;
+  font-size: 2rem;
 }

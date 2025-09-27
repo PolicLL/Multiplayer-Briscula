@@ -192,7 +192,7 @@ public class Admin {
 
     private String formatMessageForLoser(String winner, int points) {
         ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
-        objectNode.put("status", "Lost.");
+        objectNode.put("status", "You Lost.");
         objectNode.put("winner", winner);
         objectNode.put("points", points);
         return JsonUtils.toJson(objectNode);
@@ -200,7 +200,7 @@ public class Admin {
 
     private String formatMessageForWinner(String winner, int points) {
         ObjectNode objectNode = OBJECT_MAPPER.createObjectNode();
-        objectNode.put("status", "Won.");
+        objectNode.put("status", "You Won.");
         objectNode.put("winner", winner);
         objectNode.put("points", points);
         return JsonUtils.toJson(objectNode);
