@@ -743,8 +743,15 @@ h1, h2, h4 {
   margin: 2rem;
 }
 
-.anonymous-part div {
-
+.error-message {
+  background-color: #fff;       /* white background */
+  color: red;                   /* red text */
+  padding: 6px 10px;            /* space around text */
+  border: 1px solid red;        /* thin red border */
+  border-radius: 6px;           /* rounded corners */
+  margin-top: 6px;              /* spacing from input */
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 
 /* Game Room */

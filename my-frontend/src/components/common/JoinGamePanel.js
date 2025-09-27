@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 
-/* TODO: Add animation while waiting for other players to join room */
-
 function JoinGamePanel({
   name,
   setName,
@@ -12,8 +10,15 @@ function JoinGamePanel({
   isAnonymous,
 }) {
   const [selectedGame, setSelectedGame] = useState(null);
+  const [error, setError] = useState("");
 
   const handleJoin = (players) => {
+    if (isAnonymous && !name.trim()) {
+      setError("Name is required to join a game.");
+      return;
+    }
+
+    setError(""); // clear error when valid
     joinGame(players);
     setSelectedGame(players);
   };
@@ -29,13 +34,17 @@ function JoinGamePanel({
         {setName && (
           <div className="anonymous-part">
             <h1>Anonymous User</h1>
-
             <input
-            type="text"
-            placeholder="Enter the name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+              type="text"
+              placeholder="Enter the name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setError(""); // clear error when typing
+              }}
             />
+
+            {error && <p className="error-message">{error}</p>}
           </div>
         )}
 
@@ -43,7 +52,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 2 ? "active" : ""}`}
             onClick={() => handleJoin(2)}
-            disabled={!!selectedGame || (isAnonymous && !name.trim())}
+            disabled={!!selectedGame}
           >
             Join Game (1v1)
           </button>
@@ -51,7 +60,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 3 ? "active" : ""}`}
             onClick={() => handleJoin(3)}
-            disabled={!!selectedGame || (isAnonymous && !name.trim())}
+            disabled={!!selectedGame}
           >
             Join Game (1v1v1)
           </button>
@@ -59,7 +68,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 4 ? "active" : ""}`}
             onClick={() => handleJoin(4)}
-            disabled={!!selectedGame || (isAnonymous && !name.trim())}
+            disabled={!!selectedGame}
           >
             Join Game (2v2)
           </button>
