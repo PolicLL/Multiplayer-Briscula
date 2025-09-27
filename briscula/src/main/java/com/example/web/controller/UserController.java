@@ -87,6 +87,12 @@ public class UserController {
         return ResponseEntity.ok("User deleted successfully!");
     }
 
+    /*
+    IMPORTANT: Logout functions on the level of tab, which is not good idea for production.
+    On production level it should function on level of window and token should be stored in session, but
+    because of easier testing it is on level of tab.
+    Problem is to create functionality that will trigger logout when tab is closed.
+    */
     @PostMapping("/logout")
     @PreAuthorize("hasRole('USER')")
     public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {

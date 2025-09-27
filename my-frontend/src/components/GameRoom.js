@@ -264,13 +264,13 @@ function GameRoom() {
   );
 
   useEffect(() => {
-      const handleBeforeUnload = (event) => {
-          // Send the disconnect message
-          sendMessage({
-              type: "DISCONNECT_FROM_GAME",
-              roomId,
-              playerId,
-          });
+    const handleBeforeUnload = (event) => {
+      // Send the disconnect message
+      sendMessage({
+        type: "DISCONNECT_FROM_GAME",
+        roomId,
+        playerId,
+      });
       // Optional: prevent default dialog
       event.preventDefault();
       event.returnValue = "";
