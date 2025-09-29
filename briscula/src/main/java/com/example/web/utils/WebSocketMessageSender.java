@@ -19,6 +19,7 @@ public class WebSocketMessageSender {
                                    int playerId,
                                    String messageText) {
         if (isSessionOpen(webSocketSession)) {
+            log.debug("Sending message {}.", messageText);
             Message message = new Message(messageType, roomId, playerId, messageText);
             webSocketMessageDispatcher.sendMessage(webSocketSession, JsonUtils.toJson(message));
         } else {

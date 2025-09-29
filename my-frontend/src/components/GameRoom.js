@@ -205,6 +205,7 @@ function GameRoom() {
 
         case "RECEIVED_THROWN_CARD": {
           const card = parseCard(parsedMessage.content);
+
           setAnimatingThrownCard({ ...card, from: card.isPlayer ? "bottom" : "top" });
 
           setOpponentName(card.playerName);
@@ -319,39 +320,52 @@ function GameRoom() {
         </div>
       )}
 
-      <div className="opponent-avatar top-center">
-        <div className="opponent-name">{opponentName}</div>
-        <img
-          src="/images/anonymous.png" // Place your image in public/images/
-          alt="Opponent"
-          className="opponent-image"
-        />
-      </div>
-
-      <div className="colleagues-cards top-center">
-        {colleaguesCards.map((card, idx) => (
+      {colleaguesCards.length > 0 ? (
+        // Show teammates section if there are cards
+        <div className="colleagues-section">
+          <h3 className="colleagues-title">Teammates</h3>
+          <div className="colleagues-cards top-center">
+            {colleaguesCards.map((card, idx) => (
+              <img
+                key={card.code}
+                src={card.imageUrl}
+                alt={card.code}
+                className="card colleague-card from-top"
+                style={{ animationDelay: `${idx * 0.1}s` }}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        // Show opponent avatar only if no colleagues
+        <div className="opponent-avatar top-center">
+          <div className="opponent-name">{opponentName}</div>
           <img
-            key={card.code}
-            src={card.imageUrl}
-            alt={card.code}
-            className="card from-top"
-            style={{ animationDelay: `${idx * 0.1}s` }}
+            src="/images/anonymous.png"
+            alt="Opponent"
+            className="opponent-image"
           />
-        ))}
-      </div>
+        </div>
+      )}
 
-      {/* Opponent's cards at the top center */}
-      <div className="colleagues-cards top-center">
-        {colleaguesCards.map((card, idx) => (
-          <img
-            key={card.code}
-            src={card.imageUrl}
-            alt={card.code}
-            className="card from-top"
-            style={{ animationDelay: `${idx * 0.1}s` }}
-          />
-        ))}
-      </div>
+
+      {colleaguesCards.length > 0 && (
+        <div className="colleagues-section">
+          <h3 className="colleagues-title">Teammates cards</h3>
+          <div className="colleagues-cards top-center">
+            {colleaguesCards.map((card, idx) => (
+              <img
+                key={card.code}
+                src={card.imageUrl}
+                alt={card.code}
+                className="card colleague-card from-top"
+                style={{ animationDelay: `${idx * 0.1}s` }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
 
       <div className="thrown-cards center">
 

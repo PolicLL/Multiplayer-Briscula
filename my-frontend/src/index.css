@@ -824,6 +824,18 @@ h1, h2, h4 {
   pointer-events: none;
 }
 
+.colleagues-section {
+  z-index: 300;
+  background: #ccc;
+  position: absolute;
+  top: 10px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none; /* so it doesn't block cards */
+}
+
 /* Opponent's cards at top center, animate from top */
 .colleagues-cards.top-center {
   position: absolute;
@@ -838,6 +850,21 @@ h1, h2, h4 {
   /* width/height removed, uses .card */
   animation: slideFromTopToCenter 0.5s ease;
 }
+
+.colleagues-title {
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.colleague-card {
+  width: 100px;   /* smaller than the default */
+  height: 190px;  /* adjust proportionally */
+}
+
+
 @keyframes slideFromTopToCenter {
   from { transform: translateY(-120px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
