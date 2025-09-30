@@ -87,9 +87,11 @@ function JoinGamePanel({
             type="checkbox"
             checked={shouldShowPoints}
             onChange={handleCheckboxChange}
+            disabled={!!selectedGame}
           />
           Show Points
         </label>
+
       </div>
     </main>
   );
