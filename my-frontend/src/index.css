@@ -175,11 +175,13 @@ h1, h2, h4 {
 
 .login-card {
   background: #FAF8F2;
-  display: inline-block;
+  display: block;
   padding: 30px 40px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  min-width: 300px;
+  min-width: 400px;
+  max-width: 450px;
+  margin: 0 auto;
 }
 
 .login-card h2 {
@@ -222,6 +224,10 @@ h1, h2, h4 {
   font-size: 13px;
   margin: -5px 0 10px;
   text-align: left;
+}
+
+.login-message {
+  color: #B22222; 
 }
 
 /* Registration form */

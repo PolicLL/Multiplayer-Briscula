@@ -131,7 +131,7 @@ public class UserService {
         User existingUser = userRepository.findByUsername(userLoginDto.username());
 
         if (existingUser == null)
-            throw new UserNotFoundException();
+            throw new UnsuccessfulLoginAttemptException();
 
         if (tokenStore.isTokenActive(existingUser.getEmail())) {
             throw new UserAlreadyLoggedInException(existingUser.getUsername());

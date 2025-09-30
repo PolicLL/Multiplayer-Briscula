@@ -1,14 +1,7 @@
 package com.example.web.controller;
 
 import com.example.web.dto.ErrorResponse;
-import com.example.web.exception.BadRequestException;
-import com.example.web.exception.TooBigNumberOfBotsException;
-import com.example.web.exception.UserAlreadyAssignedToTournament;
-import com.example.web.exception.UserAlreadyLoggedInException;
-import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
-import com.example.web.exception.UserWithEmailAlreadyExistsException;
-import com.example.web.exception.UserWithUsernameAlreadyExistsException;
-import com.example.web.exception.WrongUsernameOrPassword;
+import com.example.web.exception.*;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -177,6 +170,20 @@ public class GlobalExceptionHandler {
                         LocalDateTime.now(),
                         HttpStatus.BAD_REQUEST.value(),
                         "User is already in tournament or game.",
+                        e.getMessage(),
+                        request.getRequestURI()
+                )
+        );
+    }
+
+    @ExceptionHandler(UnsuccessfulLoginAttemptException.class)
+    public ResponseEntity<ErrorResponse> handleUnsuccessfulLoginAttemptException(
+            UnsuccessfulLoginAttemptException e, HttpServletRequest request) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                new ErrorResponse(
+                        LocalDateTime.now(),
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Invalid attempt to login.",
                         e.getMessage(),
                         request.getRequestURI()
                 )

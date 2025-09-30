@@ -29,6 +29,8 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    setMessage("");
+
     if (!validateForm()) return;
 
     try {
@@ -41,7 +43,6 @@ function Login() {
 
       sessionStorage.setItem("jwtToken", token);
       sessionStorage.setItem("username", formData.username);
-      setMessage("Login successful!");
 
       window.location.href = "/dashboard";
     } catch (error) {
@@ -61,8 +62,6 @@ function Login() {
       <div className="login-container">
         <div className="login-card">
           <h2>Login</h2>
-
-          {message && <p className="login-message">{message}</p>}
 
           <form onSubmit={handleSubmit}>
             <input
@@ -84,6 +83,8 @@ function Login() {
               }
             />
             {errors.password && <p className="login-error">{errors.password}</p>}
+
+            {message && <p className="login-message">{message}</p>}
 
             <button className="button button-primary" type="submit">Log In</button>
           </form>

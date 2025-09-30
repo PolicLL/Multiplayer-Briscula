@@ -205,7 +205,6 @@ function GameRoom() {
 
         case "RECEIVED_THROWN_CARD": {
           const card = parseCard(parsedMessage.content);
-
           setAnimatingThrownCard({ ...card, from: card.isPlayer ? "bottom" : "top" });
 
           setOpponentName(card.playerName);
