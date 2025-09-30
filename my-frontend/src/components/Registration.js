@@ -75,6 +75,14 @@ function UserForm() {
   };
 
   const uploadPhoto = async (file) => {
+    if (!file) return;
+
+    if (file.size > 1 * 1024 * 1024) {
+      setMessage("File size must be less than 5 MB.");
+      return;
+    }
+
+
     const photoFormData = new FormData();
     photoFormData.append("photo", file);
 
@@ -158,7 +166,7 @@ function UserForm() {
     if (sessionStorage.getItem("isRegistered")) {
       return navigate("/");
     }
-    return () => {};
+    return () => { };
   }, []);
 
   /* TODO: Add some animation while registration is being processed */
@@ -168,8 +176,6 @@ function UserForm() {
     <div className="form-input-container">
       <div className="register-card">
         <h2>Registration</h2>
-
-        {message && <p className="register-message">{message}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -246,13 +252,24 @@ function UserForm() {
               accept="image/*"
               onChange={(e) => {
                 const selectedFile = e.target.files[0];
-                setFile(selectedFile);
+                if (selectedFile) {
+                  if (selectedFile.size > 1 * 1024 * 1024) {
+                    setMessage("You have choosen an image with size bigger than 1 MB.");
+                    setFile(null);
+                    e.target.value = "";
+                    return;
+                  }
+                  setFile(selectedFile);
+                  setMessage(""); // clear previous errors
+                }
               }}
             />
             <label htmlFor="photoUpload" className="file-upload-label">
               {file ? "Change Photo" : "Choose Photo"}
             </label>
             {file && <p className="file-name">{file.name}</p>}
+              
+            {message && <p className="error-text">{message}</p>}
           </div>
 
           {errors.photo && <p className="register-error">{errors.photo}</p>}

@@ -25,6 +25,12 @@ function EditUserForm({ user, onCancel, onUpdate }) {
       let photoId = user.photoId;
 
       if (file) {
+
+        if (file.size > 1 * 1024 * 1024) {
+          setMessage("File size must be less than 5 MB.");
+          return;
+        }
+
         const photoFormData = new FormData();
         photoFormData.append("photo", file);
         const response = await axios.post(
@@ -70,8 +76,6 @@ function EditUserForm({ user, onCancel, onUpdate }) {
     <div className="form-input-container">
       <div className="register-card">
         <h2>Edit Profile</h2>
-
-        {message && <p className="register-message">{message}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -124,7 +128,19 @@ function EditUserForm({ user, onCancel, onUpdate }) {
               type="file"
               id="photoUpload"
               accept="image/*"
-              onChange={(e) => setFile(e.target.files[0])}
+              onChange={(e) => {
+                const selectedFile = e.target.files[0];
+                if (selectedFile) {
+                  if (selectedFile.size > 1 * 1024 * 1024) {
+                    setMessage("You have choosen an image with size bigger than 1 MB.");
+                    setFile(null);
+                    e.target.value = "";
+                    return;
+                  }
+                  setFile(selectedFile);
+                  setMessage(""); 
+                }
+              }}
             />
             <label htmlFor="photoUpload" className="file-upload-label">
               {file ? "Change Photo" : "Choose Photo"}
@@ -132,6 +148,8 @@ function EditUserForm({ user, onCancel, onUpdate }) {
             {file && <p className="file-name">{file.name}</p>}
           </div>
           {errors.photo && <p className="register-error">{errors.photo}</p>}
+
+          {message && <p className="error-text">{message}</p>}
 
           <button className="button button-primary" type="submit">
             Update Profile

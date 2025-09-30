@@ -307,6 +307,19 @@ h1, h2, h4 {
   margin-top: 15px;
 }
 
+.helper-text {
+  font-size: 0.875rem;
+  color: #666;
+  margin-top: 4px;
+}
+
+.error-text {
+  font-size: 0.875rem;
+  color: red;
+  margin-top: 4px;
+}
+
+
 /* Choose photo button */
 
 .file-upload {
