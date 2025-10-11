@@ -230,7 +230,7 @@ public class TournamentService {
     }
 
     @Transactional
-    private void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
+    protected void broadcastTournamentUpdate(TournamentResponseDto tournamentResponseDto, boolean isFull) {
         log.info("Broadcasting tournament update to players.");
 
 
@@ -372,7 +372,8 @@ public class TournamentService {
     }
 
     private Set<ConnectedPlayer> getPlayersForMatch(String tournamentId, Match match) {
-        List<String> userIds = match.getUsers().stream().map(User::getId).toList();
+        List<String> userIds = matchDetailsRepository.findAllByMatchId(
+                match.getId()).stream().map(MatchDetails::getUser).map(User::getId).toList();
         return tournamentPlayers.get(tournamentId)
                 .stream()
                 .filter(player -> userIds.contains(player.getUserId()))

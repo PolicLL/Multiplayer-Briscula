@@ -1,24 +1,11 @@
 package com.example.web.model;
 
 import com.example.web.security.model.Role;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
 @Entity
@@ -60,7 +47,4 @@ public class User {
 
     @ManyToMany(mappedBy = "users")
     private Set<Tournament> tournaments = new HashSet<>();
-
-    @ManyToMany(mappedBy = "users")
-    private Set<Match> matches = new HashSet<>();
 }

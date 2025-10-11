@@ -94,8 +94,6 @@ public class MatchService {
     public Match createMatch(CreateMatchDto createMatchDto) {
         Match match = matchMapper.toMatch(createMatchDto);
         match.setId(UUID.randomUUID().toString());
-        match.setUsers(userRepository.findAllByIdIn(createMatchDto.userIds()));
-
         return matchRepository.save(match);
     }
 
@@ -108,7 +106,6 @@ public class MatchService {
                 .match(createMatchDto.match())
                 .group(createMatchDto.group())
                 .id(UUID.randomUUID().toString())
-                .points(0)
                 .numberOfWins(0)
                 .build()));
     }

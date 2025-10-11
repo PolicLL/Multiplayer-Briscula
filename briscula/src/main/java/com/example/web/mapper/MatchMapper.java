@@ -19,7 +19,6 @@ public interface MatchMapper {
 
     Match toMatch(CreateMatchDto createMatchDto);
 
-    @Mapping(target = "userIds", source = "users", qualifiedByName = "mapUsersToIds")
     MatchDto toMatchDto(Match match);
 
     @Mapping(target = "userId", source = "user.id")

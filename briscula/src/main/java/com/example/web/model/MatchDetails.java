@@ -30,8 +30,6 @@ public class MatchDetails {
     @JoinColumn(name = "match_id", nullable = false)
     private Match match;
 
-    private int points;
-
     private int numberOfWins;
 
     @Column(name = "group_number")
