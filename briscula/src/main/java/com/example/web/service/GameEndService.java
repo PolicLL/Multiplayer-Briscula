@@ -56,8 +56,10 @@ public class GameEndService {
         List<ConnectedPlayer> winners = resultLists.get(0);
         List<ConnectedPlayer> losers = resultLists.get(1);
 
+        boolean isTournamentMatch = matchId != null;
+
         // matchId is null if this is not tournament match
-        if (matchId == null) {
+        if (!isTournamentMatch) {
             Stream.concat(winners.stream(), losers.stream())
                     .forEach(player ->
                             messageDispatcher.leftGameOrTournament(player.getWebSocketSession()));

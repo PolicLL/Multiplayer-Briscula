@@ -222,8 +222,7 @@ function GameRoom() {
 
         case "WAIT_FOR_NEXT_MATCH":
           setThrownCards([]);
-          // TODO: Also when moving to /dashboard make sure there is some animation or message that will indicate that player is waiting
-          navigate(`/dashboard`);
+          navigate(`/dashboard`, { state: { waitingForNextMatch: true } });
           break;
 
         case "RESTARTING_MATCH":

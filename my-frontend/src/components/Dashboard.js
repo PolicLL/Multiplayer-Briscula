@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import JoinGamePanel from "./common/JoinGamePanel";
 import EditUserForm from "./EditUserForm";
 import Menu from "./Menu";
@@ -25,6 +25,15 @@ function Dashboard() {
   const [tournaments, setTournaments] = useState([]);
 
   const { sendMessage, setOnMessage } = useWebSocketContext();
+
+  const location = useLocation();
+  const [waitingForNextMatch, setWaitingForNextMatch] = useState(false);
+
+  useEffect(() => {
+    if (location.state?.waitingForNextMatch) {
+      setWaitingForNextMatch(true);
+    }
+  }, [location.state]);
 
   const handleMessage = useCallback(
     (parsedMessage) => {
@@ -77,7 +86,7 @@ function Dashboard() {
     return () => {
       setOnMessage(null);
     };
-  }, [navigate, username, setOnMessage, handleMessage]); 
+  }, [navigate, username, setOnMessage, handleMessage]);
 
   useEffect(() => {
     console.log("Tournaments updated:", tournaments);
@@ -154,30 +163,40 @@ function Dashboard() {
               <p>Country: {userInfo?.country}</p>
               <p>Email: {userInfo?.email}</p>
 
-                <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
-                  Edit Profile
-                </button>
+              <button className="edit-btn edit-profile" onClick={() => setIsEditing(true)}>
+                Edit Profile
+              </button>
             </div>
-          </div>          
-          
+          </div>
+
           <JoinGamePanel
             shouldShowPoints={shouldShowPoints}
             handleCheckboxChange={(e) => setShouldShowPoints(e.target.checked)}
             joinGame={joinGame}
             leaveGame={leaveGame}
             isAnonymous={false}
+            disabled={waitingForNextMatch}
           />
-          
+
+          {waitingForNextMatch && (
+            <div className="waiting-next-match">
+              <p className="waiting-text">Waiting for the next match of the tournament</p>
+              <div className="spinner"></div>
+            </div>
+          )}
+
           <div className="dashboard-buttons">
             <button
               onClick={() => navigate("/tournament/create")}
               className="create-btn"
+              disabled={waitingForNextMatch}
             >
               Create Tournament
             </button>
             <button
               onClick={() => setShowTournaments((prev) => !prev)}
               className="view-btn"
+              disabled={waitingForNextMatch}
             >
               {showTournaments ? "Hide Tournaments" : "View Tournaments"}
             </button>

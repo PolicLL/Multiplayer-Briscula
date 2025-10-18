@@ -16,7 +16,8 @@ body {
 
 /* For Firefox */
 html {
-  scrollbar-width: none; /* hides scrollbar but still scrollable */
+  scrollbar-width: none;
+  /* hides scrollbar but still scrollable */
 }
 
 /* For IE/Edge legacy */
@@ -68,10 +69,13 @@ code {
 
 .content {
   position: relative;
-  z-index: 1; /* content sits above overlay */
+  z-index: 1;
+  /* content sits above overlay */
 }
 
-h1, h2, h4 {
+h1,
+h2,
+h4 {
   color: #3B2F2F;
 }
 
@@ -85,7 +89,7 @@ h1, h2, h4 {
   font-weight: bold;
   cursor: pointer;
   transition: 0.2s;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .button-primary {
@@ -110,7 +114,7 @@ h1, h2, h4 {
 }
 
 .button-secondary {
-  background: #6B4226; 
+  background: #6B4226;
   color: #fff;
 }
 
@@ -136,28 +140,28 @@ h1, h2, h4 {
   background: #FAF8F2;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-.leaderboard-table th, 
+.leaderboard-table th,
 .leaderboard-table td {
   padding: 12px 16px;
   text-align: center;
-  border-bottom: 1px solid #D6CBBE; 
+  border-bottom: 1px solid #D6CBBE;
 }
 
 .leaderboard-table th {
-  background: #6B4226; 
-  color: #FFFFFF; 
+  background: #6B4226;
+  color: #FFFFFF;
   font-weight: bold;
 }
 
 .leaderboard-table tr:nth-child(even) {
-  background: #FAF8F2; 
+  background: #FAF8F2;
 }
 
 .leaderboard-table tr:nth-child(odd) {
-  background: #F1E7D8; 
+  background: #F1E7D8;
 }
 
 .leaderboard-table tr:hover {
@@ -178,7 +182,7 @@ h1, h2, h4 {
   display: block;
   padding: 30px 40px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   min-width: 400px;
   max-width: 450px;
   margin: 0 auto;
@@ -201,7 +205,7 @@ h1, h2, h4 {
 }
 
 .login-card input:focus {
-  border-color: #6B4226; 
+  border-color: #6B4226;
   outline: none;
   box-shadow: 0 0 5px rgba(107, 66, 38, 0.5);
 }
@@ -220,41 +224,45 @@ h1, h2, h4 {
 }
 
 .login-error {
-  color: #B22222; 
+  color: #B22222;
   font-size: 13px;
   margin: -5px 0 10px;
   text-align: left;
 }
 
 .login-message {
-  color: #B22222; 
+  color: #B22222;
 }
 
 /* Registration form */
 
 .form-input-container {
   display: flex;
-  justify-content: center;   /* horizontal */
-  align-items: center;       /* vertical */
-  height: 100vh;             /* full screen height */
-  margin: 0;                 /* remove margins */
+  justify-content: center;
+  /* horizontal */
+  align-items: center;
+  /* vertical */
+  height: 100vh;
+  /* full screen height */
+  margin: 0;
+  /* remove margins */
   text-align: center;
   padding: 0 10px;
 }
 
 .register-card {
-  background: #FAF8F2; 
+  background: #FAF8F2;
   padding: 30px 40px;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   min-width: 320px;
   max-width: 450px;
-  width: auto;  
+  width: auto;
 }
 
 
 .register-card h2 {
-  color: #4A3222; 
+  color: #4A3222;
   margin-bottom: 20px;
 }
 
@@ -273,7 +281,7 @@ h1, h2, h4 {
 
 .register-card input:focus,
 .register-card select:focus {
-  border-color: #6B4226; 
+  border-color: #6B4226;
   outline: none;
   box-shadow: 0 0 5px rgba(107, 66, 38, 0.5);
 }
@@ -289,13 +297,15 @@ h1, h2, h4 {
 
 /* Messages */
 .register-message {
-  color: #2E7D32; /* green */
+  color: #2E7D32;
+  /* green */
   margin-bottom: 10px;
   font-weight: bold;
 }
 
 .register-error {
-  color: #B22222; /* firebrick red */
+  color: #B22222;
+  /* firebrick red */
   font-size: 13px;
   margin: -5px 0 10px;
   text-align: left;
@@ -330,7 +340,7 @@ h1, h2, h4 {
 }
 
 .file-upload input[type="file"] {
-  display: none; 
+  display: none;
 }
 
 .file-upload-label {
@@ -369,13 +379,15 @@ h1, h2, h4 {
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
   min-height: 100vh;
   background-image: url("../public/images/light-wooden-background.jpg");
-  background-size: cover; /* Cover the entire container */
+  background-size: cover;
+  /* Cover the entire container */
   background-repeat: no-repeat;
   background-position: top left;
-  color: hsl(0, 0%, 20%); /* Text color */
+  color: hsl(0, 0%, 20%);
+  /* Text color */
   font-family: Arial, sans-serif;
 }
 
@@ -388,15 +400,19 @@ h1, h2, h4 {
 
 .user-info-container {
   padding: 20px;
-  background: rgba(131, 103, 71, 0.85); /* semi-transparent warm brown */
-  color: #fff; /* default text color for contrast */
+  background: rgba(131, 103, 71, 0.85);
+  /* semi-transparent warm brown */
+  color: #fff;
+  /* default text color for contrast */
   max-width: none;
   width: 100%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: row;
-  align-items: left; /* center content */
-  gap: 8px; /* spacing between elements */
+  align-items: left;
+  /* center content */
+  gap: 8px;
+  /* spacing between elements */
 }
 
 .user-info-container p {
@@ -406,7 +422,8 @@ h1, h2, h4 {
 /* User photo */
 .user-info-container img {
   border: 4px solid #E0D4C1;
-  border-radius: 50%; /* make it circular */
+  border-radius: 50%;
+  /* make it circular */
   width: 100px;
   height: 100px;
   object-fit: cover;
@@ -422,15 +439,18 @@ h1, h2, h4 {
 .user-info-container h3 {
   font-size: 22px;
   margin: 5px 0;
-  color: #fff; /* lighter color for contrast */
+  color: #fff;
+  /* lighter color for contrast */
 }
 
 /* Paragraphs */
 .user-info-container p {
   font-size: 15px;
-  color: #fff; /* white for readability */
+  color: #fff;
+  /* white for readability */
   margin: 4px 0;
-  text-align: center; /* center text under photo */
+  text-align: center;
+  /* center text under photo */
 }
 
 .user-info {
@@ -438,8 +458,10 @@ h1, h2, h4 {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* center content */
-  gap: 8px; /* spacing between elements */
+  align-items: center;
+  /* center content */
+  gap: 8px;
+  /* spacing between elements */
 }
 
 .user-photo {
@@ -450,6 +472,61 @@ h1, h2, h4 {
   margin-bottom: 10px;
 }
 
+/* Waiting for the next match animation */
+
+.waiting-next-match {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  width: 100%;
+  background: rgba(131, 103, 71, 0.85);
+  color: #fff;
+  animation: fadeIn 0.4s ease;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.waiting-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #fff;
+  /* white text for readability */
+  margin-top: 20px;
+  margin-bottom: 20px;
+  border-radius: 20px;
+  background-color: #f5f5f5;
+  padding: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
 .dashboard-buttons {
   display: flex;
   flex-wrap: wrap;
@@ -457,7 +534,7 @@ h1, h2, h4 {
   gap: 12px;
   /* margin: 15px 0; */
   background: rgba(131, 103, 71, 0.85);
-  width: 100%;        
+  width: 100%;
 }
 
 .dashboard-buttons button {
@@ -469,8 +546,8 @@ h1, h2, h4 {
   font-weight: 500;
   cursor: pointer;
   transition: transform 0.2s ease, background 0.3s ease;
-  max-width: 700px;        
-  min-width: 560px;  
+  max-width: 700px;
+  min-width: 560px;
 }
 
 .dashboard-buttons button:hover {
@@ -522,25 +599,32 @@ h1, h2, h4 {
 
 .join-game-controls {
   display: flex;
-  flex-direction: row;       /* lay items side by side */
-  justify-content: center; /* even spacing across full width */
-  align-items: center;       /* vertical alignment */
+  flex-direction: row;
+  /* lay items side by side */
+  justify-content: center;
+  /* even spacing across full width */
+  align-items: center;
+  /* vertical alignment */
   width: 100%;
   background: rgba(131, 103, 71, 0.85);
 }
 
 .game-controls {
   display: flex;
-  flex-direction: column;       /* lay items side by side */
-  justify-content: space-between; /* even spacing across full width */
-  align-items: center;       /* vertical alignment */
-  gap: 10px;                 /* spacing between items */
-  padding: 10px 200px; 
+  flex-direction: column;
+  /* lay items side by side */
+  justify-content: space-between;
+  /* even spacing across full width */
+  align-items: center;
+  /* vertical alignment */
+  gap: 10px;
+  /* spacing between items */
+  padding: 10px 200px;
   border-radius: 0;
   color: #fff;
   width: 70%;
   max-width: none;
-  
+
 }
 
 
@@ -561,15 +645,21 @@ h1, h2, h4 {
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
-  flex: 1;              /* each item takes equal width */
-  text-align: center;   /* center text inside buttons/inputs */
-  aspect-ratio: 1 / 1;       /* makes them squares */
-  max-width: 260px;          /* prevent oversized cubes */
-  min-width: 60px;           /* prevent too tiny cubes */
+  flex: 1;
+  /* each item takes equal width */
+  text-align: center;
+  /* center text inside buttons/inputs */
+  aspect-ratio: 1 / 1;
+  /* makes them squares */
+  max-width: 260px;
+  /* prevent oversized cubes */
+  min-width: 60px;
+  /* prevent too tiny cubes */
 }
 
 .game-controls button.primary {
-  background-color: #8B5E3C; /* wood-tone */
+  background-color: #8B5E3C;
+  /* wood-tone */
   color: #fff;
 }
 
@@ -592,14 +682,16 @@ h1, h2, h4 {
 }
 
 .game-controls button.primary.active {
-  background-color: #D4A373; /* highlight color */
+  background-color: #D4A373;
+  /* highlight color */
   transform: scale(1.05);
   box-shadow: 0 0 8px rgba(255, 255, 255, 0.6);
 }
 
 .join-game-buttons {
   display: flex;
-  flex-direction: row;       /* lay items side by side */
+  flex-direction: row;
+  /* lay items side by side */
 }
 
 /*
@@ -618,10 +710,12 @@ h1, h2, h4 {
 .game-controls label {
   display: flex;
   align-items: center;
-  gap: 8px; /* space between checkbox and text */
+  gap: 8px;
+  /* space between checkbox and text */
   margin-top: 10px;
   font-weight: bold;
-  color: #fff; /* match your panel text */
+  color: #fff;
+  /* match your panel text */
   cursor: pointer;
 }
 
@@ -641,7 +735,8 @@ h1, h2, h4 {
 
 /* Checked state */
 .game-controls input[type="checkbox"]:checked {
-  background-color: #8B5E3C; /* same as primary button */
+  background-color: #8B5E3C;
+  /* same as primary button */
   border-color: #8B5E3C;
 }
 
@@ -660,7 +755,8 @@ h1, h2, h4 {
 
 /* Disabled state */
 .game-controls input[type="checkbox"]:disabled {
-  background-color: #A5D6A7; /* dimmed */
+  background-color: #A5D6A7;
+  /* dimmed */
   border-color: #ccc;
   cursor: not-allowed;
 }
@@ -673,7 +769,8 @@ h1, h2, h4 {
   justify-content: flex-start;
   gap: 12px;
   margin-top: 15px;
-  min-height: 40px; /* 👈 reserve space to prevent layout shift */
+  min-height: 40px;
+  /* 👈 reserve space to prevent layout shift */
 }
 
 /* circular spinner */
@@ -711,13 +808,14 @@ h1, h2, h4 {
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center; /* center content */
+  align-items: center;
+  /* center content */
   flex-wrap: wrap;
   justify-content: center;
 }
 
 .tournament-table-container h3 {
-   color: #6B4226;
+  color: #6B4226;
 }
 
 
@@ -727,7 +825,7 @@ h1, h2, h4 {
   background: #FAF8F2;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   width: 80%;
   min-width: 800px;
   margin-top: 20px;
@@ -735,19 +833,19 @@ h1, h2, h4 {
 }
 
 
-.tournament-table th, 
+.tournament-table th,
 .tournament-table td {
   padding: 12px 16px;
   text-align: center;
-  border-bottom: 1px solid #D6CBBE; 
+  border-bottom: 1px solid #D6CBBE;
 }
 
 .tournament-table tr:nth-child(even) {
-  background: #FAF8F2; 
+  background: #FAF8F2;
 }
 
 .tournament-table tr:nth-child(odd) {
-  background: #F1E7D8; 
+  background: #F1E7D8;
 }
 
 .tournament-table tr:hover {
@@ -756,8 +854,8 @@ h1, h2, h4 {
 }
 
 .tournament-table th {
-  background: #6B4226; 
-  color: #FFFFFF; 
+  background: #6B4226;
+  color: #FFFFFF;
   font-weight: bold;
 }
 
@@ -786,10 +884,10 @@ h1, h2, h4 {
 .anonymous-dashboard-container {
   display: flex;
   flex-direction: column;
-  align-items: center; 
+  align-items: center;
   min-height: 100vh;
   background-image: url("../public/images/light-wooden-background.jpg");
-  background-size: cover; 
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: top left;
   color: hsl(0, 0%, 20%);
@@ -802,12 +900,18 @@ h1, h2, h4 {
 }
 
 .error-message {
-  background-color: #fff;       /* white background */
-  color: red;                   /* red text */
-  padding: 6px 10px;            /* space around text */
-  border: 1px solid red;        /* thin red border */
-  border-radius: 6px;           /* rounded corners */
-  margin-top: 6px;              /* spacing from input */
+  background-color: #fff;
+  /* white background */
+  color: red;
+  /* red text */
+  padding: 6px 10px;
+  /* space around text */
+  border: 1px solid red;
+  /* thin red border */
+  border-radius: 6px;
+  /* rounded corners */
+  margin-top: 6px;
+  /* spacing from input */
   font-size: 0.9rem;
   font-weight: 500;
 }
@@ -845,7 +949,7 @@ h1, h2, h4 {
   height: 295px;
   object-fit: contain;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .opponent-avatar.top-center {
@@ -857,17 +961,18 @@ h1, h2, h4 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: none; /* so it doesn't block cards */
+  pointer-events: none;
+  /* so it doesn't block cards */
 }
 
 .opponent-image {
   width: 130px;
-  height:130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
   border: 3px solid #6B4226;
   background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .opponent-name {
@@ -891,7 +996,8 @@ h1, h2, h4 {
   display: flex;
   flex-direction: column;
   align-items: center;
-  pointer-events: none; /* so it doesn't block cards */
+  pointer-events: none;
+  /* so it doesn't block cards */
 }
 
 /* Opponent's cards at top center, animate from top */
@@ -904,6 +1010,7 @@ h1, h2, h4 {
   gap: 16px;
   z-index: 2;
 }
+
 .colleagues-cards.top-center .card {
   /* width/height removed, uses .card */
   animation: slideFromTopToCenter 0.5s ease;
@@ -918,14 +1025,23 @@ h1, h2, h4 {
 }
 
 .colleague-card {
-  width: 100px;   /* smaller than the default */
-  height: 190px;  /* adjust proportionally */
+  width: 100px;
+  /* smaller than the default */
+  height: 190px;
+  /* adjust proportionally */
 }
 
 
 @keyframes slideFromTopToCenter {
-  from { transform: translateY(-120px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(-120px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Your cards at bottom center, same size as opponent's */
@@ -938,13 +1054,22 @@ h1, h2, h4 {
   gap: 16px;
   z-index: 2;
 }
+
 .your-cards.bottom-center .card {
   /* width/height removed, uses .card */
   animation: slideFromBottom 0.5s ease;
 }
+
 @keyframes slideFromBottom {
-  from { transform: translateY(120px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(120px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* Thrown cards in center */
@@ -952,32 +1077,52 @@ h1, h2, h4 {
   position: relative;
   width: 100%;
   height: 100%;
-  min-height: 300px; /* or whatever fits your layout */
+  min-height: 300px;
+  /* or whatever fits your layout */
   display: flex;
-  justify-content: center;  /* centers horizontally */
-  align-items: center;      /* centers vertically */
+  justify-content: center;
+  /* centers horizontally */
+  align-items: center;
+  /* centers vertically */
 }
 
 .card.thrown-card.from-top-anim {
   animation: throwFromTop 0.5s ease;
 }
+
 .card.thrown-card.from-bottom-anim {
   animation: throwFromBottom 0.5s ease;
 }
+
 @keyframes throwFromTop {
-  from { transform: translateY(-120px) scale(0.8); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(-120px) scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
+
 @keyframes throwFromBottom {
-  from { transform: translateY(120px) scale(0.8); opacity: 0; }
-  to { transform: translateY(0) scale(1); opacity: 1; }
+  from {
+    transform: translateY(120px) scale(0.8);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 }
 
 /* Card base style */
 .card {
   object-fit: contain;
   border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   background: #fff;
   cursor: pointer;
 }
@@ -985,9 +1130,17 @@ h1, h2, h4 {
 .card.from-bottom {
   animation: slideFromBottom 0.5s ease;
 }
+
 @keyframes slideFromBottom {
-  from { transform: translateY(120px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(120px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* HUD info */
@@ -1017,7 +1170,7 @@ h1, h2, h4 {
   font-weight: bold;
   z-index: 10;
   text-align: center;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
   pointer-events: none;
   border-radius: 24px;
 }
@@ -1031,10 +1184,12 @@ h1, h2, h4 {
   font-size: 3rem;
   color: #fffbe7;
 }
+
 .winner-info-overlay strong {
   color: #ffe082;
   font-size: 2.2rem;
 }
+
 .winner-info-overlay div {
   margin: 12px 0;
   font-size: 2rem;

@@ -9,7 +9,8 @@ function JoinGamePanel({
   leaveGame,
   isAnonymous,
   status,
-  serverError
+  serverError,
+  disabled
 }) {
   const [selectedGame, setSelectedGame] = useState(null);
   const [error, setError] = useState("");
@@ -63,7 +64,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 2 ? "active" : ""}`}
             onClick={() => handleJoin(2)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || disabled}
           >
             Join Game (1v1)
           </button>
@@ -71,7 +72,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 3 ? "active" : ""}`}
             onClick={() => handleJoin(3)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || disabled}
           >
             Join Game (1v1v1)
           </button>
@@ -79,7 +80,7 @@ function JoinGamePanel({
           <button
             className={`primary ${selectedGame === 4 ? "active" : ""}`}
             onClick={() => handleJoin(4)}
-            disabled={!!selectedGame}
+            disabled={!!selectedGame || disabled}
           >
             Join Game (2v2)
           </button>
@@ -87,7 +88,7 @@ function JoinGamePanel({
           <button
             className="secondary"
             onClick={handleLeave}
-            disabled={!selectedGame}
+            disabled={!selectedGame || disabled}
           >
             Leave Game
           </button>
