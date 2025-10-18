@@ -665,6 +665,45 @@ h1, h2, h4 {
   cursor: not-allowed;
 }
 
+/* Waiting animaiton */
+
+.waiting-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 15px;
+  min-height: 40px; /* 👈 reserve space to prevent layout shift */
+}
+
+/* circular spinner */
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #ccc;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.waiting-animation {
+  display: flex;
+  gap: 5px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.waiting-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: #333;
+}
+
+
 /* Tournament list */
 
 .tournament-table-container {

@@ -37,6 +37,8 @@ function JoinGamePanel({
     }
   }, [serverError]);
 
+  const isWaiting = !!selectedGame;
+
   return (
     <main className="join-game-controls">
       <div className="game-controls">
@@ -90,6 +92,13 @@ function JoinGamePanel({
             Leave Game
           </button>
         </div>
+
+        {isWaiting && (
+          <div className="waiting-section">
+            <div className="spinner"></div>
+            <p className="waiting-text">Waiting for others to join</p>
+          </div>
+        )}
 
         <label>
           <input
