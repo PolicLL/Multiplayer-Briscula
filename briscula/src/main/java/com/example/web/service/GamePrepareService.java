@@ -1,8 +1,5 @@
 package com.example.web.service;
 
-import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
-import static com.example.web.utils.WebSocketMessageSender.sendMessage;
-
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.user.player.RealPlayer;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
@@ -13,19 +10,17 @@ import com.example.web.model.GameRoom;
 import com.example.web.model.Match;
 import com.example.web.utils.WebSocketMessageReader;
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.*;
+
+import static com.example.web.model.enums.ServerToClientMessageType.GAME_STARTED;
+import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 @Slf4j
 @Component
@@ -71,7 +66,7 @@ public class GamePrepareService {
         } else {
             // TODO Check for the name used by anonymous, make sure it is not used by registered player
             if (userService.existsByUsername(playerName))
-                throw new UserWithUsernameAlreadyExistsException();
+                throw new UserWithUsernameAlreadyExistsException(playerName);
         }
 
 

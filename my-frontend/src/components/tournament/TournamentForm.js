@@ -106,7 +106,7 @@ const TournamentForm = ({ onSuccess, onError }) => {
           </button>
         </form>
 
-        {message && <p className="register-message">{message}</p>}
+        {message && <p className="error-message">{message}</p>}
       </div>
     </div>
 

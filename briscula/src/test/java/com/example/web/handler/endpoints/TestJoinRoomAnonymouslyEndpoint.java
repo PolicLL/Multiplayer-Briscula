@@ -13,12 +13,13 @@ import static com.example.web.utils.Constants.OBJECT_MAPPER;
 public class TestJoinRoomAnonymouslyEndpoint {
 
     private final CompletableFuture<String> completableFuture;
+    private final String name;
 
     @OnOpen
     public void onOpen(Session session) {
         System.out.println("✅ WebSocket connection established");
 
-        String alreadyUsedNameByRegisteredUser = "User1950";
+        String alreadyUsedNameByRegisteredUser = "SomeRandomUsername";
 
         try {
             session.getAsyncRemote().sendText(OBJECT_MAPPER.writeValueAsString(Map.of(

@@ -1,5 +1,6 @@
 package com.example.web.handler;
 
+import static com.example.web.model.enums.ServerToClientMessageType.USER_WITH_USERNAME_ALREADY_IN_GAME;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static utils.EntityUtils.generateValidUserDtoWithoutPhoto;
@@ -84,23 +85,19 @@ class WebSocketHandlerIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     void testRawWebSocketJoinRoomExceptionUsernameIsAlreadyUsed() throws Exception {
-        userService.createUser(generateValidUserDtoWithoutPhoto("User1950"));
+        String name = "SomeRandomUsername";
+        userService.createUser(generateValidUserDtoWithoutPhoto(name));
 
         CompletableFuture<String> future = new CompletableFuture<>();
 
         WebSocketContainer container = ContainerProvider.getWebSocketContainer();
-        TestJoinRoomAnonymouslyEndpoint endpoint = new TestJoinRoomAnonymouslyEndpoint(future);
+        TestJoinRoomAnonymouslyEndpoint endpoint = new TestJoinRoomAnonymouslyEndpoint(future, name);
 
         container.connectToServer(endpoint, WS_URI);
 
-        ExecutionException ex = assertThrows(
-                ExecutionException.class,
-                () -> future.get(10, TimeUnit.SECONDS)
-        );
+        String response = future.get(5, TimeUnit.SECONDS);
 
-        assertThat(ex.getCause())
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("WebSocket closed with code");
+        assertThat(response).contains(USER_WITH_USERNAME_ALREADY_IN_GAME.name());
     }
 
     @Test

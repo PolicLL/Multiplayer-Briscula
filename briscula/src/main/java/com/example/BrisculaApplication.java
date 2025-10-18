@@ -11,3 +11,13 @@ public class BrisculaApplication {
     }
 
 }
+
+// TODO
+
+/*
+
+- when editing user, country that is currently selected should be shown
+- handle error on frontend side for anonymous user when he chooses the name that is used on backend
+- after tournament is finished, number of it's default players should again be increased by number of bots
+
+ */

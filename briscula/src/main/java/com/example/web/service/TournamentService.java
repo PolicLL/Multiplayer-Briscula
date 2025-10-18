@@ -103,10 +103,10 @@ public class TournamentService {
                 User userBot = userService.retrieveUserByUsername(botName);
 
 
-        /*
-        This session is created and added for Bot player to not break equals function that uses
-        id of websocket session, but this session is not used.
-         */
+                /*
+                This session is created and added for Bot player to not break equals function that uses
+                id of websocket session, but this session is not used.
+                 */
                 WebSocketSession dummyWebSocketSession = getWebSocketSession();
                 Bot bot = new Bot(botName, dummyWebSocketSession);
 
@@ -396,6 +396,9 @@ public class TournamentService {
         tournamentUsers.get(tournamentId).clear();
         tournamentPlayersWinners.get(tournamentId).clear();
         tournamentIdNumberOfWinners.put(tournament.getId(), tournament.getNumberOfPlayers() / 2);
+
+        if (tournament.getNumberOfBots() > 0)
+            initializeTournamentWithBots(tournament,  tournament.getNumberOfBots());
     }
 
     private int getNumberOfPlayersInTournament(String tournamentId) {
@@ -444,5 +447,6 @@ public class TournamentService {
     }
 
     public void handleLeaving(WebSocketSession session, WebSocketMessage<?> message) {
+        
     }
 }

@@ -11,14 +11,21 @@ function PrepareGame() {
   const [receivedMessage, setReceivedMessage] = useState("");
   const [status, setStatus] = useState("");
   const [numberOfPlayers, setNumberOfPlayers] = useState(-1);
+  const [serverError, setServerError] = useState("");
+
   const { sendMessage, setOnMessage } = useWebSocketContext();
 
   const handleMessage = useCallback(
-    (parsedMessage) => {},
+    (parsedMessage) => {
+      if (parsedMessage.type === "USER_WITH_USERNAME_ALREADY_IN_GAME") {
+        setStatus(parsedMessage.content);
+        setServerError(parsedMessage.content); 
+      }
+    },
     [navigate, setOnMessage] // ✅ Do NOT include `tournaments` here!
   );
 
-  // set default anonymous user, if it s not choosen ,choose some random, give abilioty to chose custome
+  // TODO set default anonymous user, if it s not choosen ,choose some random, give abilioty to chose custome
 
   const joinGame = (numberOfPlayers) => {
     if (!name.trim()) return alert("Enter a name.");
@@ -77,8 +84,9 @@ function PrepareGame() {
         isStartEnabled={false}
         leaveGame={leaveGame}
         isAnonymous={true}
+        status={status}
+        serverError={serverError}
       />
-      <p style={{ fontWeight: "bold", fontSize: "18px" }}>{status}</p>
     </div>
   );
 }

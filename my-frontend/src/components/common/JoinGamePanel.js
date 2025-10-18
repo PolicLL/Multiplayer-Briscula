@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function JoinGamePanel({
   name,
@@ -8,6 +8,8 @@ function JoinGamePanel({
   joinGame,
   leaveGame,
   isAnonymous,
+  status,
+  serverError
 }) {
   const [selectedGame, setSelectedGame] = useState(null);
   const [error, setError] = useState("");
@@ -28,6 +30,13 @@ function JoinGamePanel({
     setSelectedGame(null);
   };
 
+  useEffect(() => {
+    if (serverError) {
+      setError(serverError);
+      setSelectedGame(null);
+    }
+  }, [serverError]);
+
   return (
     <main className="join-game-controls">
       <div className="game-controls">
@@ -40,7 +49,7 @@ function JoinGamePanel({
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
-                setError(""); // clear error when typing
+                setError("");
               }}
             />
 

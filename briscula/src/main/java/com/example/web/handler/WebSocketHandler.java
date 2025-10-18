@@ -2,6 +2,7 @@ package com.example.web.handler;
 
 import com.example.web.dto.Message;
 import com.example.web.exception.UserIsAlreadyInTournamentOrGame;
+import com.example.web.exception.UserWithUsernameAlreadyExistsException;
 import com.example.web.exception.WebSocketException;
 import com.example.web.service.*;
 import com.example.web.utils.JsonUtils;
@@ -19,6 +20,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 
 import static com.example.web.model.enums.ServerToClientMessageType.USER_ALREADY_IN_GAME_OR_TOURNAMENT;
+import static com.example.web.model.enums.ServerToClientMessageType.USER_WITH_USERNAME_ALREADY_IN_GAME;
 
 @Slf4j
 @Component
@@ -65,6 +67,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
                     .build()));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        } catch (UserWithUsernameAlreadyExistsException e) {
+            messageDispatcher.sendMessage(session, JsonUtils.toJson(Message.builder()
+                    .content(e.getMessage())
+                    .type(USER_WITH_USERNAME_ALREADY_IN_GAME)
+                    .build()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
