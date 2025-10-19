@@ -17,6 +17,7 @@ import java.util.concurrent.TimeoutException;
 
 import static com.example.briscula.utilities.constants.CardFormatter.formatCard;
 import static com.example.web.model.enums.ServerToClientMessageType.*;
+import static com.example.web.utils.Constants.RANDOM;
 import static com.example.web.utils.WebSocketMessageSender.sendMessage;
 
 @Getter
@@ -84,6 +85,7 @@ public class RealPlayer extends Player {
         selectedCardFuture = new CompletableFuture<>();
         try {
             if (!WebSocketMessageDispatcher.isSessionRegistered(webSocketSession)) {
+                Thread.sleep(RANDOM.nextInt(3000) + 1000);
                 return 0;
             }
             return selectedCardFuture.get(waitingTimeForChoosingCardInSeconds, TimeUnit.SECONDS);

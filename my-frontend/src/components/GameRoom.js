@@ -142,7 +142,7 @@ function GameRoom() {
         case "CHOOSE_CARD": {
           setMessage(parsedMessage.content);
           setCardsClickable(true);
-          setTimeLeft(5);
+          setTimeLeft(30);
           console.log("Time left is set to 30.")
 
           if (timerRef.current) clearInterval(timerRef.current);

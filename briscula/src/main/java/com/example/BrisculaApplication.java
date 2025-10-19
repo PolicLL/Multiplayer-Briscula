@@ -21,5 +21,7 @@ public class BrisculaApplication {
 - after tournament is finished, number of it's default players should again be increased by number of bots
 - check timers
 - add indexes to the players so that you can know what is the order of throwing and then u can know if you are the last person
+- fix mock data for user
+- add connection to DBeaver
 
  */

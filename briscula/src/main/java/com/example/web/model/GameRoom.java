@@ -74,7 +74,7 @@ public class GameRoom {
 
     public void notifyPlayerLeft(int playerId) {
         if (players.get(playerId).getPlayer() instanceof RealPlayer realPlayer) {
-            realPlayer.setWaitingTimeForChoosingCardInSeconds(0);
+            realPlayer.setWaitingTimeForChoosingCardInSeconds(3); // TODO: Not sure if this is still needed.
         }
 
         ++numberOfPlayersThatLeft;

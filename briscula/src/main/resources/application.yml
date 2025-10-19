@@ -21,7 +21,7 @@ spring:
 
 briscula:
   waiting-time-in-seconds-for-choosing-card: 30
-  waiting-time-after-round-in-seconds: 1
+  waiting-time-after-round-in-seconds: 2
 #logging:
 #  level:
 #    org.springframework.security: DEBUG
