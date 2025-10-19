@@ -52,44 +52,45 @@ function Login() {
   };
 
   useEffect(() => {
-    if (sessionStorage.getItem("isRegistered")) {
+    if (sessionStorage.getItem("isRegistered") === "true") {
+      console.log("User already logged in, redirecting to dashboard.");
       return navigate("/");
     }
-    return () => {};
+    return () => { };
   }, []);
 
   return (
-      <div className="login-container">
-        <div className="login-card">
-          <h2>Login</h2>
+    <div className="login-container">
+      <div className="login-card">
+        <h2>Login</h2>
 
-          <form onSubmit={handleSubmit}>
-            <input
-              type="text"
-              placeholder="Username"
-              value={formData.username}
-              onChange={(e) =>
-                setFormData({ ...formData, username: e.target.value })
-              }
-            />
-            {errors.username && <p className="login-error">{errors.username}</p>}
+        <form onSubmit={handleSubmit}>
+          <input
+            type="text"
+            placeholder="Username"
+            value={formData.username}
+            onChange={(e) =>
+              setFormData({ ...formData, username: e.target.value })
+            }
+          />
+          {errors.username && <p className="login-error">{errors.username}</p>}
 
-            <input
-              type="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
-              }
-            />
-            {errors.password && <p className="login-error">{errors.password}</p>}
+          <input
+            type="password"
+            placeholder="Password"
+            value={formData.password}
+            onChange={(e) =>
+              setFormData({ ...formData, password: e.target.value })
+            }
+          />
+          {errors.password && <p className="login-error">{errors.password}</p>}
 
-            {message && <p className="login-message">{message}</p>}
+          {message && <p className="login-message">{message}</p>}
 
-            <button className="button button-primary" type="submit">Log In</button>
-          </form>
-        </div>
+          <button className="button button-primary" type="submit">Log In</button>
+        </form>
       </div>
+    </div>
   );
 }
 

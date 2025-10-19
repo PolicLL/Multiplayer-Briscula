@@ -89,7 +89,6 @@ public class RealPlayer extends Player {
             return selectedCardFuture.get(waitingTimeForChoosingCardInSeconds, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
             log.warn("Player did not respond in time. Proceeding with default choice.");
-            sendMessage(webSocketSession, CHOOSE_CARD, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "");
             sendMessage(webSocketSession, REMOVE_CARD, roomPlayerId.getRoomId(), roomPlayerId.getPlayerId(), "0");
             return 0;
         } catch (Exception e) {

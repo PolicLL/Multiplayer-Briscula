@@ -17,11 +17,15 @@ export const WebSocketProvider = ({ children }) => {
 
   const sendMessage = useCallback((message) => {
     if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-      socketRef.current.send(JSON.stringify(message));
+      // Delay sending the message by 0.1 seconds (100 ms)
+      setTimeout(() => {
+        socketRef.current.send(JSON.stringify(message));
+      }, 200);
     } else {
       console.warn("WebSocket not connected.");
     }
   }, []);
+
 
   // Update the ref whenever setOnMessage is called
   const setOnMessage = useCallback((handler) => {
@@ -37,7 +41,7 @@ export const WebSocketProvider = ({ children }) => {
       console.log("WebSocket connected");
       sendMessage({ type: "LOGGED_IN" });
     };
-    socket.onclose = () => {console.log("WebSocket closed");}
+    socket.onclose = () => { console.log("WebSocket closed"); }
     socket.onerror = (err) => console.error("WebSocket error:", err);
 
     socket.onmessage = (event) => {

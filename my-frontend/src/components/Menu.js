@@ -9,8 +9,8 @@ function Menu({ onLogout }) {
   const hasEnteredAnonymously = sessionStorage.getItem("hasEnteredAnonymously") === "true";
 
   const callLogoutMethod = () => {
-    onLogout?.(); // will only call if onLogout exists and is a function
-    navigate("/"); // optional, still navigate after logout
+    onLogout?.(); 
+    navigate("/"); 
   }
 
 

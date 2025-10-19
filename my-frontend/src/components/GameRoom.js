@@ -26,7 +26,6 @@ function GameRoom() {
 
   // Add this near your other useState hooks
   const [animatingThrownCard, setAnimatingThrownCard] = useState(null);
-
   const [opponentName, setOpponentName] = useState("Opponent");
 
   const parsePlayerStatus = (cardString, n) => {
@@ -143,7 +142,8 @@ function GameRoom() {
         case "CHOOSE_CARD": {
           setMessage(parsedMessage.content);
           setCardsClickable(true);
-          setTimeLeft(30);
+          setTimeLeft(5);
+          console.log("Time left is set to 30.")
 
           if (timerRef.current) clearInterval(timerRef.current);
 
@@ -152,11 +152,14 @@ function GameRoom() {
               if (prev <= 1) {
                 clearInterval(timerRef.current);
                 setCardsClickable(false);
+                setTimeLeft(0);
+                setMessage("")
                 return 0;
               }
               return prev - 1;
             });
           }, 1000);
+
           break;
         }
 
@@ -247,6 +250,8 @@ function GameRoom() {
                 clearInterval(timerRef.current);
                 setCardsClickable(false);
                 setColleaguesCards([]);
+                setTimeLeft(0);
+                console.log("Time left is set to 0.")
                 return 0;
               }
               return prev - 1;
@@ -261,6 +266,7 @@ function GameRoom() {
     },
     [roomId, playerId, sendMessage]
   );
+
 
   useEffect(() => {
     const handleBeforeUnload = (event) => {
@@ -381,7 +387,7 @@ function GameRoom() {
               <strong>Winner:</strong> {winnerInfo.winner}
             </div>
             <div>
-              <strong>Points:</strong> {winnerInfo.points}
+              <strong>Your Points:</strong> {winnerInfo.points}
             </div>
           </div>
         )}
