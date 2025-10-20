@@ -20,6 +20,13 @@ public class Bot extends Player {
     public Card playRound() {
         Card tempCard = playerCards.get(RANDOM.nextInt(playerCards.size()));
         playerCards.remove(tempCard);
+
+        try {
+            Thread.sleep(RANDOM.nextInt(3000) + 1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         return tempCard;
     }
 

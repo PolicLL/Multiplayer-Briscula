@@ -129,18 +129,32 @@ public class Admin {
     public void dealNextRound(RoundWinner roundWinner) {
         if (deck.getNumberOfDeckCards() == 0) return;
 
-        players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+        int indexOfWinner = getIndexOfWinner(roundWinner);
+
+        dealOneCardToPlayers(indexOfWinner);
 
         if (GameOptionNumberOfPlayers.TWO_PLAYERS.equals(gameOptionNumberOfPlayers)) {
-            players.forEach(player -> player.getPlayer().addCard(deck.removeOneCard()));
+            dealOneCardToPlayers(indexOfWinner);
         }
 
+        indexOfCurrentPlayer = getIndexOfWinner(roundWinner);
+    }
+
+    private void dealOneCardToPlayers(int indexOfWinner) {
+        for (int i = 0; i < players.size(); i++) {
+            int currentIndex = (indexOfWinner + i) % players.size();
+            players.get(currentIndex).getPlayer().addCard(deck.removeOneCard());
+        }
+    }
+
+    private int getIndexOfWinner(RoundWinner roundWinner) {
         for (int i = 0; i < players.size(); ++i) {
             if (roundWinner.player() == players.get(i).getPlayer()) {
-                indexOfCurrentPlayer = i;
-                break;
+                return i;
             }
         }
+
+        return 0;
     }
 
     public Player getCurrentPlayer() {

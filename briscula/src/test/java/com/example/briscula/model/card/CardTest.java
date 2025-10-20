@@ -46,7 +46,6 @@ class CardTest {
     }
 
     private static Stream<Arguments> testSameNonMainCardType() {
-
         return Stream.of(
                 Arguments.of(SPADE, ACE, SPADE, THREE),
                 Arguments.of(SPADE, THREE, SPADE, FOUR)
@@ -65,7 +64,6 @@ class CardTest {
     }
 
     private static Stream<Arguments> testDifferentNonMainCardType() {
-
         return Stream.of(
                 Arguments.of(SPADE, ACE, DENARI, TWO),
                 Arguments.of(DENARI, JACK, SPADE, SEVEN)
@@ -107,7 +105,6 @@ class CardTest {
     }
 
     private static Stream<Arguments> testSecondCardMainCardType() {
-
         return Stream.of(
                 Arguments.of(SPADE, ACE, COPPE, TWO),
                 Arguments.of(DENARI, THREE, COPPE, FOUR),
@@ -121,7 +118,6 @@ class CardTest {
     void TestBothCardsMainType(
             CardType cardType1, CardValue cardValue1, CardType cardType2, CardValue cardValue2
     ) {
-
         var firstCard = new Card(cardType1, cardValue1);
         var secondCard = new Card(cardType2, cardValue2);
 

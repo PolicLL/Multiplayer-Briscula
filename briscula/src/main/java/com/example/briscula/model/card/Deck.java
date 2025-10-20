@@ -1,6 +1,7 @@
 package com.example.briscula.model.card;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -25,6 +26,8 @@ public class Deck {
                 deckCards.add(new Card(type, value));
             }
         }
+
+        Collections.shuffle(deckCards);
     }
 
     public void setLastCard(Card mainCard) {
@@ -44,8 +47,7 @@ public class Deck {
     }
 
     public Card removeOneCard() {
-        if (deckCards.size() == 1) return deckCards.remove(0);
-        return deckCards.remove(random.nextInt(deckCards.size() - 1));
+        return deckCards.remove(0);
     }
 
     public void removeOneWithCardValueTwo() {
