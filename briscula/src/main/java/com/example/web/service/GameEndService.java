@@ -28,9 +28,6 @@ import static com.example.web.utils.Constants.ROOM_ID;
 @RequiredArgsConstructor
 public class GameEndService {
 
-    // TODO: When player win tournament match then while waiting for the next one make sure
-    // some animation is shown on the screen
-
     private final GameRoomService gameRoomService;
     private final UserService userService;
 

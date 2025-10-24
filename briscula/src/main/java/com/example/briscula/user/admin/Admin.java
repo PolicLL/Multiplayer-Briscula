@@ -1,8 +1,5 @@
 package com.example.briscula.user.admin;
 
-import static com.example.web.utils.Constants.OBJECT_MAPPER;
-import static com.example.web.utils.Constants.getRandomNumber;
-
 import com.example.briscula.game.RoundWinner;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
@@ -14,20 +11,17 @@ import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.model.ConnectedPlayer;
 import com.example.web.model.enums.GameEndStatus;
 import com.example.web.model.enums.GameEndStatus.Status;
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 import com.example.web.utils.JsonUtils;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static com.example.web.utils.Constants.OBJECT_MAPPER;
+import static com.example.web.utils.Constants.getRandomNumber;
 
 @Getter
 @Slf4j
@@ -127,7 +121,10 @@ public class Admin {
     }
 
     public void dealNextRound(RoundWinner roundWinner) {
-        if (deck.getNumberOfDeckCards() == 0) return;
+        if (deck.getNumberOfDeckCards() == 0) {
+            indexOfCurrentPlayer = getIndexOfWinner(roundWinner);
+            return;
+        };
 
         int indexOfWinner = getIndexOfWinner(roundWinner);
 
@@ -137,7 +134,7 @@ public class Admin {
             dealOneCardToPlayers(indexOfWinner);
         }
 
-        indexOfCurrentPlayer = getIndexOfWinner(roundWinner);
+        indexOfCurrentPlayer = indexOfWinner;
     }
 
     private void dealOneCardToPlayers(int indexOfWinner) {

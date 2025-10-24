@@ -19,6 +19,10 @@ public enum CardValue {
         return this.ordinal() > other.ordinal();
     }
 
+    public boolean isSmallerThan(CardValue other) {
+        return this.ordinal() < other.ordinal();
+    }
+
     @Override
     public String toString() {
         return String.format("%s(%d)", name(), points);

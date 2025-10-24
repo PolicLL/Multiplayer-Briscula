@@ -23,5 +23,6 @@ public class BrisculaApplication {
 - add indexes to the players so that you can know what is the order of throwing and then u can know if you are the last person
 - fix mock data for user
 - add connection to DBeaver
+- update validation of fields for edit user
 
  */

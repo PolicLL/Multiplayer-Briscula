@@ -1,17 +1,19 @@
 package com.example.briscula.user.player;
 
 
+import com.example.briscula.game.Move;
 import com.example.briscula.model.card.Card;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-
+import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import org.springframework.web.socket.WebSocketSession;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 
 @ToString
 @SuperBuilder
@@ -38,7 +40,7 @@ public abstract class Player {
         this.webSocketSession = webSocketSession;
     }
 
-    public abstract Card playRound();
+    public abstract Card playRound(Queue<Move> queueMoves, Card card, GameOptionNumberOfPlayers gameOptions);
 
     public abstract void sentLoosingMessage(String message);
 

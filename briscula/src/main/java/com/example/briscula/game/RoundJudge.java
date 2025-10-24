@@ -3,10 +3,9 @@ package com.example.briscula.game;
 
 import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
+import lombok.RequiredArgsConstructor;
 
 import java.util.Queue;
-
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 public class RoundJudge {
@@ -37,6 +36,13 @@ public class RoundJudge {
         }
 
         return firstCard.isSameType(secondCard) && isSecondCardStrongerThanFirstCard(firstCard, secondCard);
+    }
+
+    public static boolean isCardStrongerThanAllOtherCards(Card card, Queue<Move> moves,  CardType mainCardType) {
+        return moves
+                .stream()
+                .map(Move::card)
+                .allMatch(tempCard -> isSecondCardStronger(tempCard, card, mainCardType));
     }
 
     /**

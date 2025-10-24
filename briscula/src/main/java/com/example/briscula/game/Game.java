@@ -57,7 +57,7 @@ public class Game {
 
         for (int i = 0; i < numberOfIterations; i++) {
             Player player = admin.getCurrentPlayer();
-            Card card = player.playRound();
+            Card card = player.playRound(queueMoves, admin.getMainCard(), gameOptions);
             Move newMove = new Move(player, card);
             queueMoves.add(newMove);
 

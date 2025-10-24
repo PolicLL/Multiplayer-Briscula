@@ -1,8 +1,10 @@
 package com.example.briscula.user.player;
 
 import com.example.briscula.configuration.BrisculaConfig;
+import com.example.briscula.game.Move;
 import com.example.briscula.model.card.Card;
 import com.example.briscula.utilities.constants.CardFormatter;
+import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
 import com.example.web.service.WebSocketMessageDispatcher;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;
+import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -54,7 +57,7 @@ public class RealPlayer extends Player {
     }
 
     @Override
-    public Card playRound() {
+    public Card playRound(Queue<Move> moves, Card mainCard, GameOptionNumberOfPlayers gameOptions) {
         printInstructions();
         int numberInput = enterNumber();
         return playerCards.remove(numberInput);
