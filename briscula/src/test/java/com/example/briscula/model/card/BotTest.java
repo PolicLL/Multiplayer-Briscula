@@ -1,16 +1,18 @@
 package com.example.briscula.model.card;
 
+import com.example.briscula.game.Game;
 import com.example.briscula.game.Move;
 import com.example.briscula.user.player.Bot;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import com.example.web.model.ConnectedPlayer;
+import com.example.web.model.GameRoom;
+import com.example.web.model.enums.GameEndStatus;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static utils.EntityUtils.getConnectedPlayer;
 import static utils.EntityUtils.getWebSocketSession;
 
 public class BotTest {
@@ -21,7 +23,7 @@ public class BotTest {
     );
 
     @Test
-    void testKillIf_OneCardOnTableNotMainType_WithNotMainType() {
+    void testKill_OneCardOnTableNotMainType_WithNotMainType() {
         // given
         Queue<Move> moves = new LinkedList<>(List.of(
                 new Move(playerList.get(0), new Card(CardType.COPPE, CardValue.SEVEN))
@@ -45,7 +47,7 @@ public class BotTest {
     }
 
     @Test
-    void testThrowingFirst_When_ThereIsStrongMainAndNonMainType() {
+    void testThrowingFirst_When_YouHaveStrongMainAndNonMainTypeCard() {
         // given
         Queue<Move> moves = new LinkedList<>(List.of());
 
@@ -67,7 +69,7 @@ public class BotTest {
     }
 
     @Test
-    void testThrowingThird_When_CanKill_WithSmallerCard_AndThereIsMoreThan10Points() {
+    void testThrowingThird_WhenCanKill_WithSmallerCard_AndThereIsMoreThan10Points() {
         // given
         Queue<Move> moves = new LinkedList<>(List.of(
                 new Move(playerList.get(0), new Card(CardType.COPPE, CardValue.KING)),
@@ -114,5 +116,46 @@ public class BotTest {
 
         // then
         assertThat(cardBotChoose).isEqualTo(new Card(CardType.COPPE, CardValue.ACE));
+    }
+
+    @Test
+    void testSmartBotVsBot() {
+        Bot smartBot = new Bot("SmartBot", getWebSocketSession());
+        smartBot.setWaitingTimeInMiliseconds(0);
+
+        Bot stupidBot = new Bot("StupidBot", getWebSocketSession());
+        stupidBot.setHasIntelligence(false);
+        stupidBot.setWaitingTimeInMiliseconds(0);
+
+        int smartBotWins = 0;
+        int stupidBotWins = 0;
+
+        for (int i = 0; i < 100; ++i) {
+            GameEndStatus gameEndStatus = new GameRoom(List.of(getConnectedPlayer(smartBot), getConnectedPlayer(stupidBot)),
+                    GameOptionNumberOfPlayers.TWO_PLAYERS, true).startGame();
+
+            List<ConnectedPlayer> winners = gameEndStatus.playerResults().entrySet().stream()
+                    .filter(Map.Entry::getValue)
+                    .map(Map.Entry::getKey)
+                    .toList();
+
+            smartBot.resetPoints();
+            stupidBot.resetPoints();
+
+            if (gameEndStatus.status().equals(GameEndStatus.Status.NO_WINNER))
+                continue;
+
+            ConnectedPlayer winner = winners.get(0);
+
+            if (winner.getPlayer().equals(smartBot)) {
+                ++smartBotWins;
+            }
+            else ++stupidBotWins;
+        }
+
+        assertThat(smartBotWins).isGreaterThan(stupidBotWins);
+
+        System.out.println("SmartBot wins = " +  smartBotWins + " Stupid bot wins = " + stupidBotWins);
+
     }
 }

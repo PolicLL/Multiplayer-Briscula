@@ -5,6 +5,8 @@ import com.example.briscula.model.card.Card;
 import com.example.briscula.model.card.CardType;
 import com.example.briscula.model.card.CardValue;
 import com.example.briscula.utilities.constants.GameOptionNumberOfPlayers;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.List;
@@ -16,20 +18,38 @@ import static com.example.briscula.game.RoundJudge.isCardStrongerThanAllOtherCar
 import static com.example.briscula.model.card.Card.getNumberOfPoints;
 import static com.example.web.utils.Constants.RANDOM;
 
+@Slf4j
 public class Bot extends Player {
 
+    @Setter
+    private boolean hasIntelligence = true;
+
+    @Setter
+    private int waitingTimeInMiliseconds = RANDOM.nextInt(3000) + 1000;
 
     public Bot(String nickname, WebSocketSession webSocketSession) {
         super(nickname, webSocketSession);
     }
 
     public Card playRound(Queue<Move> moves, Card mainCard, GameOptionNumberOfPlayers gameOptions) {
-        Card tempCard = determineCardToThrow(moves, mainCard, gameOptions);
+        System.out.println();
+
+        this.playerCards.forEach(card -> log.info(card.toString()));
+
+        System.out.println();
+
+        Card tempCard = null;
+
+        if (!hasIntelligence) {
+            tempCard = getRandomCardInList(playerCards);
+        } else {
+            tempCard = determineCardToThrow(moves, mainCard, gameOptions);
+        }
+
         playerCards.remove(tempCard);
 
-
         try {
-            Thread.sleep(RANDOM.nextInt(3000) + 1000);
+            Thread.sleep(waitingTimeInMiliseconds);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
@@ -69,7 +89,7 @@ public class Bot extends Player {
             }
         }
 
-        return playerCards.get(0);
+        return getRandomCardInList(playerCards);
     }
 
     private Card handleThrowingWhenYouAreThirdOrFourth(Queue<Move> moves, Card mainCard) {

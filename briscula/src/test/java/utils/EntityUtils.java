@@ -156,8 +156,9 @@ public class EntityUtils {
     }
 
     public static ConnectedPlayer getConnectedPlayersBots() {
-        return new ConnectedPlayer(new Bot("Bot " + getRandomNumber(100000), getWebSocketSession()),
-                true);
+        Bot newBot = new Bot("Bot " + getRandomNumber(100000), getWebSocketSession());
+        newBot.setWaitingTimeInMiliseconds(0);
+        return new ConnectedPlayer(newBot, true);
     }
 
     // WebSocketSession
